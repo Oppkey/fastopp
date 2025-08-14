@@ -2,7 +2,7 @@
 Page routes for rendering HTML templates
 """
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from auth.core import get_current_staff_or_admin_from_cookies
 from models import User
@@ -91,4 +91,10 @@ async def marketing_demo(request: Request):
         "request": request,
         "success": True,
         "message": "Thank you! Our AI team will contact you within 24 hours with a personalized marketing demo."
-    }) 
+    })
+
+
+@router.get("/LICENSE")
+async def get_license():
+    """Serve the LICENSE file from the root directory"""
+    return FileResponse("LICENSE", media_type="text/plain") 
