@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://oppkey.github.io/fastopp/feed.xml" rel="self" type="application/atom+xml" /><link href="https://oppkey.github.io/fastopp/" rel="alternate" type="text/html" /><updated>2025-09-30T16:45:44+00:00</updated><id>https://oppkey.github.io/fastopp/feed.xml</id><title type="html">FastOpp Blog</title><subtitle>Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</subtitle><author><name>Oppkey</name></author><entry><title type="html">Welcome to FastOpp - Easier AI Web Apps for Students</title><link href="https://oppkey.github.io/fastopp/2025/09/29/welcome-to-fastopp/" rel="alternate" type="text/html" title="Welcome to FastOpp - Easier AI Web Apps for Students" /><published>2025-09-29T00:00:00+00:00</published><updated>2025-09-29T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/09/29/welcome-to-fastopp</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/09/29/welcome-to-fastopp/"><![CDATA[<p>Welcome to the FastOpp blog. <strong>FastOpp</strong> is a FastAPI starter package designed specifically for students prototyping AI web applications.</p>
+
+<h2 id="what-is-fastopp">What is FastOpp?</h2>
+
+<p>FastOpp provides pre-built admin components that give FastAPI functionality comparable to Django for AI-first applications. It’s designed to bridge the gap between Django’s ease of use and FastAPI’s modern async capabilities.</p>
+
+<h3 id="the-problem-were-solving">The Problem We’re Solving</h3>
+
+<p>Django and Flask are not designed for optimized async LLM applications. While both can absolutely be used for complex AI applications, there are often rough patches during development of asynchronous AI applications that communicate with backend LLMs available at OpenAI, Anthropic, and OpenRouter.</p>
+
+<p>FastAPI has advantages in future-proof architecture, but can have a steep learning curve for people, especially for developers familiar with Django. FastOpp bridges this gap by providing an opinionated framework for FastAPI with Django-inspired features.</p>
+
+<h2 id="key-features">Key Features</h2>
+
+<h3 id="️-admin-panel">🛡️ Admin Panel</h3>
+<p>Django-style admin panel with role-based authentication, similar to Django admin but built for FastAPI.</p>
+
+<h3 id="️-sql-database">🗄️ SQL Database</h3>
+<p>SQL database with Django-inspired models and migrations using SQLModel and Alembic.</p>
+
+<h3 id="-modern-ui">🎨 Modern UI</h3>
+<p>Tailwind CSS, DaisyUI, Alpine.js, and HTMX for beautiful, interactive interfaces.</p>
+
+<h3 id="-api-endpoints">🔌 API Endpoints</h3>
+<p>Auto-generated API documentation and endpoints designed to connect with React and Flutter.</p>
+
+<h3 id="-fast-development">⚡ Fast Development</h3>
+<p>Get started quickly with pre-built components and management tools like <code class="language-plaintext highlighter-rouge">oppman.py</code> and <code class="language-plaintext highlighter-rouge">oppdemo.py</code>.</p>
+
+<h2 id="who-is-fastopp-for">Who is FastOpp For?</h2>
+
+<p>FastOpp is opinionated and may not be for everyone. It’s intended for:</p>
+
+<ul>
+  <li><strong>University students</strong> looking to build resume projects</li>
+  <li><strong>Hobbyists</strong> wanting to vibe code simple AI utilities</li>
+  <li><strong>Small business entrepreneurs</strong> with great ideas but limited programming experience</li>
+</ul>
+
+<h3 id="important-note">Important Note</h3>
+<p>FastOpp is <strong>not intended for production use or for experienced developers</strong>. It’s a learning tool designed to get you started quickly with AI applications.</p>
+
+<h2 id="quick-start">Quick Start</h2>
+
+<p>Getting started with FastOpp is simple:</p>
+
+<ol>
+  <li><strong>Create your repo from the template</strong>
+    <ul>
+      <li>Go to <a href="https://github.com/Oppkey/FastOpp">FastOpp on GitHub</a></li>
+      <li>Click “Use this template” → “Create a new repository”</li>
+      <li>Name it (e.g., <code class="language-plaintext highlighter-rouge">fastopp-&lt;yourproject&gt;</code>)</li>
+    </ul>
+  </li>
+  <li><strong>Clone and setup</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/&lt;YOUR_USERNAME&gt;/fastopp-&lt;yourproject&gt;.git
+<span class="nb">cd </span>fastopp-&lt;yourproject&gt;
+uv <span class="nb">sync</span>
+</code></pre></div>    </div>
+  </li>
+  <li><strong>One-command setup</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppdemo.py init
+</code></pre></div>    </div>
+  </li>
+  <li><strong>Start developing</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppman.py runserver
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>Visit <code class="language-plaintext highlighter-rouge">http://localhost:8000/</code> to see your FastOpp application in action!</p>
+
+<h2 id="whats-next">What’s Next?</h2>
+
+<p>In upcoming posts, I’ll cover:</p>
+
+<ul>
+  <li>Setting up your first AI chat application</li>
+  <li>Customizing the admin panel</li>
+  <li>Deploying to production</li>
+  <li>Advanced FastAPI patterns with FastOpp</li>
+</ul>
+
+<h2 id="get-involved">Get Involved</h2>
+
+<ul>
+  <li><strong>GitHub</strong>: <a href="https://github.com/Oppkey/FastOpp">Oppkey/FastOpp</a></li>
+  <li><strong>Issues</strong>: Report bugs or request features</li>
+  <li><strong>Discussions</strong>: Ask questions and share your projects</li>
+</ul>
+
+<p>FastOpp is designed to be beautiful, cheap, easy, and opinionated. Whether you’re a student building your first AI app or a hobbyist exploring new possibilities, FastOpp provides the foundation you need to get started quickly.</p>
+
+<p>Stay tuned for more tutorials, tips, and updates about FastOpp development!</p>
+
+<hr />
+
+<p><em>Have questions about FastOpp? Check out our <a href="https://github.com/Oppkey/FastOpp">GitHub repository</a> or start a discussion. We’d love to hear about your AI application ideas!</em></p>]]></content><author><name>Craig Oda</name></author><summary type="html"><![CDATA[Introducing FastOpp, a FastAPI starter package designed for students prototyping AI web applications. Get Django-like functionality with FastAPI's async capabilities.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://oppkey.github.io/fastopp/assets/images/workshop.webp" /><media:content medium="image" url="https://oppkey.github.io/fastopp/assets/images/workshop.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastOpp Blog - FastOpp Blog</title>
+    <meta name="description" content="Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/fastopp/assets/images/fastopp_logo.webp">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ai-blue': '#3B82F6',
+                        'ai-purple': '#8B5CF6',
+                        'ai-green': '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/fastopp/assets/css/main.css">
+    
+    <!-- SEO -->
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>FastOpp Blog | Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="FastOpp Blog" />
+<meta name="author" content="Oppkey" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications" />
+<meta property="og:description" content="Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications" />
+<link rel="canonical" href="https://oppkey.github.io/fastopp/" />
+<meta property="og:url" content="https://oppkey.github.io/fastopp/" />
+<meta property="og:site_name" content="FastOpp Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="FastOpp Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","author":{"@type":"Person","name":"Oppkey"},"description":"Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications","headline":"FastOpp Blog","name":"FastOpp","sameAs":["https://github.com/Oppkey/FastOpp"],"url":"https://oppkey.github.io/fastopp/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    
+    <!-- Feed -->
+    <link rel="alternate" type="application/rss+xml" title="FastOpp Blog" href="/fastopp/feed.xml">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center">
+                        <a href="/fastopp/" class="text-2xl font-bold text-gray-900 hover:text-ai-blue transition-colors">
+                            FastOpp Blog
+                        </a>
+                    </div>
+                    
+                    <nav class="hidden md:flex space-x-8">
+                        <a href="/fastopp/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            Home
+                        </a>
+                        <a href="/fastopp/about/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            About
+                        </a>
+                        <a href="/fastopp/posts/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            Posts
+                        </a>
+                        <a href="https://github.com/Oppkey/FastOpp" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium"
+                           target="_blank" rel="noopener">
+                            GitHub
+                        </a>
+                    </nav>
+                    
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden">
+                        <button type="button" class="text-gray-700 hover:text-ai-blue focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <!-- Hero Section -->
+<section class="bg-gradient-to-br from-ai-blue to-ai-purple text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-5xl font-bold mb-6">FastOpp Blog</h1>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">
+                Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://github.com/Oppkey/FastOpp" 
+                   class="bg-white text-ai-blue px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                   target="_blank" rel="noopener">
+                    View on GitHub
+                </a>
+                <a href="/fastopp/posts/" 
+                   class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-ai-blue transition-colors">
+                    Read Blog Posts
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Developer and Student Resources Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Developer and Student Resources</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Learn FastOpp with comprehensive tutorials, guides, and video content designed for students and developers.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- YouTube Playlist Card -->
+            <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow border-2 border-transparent hover:border-ai-blue">
+                <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-4 text-gray-900">FastOpp Tutorial Playlist</h3>
+                <p class="text-gray-600 mb-6">
+                    Comprehensive video tutorials covering FastAPI, SQLAlchemy, AI integration, and deployment strategies. Perfect for students learning modern web development.
+                </p>
+                <a href="https://www.youtube.com/playlist?list=PLxvyAnoL-vu7k4KEX3gqMlu55ahp1icT5" 
+                   class="inline-flex items-center bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                   target="_blank" rel="noopener">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                    Watch Tutorials
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Posts Section -->
+
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Latest Posts</h2>
+            <p class="text-xl text-gray-600">
+                Stay updated with the latest FastOpp developments and tutorials.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <article class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                
+                <img src="/fastopp/assets/images/workshop.webp" alt="Welcome to FastOpp - Easier AI Web Apps for Students" class="w-full h-48 object-cover">
+                
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <time datetime="2025-09-29T00:00:00+00:00">
+                            September 29, 2025
+                        </time>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-900">
+                        <a href="/fastopp/2025/09/29/welcome-to-fastopp/" class="hover:text-ai-blue transition-colors">
+                            Welcome to FastOpp - Easier AI Web Apps for Students
+                        </a>
+                    </h3>
+                    <p class="text-gray-600 mb-4">
+                        Introducing FastOpp, a FastAPI starter package designed for students prototyping AI web applications. Get Django-like...
+                    </p>
+                    <a href="/fastopp/2025/09/29/welcome-to-fastopp/" 
+                       class="inline-flex items-center text-ai-blue hover:text-blue-700 font-medium">
+                        Read more
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </article>
+            
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/fastopp/posts/" 
+               class="inline-block bg-ai-blue text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                View All Posts
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-r from-ai-blue to-ai-purple text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold mb-6">Ready to Get Started?</h2>
+        <p class="text-xl mb-8 max-w-3xl mx-auto">
+            Create your own FastAPI AI application with FastOpp. Perfect for students, hobbyists, and entrepreneurs.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="https://github.com/Oppkey/FastOpp" 
+               class="bg-white text-ai-blue px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+               target="_blank" rel="noopener">
+                Use Template
+            </a>
+            <a href="https://github.com/Oppkey/FastOpp#-quick-start-for-students" 
+               class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-ai-blue transition-colors"
+               target="_blank" rel="noopener">
+                Quick Start Guide
+            </a>
+        </div>
+    </div>
+</section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <div class="mb-4">
+                            <span class="text-xl font-bold">FastOpp Blog</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/Oppkey/FastOpp" 
+                               class="text-gray-300 hover:text-white transition-colors"
+                               target="_blank" rel="noopener">
+                                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                        <ul class="space-y-2">
+                            <li><a href="/fastopp/" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+                            <li><a href="/fastopp/about/" class="text-gray-300 hover:text-white transition-colors">About</a></li>
+                            <li><a href="/fastopp/posts/" class="text-gray-300 hover:text-white transition-colors">Blog Posts</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">GitHub Repository</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                        <ul class="space-y-2">
+                            <li><a href="https://github.com/Oppkey/FastOpp#-quick-start-for-students" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Quick Start Guide</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp#-management-commands" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Documentation</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp#-troubleshooting" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Troubleshooting</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                    <p class="text-gray-400">
+                        &copy; 2025 Oppkey. Built with FastOpp and Jekyll.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
