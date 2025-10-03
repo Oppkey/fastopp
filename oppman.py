@@ -26,6 +26,7 @@ try:
     from scripts.check_users import check_users
     from scripts.test_auth import test_auth
     from scripts.change_password import list_users, change_password_interactive
+    from scripts.emergency_access import main as emergency_access_main
 except ImportError as e:
     print(f"❌ Import error: {e}")
     print("Make sure all script files are in the scripts/ directory")
@@ -210,6 +211,12 @@ async def run_list_users():
     await list_users()
 
 
+def run_emergency_access():
+    """Generate emergency access token"""
+    print("🚨 Generating emergency access token...")
+    emergency_access_main()
+
+
 def run_server():
     """Start the development server with uvicorn"""
     print("🚀 Starting development server...")
@@ -312,7 +319,7 @@ COMMANDS:
     delete      Delete current database (with backup)
     backup      Backup current database
     migrate     Database migration management (see examples below)
-    db          Initialize database (detects base_assets mode for minimal setup)
+    db          Initialize database (creates all tables)
     
     # User management
     superuser   Create superuser account
@@ -320,6 +327,7 @@ COMMANDS:
     test_auth   Test the authentication system
     change_password Change user password interactively
     list_users  List all users in the database
+    emergency   Generate emergency access token for password recovery
     
     # Environment and utilities
     env         Check environment configuration
@@ -335,6 +343,7 @@ EXAMPLES:
     uv run python oppman.py production     # Start production server
     
     # Database management
+    uv run python oppman.py db             # Initialize database (creates all tables)
     uv run python oppman.py backup         # Backup database
     uv run python oppman.py delete         # Delete database (with backup)
     uv run python oppman.py migrate init   # Initialize migrations
@@ -342,22 +351,29 @@ EXAMPLES:
     uv run python oppman.py migrate upgrade  # Apply migrations
     uv run python oppman.py migrate current  # Show current migration
     
-    # Environment management
-    uv run python oppman.py env            # Check environment configuration
-    uv run python oppman.py secrets        # Generate SECRET_KEY for .env file
-    
-    # Database and user management
-    uv run python oppman.py db             # Initialize database
+    # User management
     uv run python oppman.py superuser      # Create superuser
     uv run python oppman.py check_users    # Check existing users
     uv run python oppman.py test_auth      # Test authentication
     uv run python oppman.py change_password # Change user password
-    uv run python oppman.py list_users     # List all users    
+    uv run python oppman.py list_users     # List all users
+    uv run python oppman.py emergency      # Generate emergency access token
+    
+    # Environment management
+    uv run python oppman.py env            # Check environment configuration
+    uv run python oppman.py secrets        # Generate SECRET_KEY for .env file
+    
     # Demo file management (use oppdemo.py)
     uv run python oppdemo.py save          # Save demo files
     uv run python oppdemo.py restore       # Restore demo files
     uv run python oppdemo.py destroy       # Switch to minimal app
     uv run python oppdemo.py diff          # Show differences
+
+IMPORTANT NOTES:
+    - oppman.py: Core application management (database, users, migrations)
+    - oppdemo.py: Demo-specific commands (init, products, webinars, file management)
+    - Both have 'db' and 'superuser' commands - use either one
+    - Emergency access is only available in oppman.py
 
 DEFAULT CREDENTIALS:
     Superuser: admin@example.com / admin123
@@ -448,7 +464,7 @@ Examples:
             # Core application management
             "runserver", "stopserver", "production", "delete", "backup", "migrate", "env", "secrets", "help", "demo",
             # Core database and user management
-            "init", "db", "superuser", "check_users", "test_auth", "change_password", "list_users"
+            "init", "db", "superuser", "check_users", "test_auth", "change_password", "list_users", "emergency"
         ],
         help="Command to execute"
     )
@@ -552,6 +568,11 @@ Examples:
     
     # Handle core database and user management commands
     core_commands = ["db", "superuser", "check_users", "test_auth", "change_password", "list_users"]
+    
+    # Handle emergency access command (non-async)
+    if args.command == "emergency":
+        run_emergency_access()
+        return
     
     if args.command in core_commands:
         # Run async commands

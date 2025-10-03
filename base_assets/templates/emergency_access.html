@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Access - FastOpp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body class="bg-base-200 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <div class="text-center mb-6">
+                        <h1 class="text-2xl font-bold text-error">🚨 Emergency Access</h1>
+                        <p class="text-sm text-base-content/70 mt-2">
+                            Use your SECRET_KEY to gain emergency access for password recovery
+                        </p>
+                    </div>
+
+                    <div class="alert alert-warning mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        <div>
+                            <h3 class="font-bold">Security Notice</h3>
+                            <div class="text-xs">
+                                This emergency access uses your SECRET_KEY for authentication. 
+                                Only use this when you cannot access your admin account normally.
+                            </div>
+                        </div>
+                    </div>
+
+                    <form hx-post="/oppman/emergency/verify" hx-target="#result" hx-indicator="#loading">
+                        <div class="form-control mb-4">
+                            <label class="label">
+                                <span class="label-text font-semibold">Emergency Access Token</span>
+                            </label>
+                            <input 
+                                type="password" 
+                                name="token" 
+                                placeholder="Enter your SECRET_KEY" 
+                                class="input input-bordered w-full" 
+                                required
+                            />
+                            <label class="label">
+                                <span class="label-text-alt text-base-content/60">
+                                    This should be the same value as your SECRET_KEY environment variable
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="form-control">
+                            <button type="submit" class="btn btn-error w-full">
+                                <span id="loading" class="loading loading-spinner loading-sm htmx-indicator"></span>
+                                Grant Emergency Access
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="result" class="mt-4"></div>
+
+                    <div class="divider">Instructions</div>
+
+                    <div class="text-sm space-y-2">
+                        <div class="flex items-start gap-2">
+                            <span class="badge badge-primary badge-sm">1</span>
+                            <span>Get your SECRET_KEY from your server environment</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="badge badge-primary badge-sm">2</span>
+                            <span>Enter it in the field above</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="badge badge-primary badge-sm">3</span>
+                            <span>Click "Grant Emergency Access"</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="badge badge-primary badge-sm">4</span>
+                            <span>Reset your admin password</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="badge badge-primary badge-sm">5</span>
+                            <span>Disable emergency access: <code>export EMERGENCY_ACCESS_ENABLED=false</code></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <a href="/oppman/" class="link link-primary text-sm">
+                            ← Back to Oppman Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle successful emergency access
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            if (evt.detail.xhr.status === 200) {
+                const response = JSON.parse(evt.detail.xhr.responseText);
+                if (response.success) {
+                    // Redirect to emergency dashboard
+                    setTimeout(() => {
+                        window.location.href = '/oppman/emergency/dashboard';
+                    }, 1000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

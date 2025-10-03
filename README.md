@@ -240,6 +240,18 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 EOF
 ```
 
+**Using the example configuration:**
+
+```bash
+# Copy the example environment file
+cp example.env .env
+
+# Edit the .env file with your values
+nano .env  # or use your preferred editor
+```
+
+The `example.env` file contains all available configuration options with detailed comments and examples.
+
 **Or manually create `.env`:**
 
 ```bash
@@ -691,6 +703,7 @@ uv run python oppdemo.py diff
 * [Architecture Overview](docs/ARCHITECTURE.md) - MVS Architecture and code organization
 * [Database](docs/DATABASE.md)
 * [Authentication](docs/AUTHENTICATION.md)
+* [Emergency Access](docs/EMERGENCY_ACCESS.md) - Password recovery system for admin access
 * [Features](docs/FEATURES.md)
 
 ## Guidelines

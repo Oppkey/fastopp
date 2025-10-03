@@ -326,7 +326,8 @@ def save_demo_files():
         script_files = [
             "scripts/add_sample_products.py",
             "scripts/add_sample_webinar_registrants.py",
-            "scripts/download_sample_photos.py"
+            "scripts/download_sample_photos.py",
+            "scripts/emergency_access.py"
         ]
         
         for script_file in script_files:

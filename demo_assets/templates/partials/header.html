@@ -25,6 +25,8 @@
                    class="{% if current_page == 'webinar-registrants' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue transition-colors{% endif %}">Webinar Manage</a>
                 <a href="/admin/" 
                    class="{% if current_page == 'admin' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue transition-colors{% endif %}">Admin</a>
+                <a href="/oppman/" 
+                   class="{% if current_page == 'oppman' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue transition-colors{% endif %}">Oppman</a>
                 {% if request.cookies.get('access_token') %}
                 <a href="/logout" 
                    class="text-red-600 hover:text-red-700 transition-colors">Logout</a>
@@ -62,6 +64,8 @@
                    class="block px-3 py-2 {% if current_page == 'webinar-registrants' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Webinar Manage</a>
                 <a href="/admin/" 
                    class="block px-3 py-2 {% if current_page == 'admin' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Admin</a>
+                <a href="/oppman/" 
+                   class="block px-3 py-2 {% if current_page == 'oppman' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Oppman</a>
                 {% if request.cookies.get('access_token') %}
                 <a href="/logout" 
                    class="block px-3 py-2 text-red-600 hover:text-red-700">Logout</a>
