@@ -1,4 +1,129 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://oppkey.github.io/fastopp/feed.xml" rel="self" type="application/atom+xml" /><link href="https://oppkey.github.io/fastopp/" rel="alternate" type="text/html" /><updated>2025-10-07T20:31:18+00:00</updated><id>https://oppkey.github.io/fastopp/feed.xml</id><title type="html">FastOpp Blog</title><subtitle>Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</subtitle><author><name>Oppkey</name></author><entry><title type="html">Architectural Consistency When Working with a PostgreSQL Async Database</title><link href="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/" rel="alternate" type="text/html" title="Architectural Consistency When Working with a PostgreSQL Async Database" /><published>2025-10-07T00:00:00+00:00</published><updated>2025-10-07T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/07/postgresql-async</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/"><![CDATA[<h2 id="postgresql-failing-with-async-in-production-although-sqlite-works-on-my-mac">PostgreSQL Failing with Async in Production Although SQLite Works on my Mac</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architectural Consistency When Working with a PostgreSQL Async Database - FastOpp Blog</title>
+    <meta name="description" content="Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/fastopp/assets/images/fastopp_logo.webp">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ai-blue': '#3B82F6',
+                        'ai-purple': '#8B5CF6',
+                        'ai-green': '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/fastopp/assets/css/main.css">
+    
+    <!-- SEO -->
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Architectural Consistency When Working with a PostgreSQL Async Database | FastOpp Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Architectural Consistency When Working with a PostgreSQL Async Database" />
+<meta name="author" content="Craig Oda" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="How I learned that async databases need async migrations, and why the ‘quick fix’ approach doesn’t scale" />
+<meta property="og:description" content="How I learned that async databases need async migrations, and why the ‘quick fix’ approach doesn’t scale" />
+<link rel="canonical" href="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/" />
+<meta property="og:url" content="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/" />
+<meta property="og:site_name" content="FastOpp Blog" />
+<meta property="og:image" content="https://oppkey.github.io/fastopp/assets/images/workshop.webp" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-10-07T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://oppkey.github.io/fastopp/assets/images/workshop.webp" />
+<meta property="twitter:title" content="Architectural Consistency When Working with a PostgreSQL Async Database" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Craig Oda"},"dateModified":"2025-10-07T00:00:00+00:00","datePublished":"2025-10-07T00:00:00+00:00","description":"How I learned that async databases need async migrations, and why the ‘quick fix’ approach doesn’t scale","headline":"Architectural Consistency When Working with a PostgreSQL Async Database","image":"https://oppkey.github.io/fastopp/assets/images/workshop.webp","mainEntityOfPage":{"@type":"WebPage","@id":"https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/"},"url":"https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    
+    <!-- Feed -->
+    <link rel="alternate" type="application/rss+xml" title="FastOpp Blog" href="/fastopp/feed.xml">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center">
+                        <a href="/fastopp/" class="text-2xl font-bold text-gray-900 hover:text-ai-blue transition-colors">
+                            FastOpp Blog
+                        </a>
+                    </div>
+                    
+                    <nav class="hidden md:flex space-x-8">
+                        <a href="/fastopp/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            Home
+                        </a>
+                        <a href="/fastopp/about/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            About
+                        </a>
+                        <a href="/fastopp/posts/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            Posts
+                        </a>
+                        <a href="https://github.com/Oppkey/FastOpp" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium"
+                           target="_blank" rel="noopener">
+                            GitHub
+                        </a>
+                    </nav>
+                    
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden">
+                        <button type="button" class="text-gray-700 hover:text-ai-blue focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Post Header -->
+    <header class="mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Architectural Consistency When Working with a PostgreSQL Async Database</h1>
+        
+        <div class="flex items-center text-gray-600 mb-6">
+            <time datetime="2025-10-07T00:00:00+00:00" class="mr-4">
+                October 07, 2025
+            </time>
+            <span class="mr-4">•</span>
+            <span>By Craig Oda</span>
+        </div>
+        
+        
+        <img src="/fastopp/assets/images/workshop.webp" 
+             alt="Architectural Consistency When Working with a PostgreSQL Async Database" 
+             class="w-full h-64 object-cover rounded-lg shadow-lg">
+        
+    </header>
+    
+    <!-- Post Content -->
+    <div class="prose prose-lg max-w-none">
+        <h2 id="postgresql-failing-with-async-in-production-although-sqlite-works-on-my-mac">PostgreSQL Failing with Async in Production Although SQLite Works on my Mac</h2>
 
 <p>Last week, I was working on our FastOpp project and ran into a classic developer problem: “It works on my machine, but not in production.” Specifically, our FastAPI application worked perfectly with SQLite during development, but when I tried to switch to PostgreSQL in production on Leapcell using the Leapcell PostgreSQL service,
 database access broke.</p>
@@ -231,108 +356,101 @@ as asyncpg.  However, I hope to try it out next.</p>
 
 <h2 id="additional-information">Additional Information</h2>
 
-<p><a href="https://github.com/Oppkey/fastopp/pull/140">Pull request with extensive description of changes</a>.</p>]]></content><author><name>Craig Oda</name></author><summary type="html"><![CDATA[How I learned that async databases need async migrations, and why the 'quick fix' approach doesn't scale]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://oppkey.github.io/fastopp/assets/images/workshop.webp" /><media:content medium="image" url="https://oppkey.github.io/fastopp/assets/images/workshop.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Using Tavily to add internet search to chat</title><link href="https://oppkey.github.io/fastopp/2025/09/30/adding-internet-search-to-llm/" rel="alternate" type="text/html" title="Using Tavily to add internet search to chat" /><published>2025-09-30T00:00:00+00:00</published><updated>2025-09-30T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/09/30/adding-internet-search-to-llm</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/09/30/adding-internet-search-to-llm/"><![CDATA[<h3 id="httpsgithubcomcodetricitychat-with-history"><a href="https://github.com/codetricity/chat-with-history">https://github.com/codetricity/chat-with-history</a></h3>]]></content><author><name>Shotoku</name></author><summary type="html"><![CDATA[This chat_with_history example has an a way to connect LLM to internet search]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://oppkey.github.io/fastopp/assets/images/search-icon.png" /><media:content medium="image" url="https://oppkey.github.io/fastopp/assets/images/search-icon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">FastOpp Deployment to Leapcell - Free Hosting Tier</title><link href="https://oppkey.github.io/fastopp/2025/09/30/leapcell-deployment/" rel="alternate" type="text/html" title="FastOpp Deployment to Leapcell - Free Hosting Tier" /><published>2025-09-30T00:00:00+00:00</published><updated>2025-09-30T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/09/30/leapcell-deployment</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/09/30/leapcell-deployment/"><![CDATA[<p>These tutorials will take you through free deployment on
-Leapcell with both FastAPI and FastOpp.</p>
+<p><a href="https://github.com/Oppkey/fastopp/pull/140">Pull request with extensive description of changes</a>.</p>
 
-<p><a href="https://youtu.be/xhOALd640tA">FastAPI Deploy to Leapcell - free hosting tier</a></p>
+    </div>
+    
+    <!-- Post Footer -->
+    <footer class="mt-12 pt-8 border-t border-gray-200">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div class="mb-4 sm:mb-0">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">About the Author</h3>
+                <p class="text-gray-600">
+                    Craig Oda is a partner at Oppkey and an active contributor to FastOpp
+                </p>
+            </div>
+            
+            <div class="flex space-x-4">
+                <a href="https://github.com/Oppkey/FastOpp" 
+                   class="text-gray-600 hover:text-ai-blue transition-colors"
+                   target="_blank" rel="noopener">
+                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+</article>
 
-<p><a href="https://youtu.be/GoKpQTHE-1A">Free  Deploy to Leapcell with FastAPI, PostgreSQL and Object Storage</a></p>]]></content><author><name>Oppkey Tutor</name></author><summary type="html"><![CDATA[Free deployment to Leapcell. No credit card required.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://oppkey.github.io/fastopp/assets/images/leapcell_logo.png" /><media:content medium="image" url="https://oppkey.github.io/fastopp/assets/images/leapcell_logo.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Our Process for Testing and Contributing to FastOpp</title><link href="https://oppkey.github.io/fastopp/2025/09/30/testing-fastopp/" rel="alternate" type="text/html" title="Our Process for Testing and Contributing to FastOpp" /><published>2025-09-30T00:00:00+00:00</published><updated>2025-09-30T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/09/30/testing-fastopp</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/09/30/testing-fastopp/"><![CDATA[<p>Testing …</p>
+<!-- Navigation -->
+<nav class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <div class="flex justify-between">
+        
+        <a href="/fastopp/2025/09/30/testing-fastopp/" 
+           class="flex items-center text-ai-blue hover:text-blue-700 transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Previous: Our Process for Testing and Contributing to FastOpp
+        </a>
+        
+        
+        
+    </div>
+</nav>
 
-<p>Ipsum lorem…</p>]]></content><author><name>Ethan Luke Kim</name></author><summary type="html"><![CDATA[A quick guide and personal notes on testing the FastOpp framework, including the essential git commands for contributing.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://oppkey.github.io/fastopp/assets/images/github-pull-request.webp" /><media:content medium="image" url="https://oppkey.github.io/fastopp/assets/images/github-pull-request.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Welcome to FastOpp - Easier AI Web Apps for Students</title><link href="https://oppkey.github.io/fastopp/2025/09/29/welcome-to-fastopp/" rel="alternate" type="text/html" title="Welcome to FastOpp - Easier AI Web Apps for Students" /><published>2025-09-29T00:00:00+00:00</published><updated>2025-09-29T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/09/29/welcome-to-fastopp</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/09/29/welcome-to-fastopp/"><![CDATA[<p>Welcome to the FastOpp blog. <strong>FastOpp</strong> is a FastAPI starter package designed specifically for students prototyping AI web applications.</p>
+        </main>
 
-<h2 id="what-is-fastopp">What is FastOpp?</h2>
-
-<p>FastOpp provides pre-built admin components that give FastAPI functionality comparable to Django for AI-first applications. It’s designed to bridge the gap between Django’s ease of use and FastAPI’s modern async capabilities.</p>
-
-<h3 id="the-problem-were-solving">The Problem We’re Solving</h3>
-
-<p>Django and Flask are not designed for optimized async LLM applications. While both can absolutely be used for complex AI applications, there are often rough patches during development of asynchronous AI applications that communicate with backend LLMs available at OpenAI, Anthropic, and OpenRouter.</p>
-
-<p>FastAPI has advantages in future-proof architecture, but can have a steep learning curve for people, especially for developers familiar with Django. FastOpp bridges this gap by providing an opinionated framework for FastAPI with Django-inspired features.</p>
-
-<h2 id="key-features">Key Features</h2>
-
-<h3 id="️-admin-panel">🛡️ Admin Panel</h3>
-<p>Django-style admin panel with role-based authentication, similar to Django admin but built for FastAPI.</p>
-
-<h3 id="️-sql-database">🗄️ SQL Database</h3>
-<p>SQL database with Django-inspired models and migrations using SQLModel and Alembic.</p>
-
-<h3 id="-modern-ui">🎨 Modern UI</h3>
-<p>Tailwind CSS, DaisyUI, Alpine.js, and HTMX for beautiful, interactive interfaces.</p>
-
-<h3 id="-api-endpoints">🔌 API Endpoints</h3>
-<p>Auto-generated API documentation and endpoints designed to connect with React and Flutter.</p>
-
-<h3 id="-fast-development">⚡ Fast Development</h3>
-<p>Get started quickly with pre-built components and management tools like <code class="language-plaintext highlighter-rouge">oppman.py</code> and <code class="language-plaintext highlighter-rouge">oppdemo.py</code>.</p>
-
-<h2 id="who-is-fastopp-for">Who is FastOpp For?</h2>
-
-<p>FastOpp is opinionated and may not be for everyone. It’s intended for:</p>
-
-<ul>
-  <li><strong>University students</strong> looking to build resume projects</li>
-  <li><strong>Hobbyists</strong> wanting to vibe code simple AI utilities</li>
-  <li><strong>Small business entrepreneurs</strong> with great ideas but limited programming experience</li>
-</ul>
-
-<h3 id="important-note">Important Note</h3>
-<p>FastOpp is <strong>not intended for production use or for experienced developers</strong>. It’s a learning tool designed to get you started quickly with AI applications.</p>
-
-<h2 id="quick-start">Quick Start</h2>
-
-<p>Getting started with FastOpp is simple:</p>
-
-<ol>
-  <li><strong>Create your repo from the template</strong>
-    <ul>
-      <li>Go to <a href="https://github.com/Oppkey/FastOpp">FastOpp on GitHub</a></li>
-      <li>Click “Use this template” → “Create a new repository”</li>
-      <li>Name it (e.g., <code class="language-plaintext highlighter-rouge">fastopp-&lt;yourproject&gt;</code>)</li>
-    </ul>
-  </li>
-  <li><strong>Clone and setup</strong>
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/&lt;YOUR_USERNAME&gt;/fastopp-&lt;yourproject&gt;.git
-<span class="nb">cd </span>fastopp-&lt;yourproject&gt;
-uv <span class="nb">sync</span>
-</code></pre></div>    </div>
-  </li>
-  <li><strong>One-command setup</strong>
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppdemo.py init
-</code></pre></div>    </div>
-  </li>
-  <li><strong>Start developing</strong>
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppman.py runserver
-</code></pre></div>    </div>
-  </li>
-</ol>
-
-<p>Visit <code class="language-plaintext highlighter-rouge">http://localhost:8000/</code> to see your FastOpp application in action!</p>
-
-<h2 id="whats-next">What’s Next?</h2>
-
-<p>In upcoming posts, I’ll cover:</p>
-
-<ul>
-  <li>Setting up your first AI chat application</li>
-  <li>Customizing the admin panel</li>
-  <li>Deploying to production</li>
-  <li>Advanced FastAPI patterns with FastOpp</li>
-</ul>
-
-<h2 id="get-involved">Get Involved</h2>
-
-<ul>
-  <li><strong>GitHub</strong>: <a href="https://github.com/Oppkey/FastOpp">Oppkey/FastOpp</a></li>
-  <li><strong>Issues</strong>: Report bugs or request features</li>
-  <li><strong>Discussions</strong>: Ask questions and share your projects</li>
-</ul>
-
-<p>FastOpp is designed to be beautiful, cheap, easy, and opinionated. Whether you’re a student building your first AI app or a hobbyist exploring new possibilities, FastOpp provides the foundation you need to get started quickly.</p>
-
-<p>Stay tuned for more tutorials, tips, and updates about FastOpp development!</p>
-
-<hr />
-
-<p><em>Have questions about FastOpp? Check out our <a href="https://github.com/Oppkey/FastOpp">GitHub repository</a> or start a discussion. We’d love to hear about your AI application ideas!</em></p>]]></content><author><name>Craig Oda</name></author><summary type="html"><![CDATA[Introducing FastOpp, a FastAPI starter package designed for students prototyping AI web applications. Get Django-like functionality with FastAPI's async capabilities.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://oppkey.github.io/fastopp/assets/images/workshop.webp" /><media:content medium="image" url="https://oppkey.github.io/fastopp/assets/images/workshop.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <div class="mb-4">
+                            <span class="text-xl font-bold">FastOpp Blog</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/Oppkey/FastOpp" 
+                               class="text-gray-300 hover:text-white transition-colors"
+                               target="_blank" rel="noopener">
+                                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                        <ul class="space-y-2">
+                            <li><a href="/fastopp/" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+                            <li><a href="/fastopp/about/" class="text-gray-300 hover:text-white transition-colors">About</a></li>
+                            <li><a href="/fastopp/posts/" class="text-gray-300 hover:text-white transition-colors">Blog Posts</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">GitHub Repository</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                        <ul class="space-y-2">
+                            <li><a href="https://github.com/Oppkey/FastOpp#-quick-start-for-students" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Quick Start Guide</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp#-management-commands" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Documentation</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp#-troubleshooting" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Troubleshooting</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                    <p class="text-gray-400">
+                        &copy; 2025 Oppkey. Built with FastOpp and Jekyll.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
