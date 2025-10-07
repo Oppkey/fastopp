@@ -153,8 +153,8 @@ FastAPI app was using asynchronous ones.</p>
 
 <p>I committed the solution after only testing it on SQLite locally and unfortunately forgot
 to test it on PostgreSQL.  Several months passed and my laziness came back to bite
-me and cost me many hours. As I am new to Alembic, I didn’t know there was an
-async Alembic version. The logic of using synchronous calls for migrations seemed fine
+me and cost me many hours. As I am new to Alembic, I didn’t think about
+async Alembic patterns. The logic of using synchronous calls for migrations seemed fine
 to me as migrations <em>felt</em> synchronous.  I didn’t think about this mismatch in architectures
 too deeply, shrugging it off as “the way things are.”</p>
 
@@ -276,7 +276,7 @@ curl <span class="nt">-s</span> http://localhost:8000/health
   <li><strong>Modern async patterns</strong> following SQLAlchemy 2.0 best practices</li>
 </ul>
 
-<h3 id="production-ready">Production Ready**</h3>
+<h3 id="production-ready">Production Ready</h3>
 
 <ul>
   <li><strong>PostgreSQL support</strong> for production deployments</li>
