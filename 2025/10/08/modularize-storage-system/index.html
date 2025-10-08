@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Demo Now Runs on S3 in Addition to Local Files - FastOpp Blog</title>
+    <meta name="description" content="Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/fastopp/assets/images/fastopp_logo.webp">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ai-blue': '#3B82F6',
+                        'ai-purple': '#8B5CF6',
+                        'ai-green': '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/fastopp/assets/css/main.css">
+    
+    <!-- SEO -->
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>File Upload Demo Now Runs on S3 in Addition to Local Files | FastOpp Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="File Upload Demo Now Runs on S3 in Addition to Local Files" />
+<meta name="author" content="Craig Oda" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Moved image upload storage from only files to include S3" />
+<meta property="og:description" content="Moved image upload storage from only files to include S3" />
+<link rel="canonical" href="https://oppkey.github.io/fastopp/2025/10/08/modularize-storage-system/" />
+<meta property="og:url" content="https://oppkey.github.io/fastopp/2025/10/08/modularize-storage-system/" />
+<meta property="og:site_name" content="FastOpp Blog" />
+<meta property="og:image" content="https://oppkey.github.io/fastopp/assets/images/2025_10/run.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-10-08T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://oppkey.github.io/fastopp/assets/images/2025_10/run.jpg" />
+<meta property="twitter:title" content="File Upload Demo Now Runs on S3 in Addition to Local Files" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Craig Oda"},"dateModified":"2025-10-08T00:00:00+00:00","datePublished":"2025-10-08T00:00:00+00:00","description":"Moved image upload storage from only files to include S3","headline":"File Upload Demo Now Runs on S3 in Addition to Local Files","image":"https://oppkey.github.io/fastopp/assets/images/2025_10/run.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://oppkey.github.io/fastopp/2025/10/08/modularize-storage-system/"},"url":"https://oppkey.github.io/fastopp/2025/10/08/modularize-storage-system/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    
+    <!-- Feed -->
+    <link rel="alternate" type="application/rss+xml" title="FastOpp Blog" href="/fastopp/feed.xml">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center">
+                        <a href="/fastopp/" class="text-2xl font-bold text-gray-900 hover:text-ai-blue transition-colors">
+                            FastOpp Blog
+                        </a>
+                    </div>
+                    
+                    <nav class="hidden md:flex space-x-8">
+                        <a href="/fastopp/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            Home
+                        </a>
+                        <a href="/fastopp/about/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            About
+                        </a>
+                        <a href="/fastopp/posts/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            Posts
+                        </a>
+                        <a href="https://github.com/Oppkey/FastOpp" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium"
+                           target="_blank" rel="noopener">
+                            GitHub
+                        </a>
+                    </nav>
+                    
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden">
+                        <button type="button" class="text-gray-700 hover:text-ai-blue focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Post Header -->
+    <header class="mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">File Upload Demo Now Runs on S3 in Addition to Local Files</h1>
+        
+        <div class="flex items-center text-gray-600 mb-6">
+            <time datetime="2025-10-08T00:00:00+00:00" class="mr-4">
+                October 08, 2025
+            </time>
+            <span class="mr-4">•</span>
+            <span>By Craig Oda</span>
+        </div>
+        
+        
+        <img src="/fastopp/assets/images/2025_10/run.jpg" 
+             alt="File Upload Demo Now Runs on S3 in Addition to Local Files" 
+             class="w-full h-64 object-cover rounded-lg shadow-lg">
+        
+    </header>
+    
+    <!-- Post Content -->
+    <div class="prose prose-lg max-w-none">
+        <h2 id="-overview">🎯 Overview</h2>
+
+<p>FastOpp demo system moved to a modular storage system that abstracts file storage operations, supporting both local filesystem and S3-compatible object storage. The system is designed to work seamlessly in development (filesystem) and production (S3) environments, with automatic backend selection based on environment variables.</p>
+
+<h2 id="-key-features">🚀 Key Features</h2>
+
+<h3 id="modular-storage-architecture"><strong>Modular Storage Architecture</strong></h3>
+<ul>
+  <li><strong>Abstract Interface</strong>: Clean abstraction for storage operations</li>
+  <li><strong>Multiple Backends</strong>: Filesystem and S3-compatible storage</li>
+  <li><strong>Environment-Based Configuration</strong>: Automatic backend selection</li>
+  <li><strong>Production-Ready</strong>: Supports LeapCell Object Storage and AWS S3</li>
+</ul>
+
+<h3 id="demo-assets-integration"><strong>Demo Assets Integration</strong></h3>
+<ul>
+  <li><strong>Save/Restore Support</strong>: Storage system included in demo workflow</li>
+  <li><strong>Destroy/Restore Cycle</strong>: Storage system can be removed and restored</li>
+  <li><strong>Change Detection</strong>: Storage system changes tracked in diff operations</li>
+</ul>
+
+<h2 id="-files-added">📁 Files Added</h2>
+
+<h3 id="storage-system-core"><strong>Storage System Core</strong></h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/__init__.py</code> - Module exports and imports</li>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/base.py</code> - Abstract storage interface</li>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/filesystem.py</code> - Filesystem storage implementation</li>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/s3.py</code> - S3-compatible storage implementation</li>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/factory.py</code> - Storage factory for backend selection</li>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/README.md</code> - Comprehensive documentation</li>
+</ul>
+
+<h2 id="-files-modified">🔄 Files Modified</h2>
+
+<h3 id="core-application-files"><strong>Core Application Files</strong></h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">oppdemo.py</code> - Updated to use modular storage system
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">ensure_upload_dirs()</code> now uses storage abstraction</li>
+      <li>Added storage system to save/restore/destroy workflow</li>
+      <li>Added storage system to diff comparison</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="scripts-updated"><strong>Scripts Updated</strong></h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">scripts/download_sample_photos.py</code> - Updated to use storage abstraction</li>
+  <li><code class="language-plaintext highlighter-rouge">demo_scripts/download_sample_photos.py</code> - Updated to use storage abstraction</li>
+</ul>
+
+<h3 id="configuration"><strong>Configuration</strong></h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">example.env</code> - Added comprehensive storage configuration options
+    <ul>
+      <li>Storage type selection (<code class="language-plaintext highlighter-rouge">STORAGE_TYPE</code>)</li>
+      <li>Filesystem storage options (<code class="language-plaintext highlighter-rouge">UPLOAD_DIR</code>)</li>
+      <li>S3 storage options (access keys, bucket, endpoint, CDN)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="️-files-removed">🗑️ Files Removed</h2>
+
+<h3 id="cleanup"><strong>Cleanup</strong></h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">storage/</code> (project root) - Redundant folder removed
+    <ul>
+      <li>Contained only <code class="language-plaintext highlighter-rouge">base.py</code> which was identical to <code class="language-plaintext highlighter-rouge">services/storage/base.py</code></li>
+      <li>No code references to old location</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="-technical-implementation">🔧 Technical Implementation</h2>
+
+<h3 id="storage-interface"><strong>Storage Interface</strong></h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">StorageInterface</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">ensure_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span>
+    <span class="k">def</span> <span class="nf">save_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">content_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+    <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span>
+    <span class="k">def</span> <span class="nf">file_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+    <span class="k">def</span> <span class="nf">delete_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+    <span class="k">def</span> <span class="nf">list_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">get_file_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div></div>
+
+<h3 id="backend-implementations"><strong>Backend Implementations</strong></h3>
+
+<h4 id="filesystemstorage"><strong>FilesystemStorage</strong></h4>
+<ul>
+  <li>Local file storage for development</li>
+  <li>Automatic directory creation</li>
+  <li>Static file serving via FastAPI mounts</li>
+  <li>URL generation for static file access</li>
+</ul>
+
+<h4 id="s3storage"><strong>S3Storage</strong></h4>
+<ul>
+  <li>S3-compatible object storage for production</li>
+  <li>Supports AWS S3, LeapCell Object Storage, and other S3-compatible services</li>
+  <li>CDN URL support for public file access</li>
+  <li>Automatic content type detection</li>
+</ul>
+
+<h3 id="factory-pattern"><strong>Factory Pattern</strong></h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_storage</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">StorageInterface</span><span class="p">:</span>
+    <span class="n">storage_type</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">getenv</span><span class="p">(</span><span class="s">"STORAGE_TYPE"</span><span class="p">,</span> <span class="s">"filesystem"</span><span class="p">).</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">storage_type</span> <span class="o">==</span> <span class="s">"s3"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_create_s3_storage</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_create_filesystem_storage</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2 id="-environment-configuration">🌍 Environment Configuration</h2>
+
+<h3 id="development-default"><strong>Development (Default)</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># No configuration needed - uses filesystem storage</span>
+<span class="nv">STORAGE_TYPE</span><span class="o">=</span>filesystem
+<span class="nv">UPLOAD_DIR</span><span class="o">=</span>static/uploads
+</code></pre></div></div>
+
+<h3 id="production-with-leapcell"><strong>Production with LeapCell</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">STORAGE_TYPE</span><span class="o">=</span>s3
+<span class="nv">S3_ACCESS_KEY</span><span class="o">=</span>your_leapcell_access_key
+<span class="nv">S3_SECRET_KEY</span><span class="o">=</span>your_leapcell_secret_key
+<span class="nv">S3_BUCKET</span><span class="o">=</span>your_bucket_name
+<span class="nv">S3_ENDPOINT_URL</span><span class="o">=</span>https://objstorage.leapcell.io
+<span class="nv">S3_CDN_URL</span><span class="o">=</span>https://your-account.leapcellobj.com/your-bucket
+</code></pre></div></div>
+
+<h3 id="production-with-aws-s3"><strong>Production with AWS S3</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">STORAGE_TYPE</span><span class="o">=</span>s3
+<span class="nv">S3_ACCESS_KEY</span><span class="o">=</span>your_aws_access_key
+<span class="nv">S3_SECRET_KEY</span><span class="o">=</span>your_aws_secret_key
+<span class="nv">S3_BUCKET</span><span class="o">=</span>your_bucket_name
+<span class="nv">S3_REGION</span><span class="o">=</span>us-west-2
+</code></pre></div></div>
+
+<h2 id="-migration-guide">🔄 Migration Guide</h2>
+
+<h3 id="from-hardcoded-paths"><strong>From Hardcoded Paths</strong></h3>
+<p><strong>Before:</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">upload_dir</span> <span class="o">=</span> <span class="s">"static/uploads"</span>
+<span class="n">photo_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">upload_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s">"photos"</span> <span class="o">/</span> <span class="n">filename</span>
+<span class="n">photo_path</span><span class="p">.</span><span class="n">parent</span><span class="p">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">photo_path</span><span class="p">,</span> <span class="s">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>After:</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">services.storage</span> <span class="kn">import</span> <span class="n">get_storage</span>
+<span class="n">storage</span> <span class="o">=</span> <span class="n">get_storage</span><span class="p">()</span>
+<span class="n">storage</span><span class="p">.</span><span class="n">ensure_directories</span><span class="p">(</span><span class="s">"photos"</span><span class="p">)</span>
+<span class="n">photo_url</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">save_file</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="sa">f</span><span class="s">"photos/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s">"</span><span class="p">,</span> <span class="s">"image/jpeg"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="from-environment-variables"><strong>From Environment Variables</strong></h3>
+<p><strong>Before:</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">upload_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">getenv</span><span class="p">(</span><span class="s">"UPLOAD_DIR"</span><span class="p">,</span> <span class="s">"static/uploads"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>After:</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">services.storage</span> <span class="kn">import</span> <span class="n">get_storage</span>
+<span class="n">storage</span> <span class="o">=</span> <span class="n">get_storage</span><span class="p">()</span>  <span class="c1"># Automatically configured based on environment
+</span></code></pre></div></div>
+
+<h2 id="-testing">🧪 Testing</h2>
+
+<h3 id="storage-system-tests"><strong>Storage System Tests</strong></h3>
+<ul>
+  <li>✅ Filesystem storage functionality</li>
+  <li>✅ S3 storage configuration (without actual S3 access)</li>
+  <li>✅ Environment detection and backend selection</li>
+  <li>✅ Import path validation</li>
+  <li>✅ Demo assets integration</li>
+</ul>
+
+<h3 id="demo-workflow-tests"><strong>Demo Workflow Tests</strong></h3>
+<ul>
+  <li>✅ Save functionality includes storage system</li>
+  <li>✅ Restore functionality restores storage system</li>
+  <li>✅ Destroy functionality removes storage system</li>
+  <li>✅ Diff functionality compares storage system</li>
+  <li>✅ No differences found after save/restore cycle</li>
+</ul>
+
+<h2 id="-documentation">📚 Documentation</h2>
+
+<h3 id="comprehensive-readme"><strong>Comprehensive README</strong></h3>
+<ul>
+  <li><strong>Quick Start Guide</strong>: Development and production setup</li>
+  <li><strong>Environment Variables</strong>: Complete configuration reference</li>
+  <li><strong>Usage Examples</strong>: Basic and advanced usage patterns</li>
+  <li><strong>Migration Guide</strong>: Step-by-step migration instructions</li>
+  <li><strong>Configuration Examples</strong>: Development, LeapCell, and AWS S3 setups</li>
+  <li><strong>Error Handling</strong>: Consistent error handling across backends</li>
+</ul>
+
+<h3 id="code-documentation"><strong>Code Documentation</strong></h3>
+<ul>
+  <li><strong>Type Hints</strong>: Full type annotations for all methods</li>
+  <li><strong>Docstrings</strong>: Comprehensive documentation for all classes and methods</li>
+  <li><strong>Examples</strong>: Usage examples in docstrings</li>
+  <li><strong>Error Handling</strong>: Clear error messages and exception handling</li>
+</ul>
+
+<h2 id="-benefits">🎯 Benefits</h2>
+
+<h3 id="for-development"><strong>For Development</strong></h3>
+<ul>
+  <li><strong>Zero Configuration</strong>: Works out of the box with filesystem storage</li>
+  <li><strong>Easy Testing</strong>: Simple to mock and test</li>
+  <li><strong>Clear Separation</strong>: Storage logic separated from business logic</li>
+  <li><strong>Type Safety</strong>: Full type hints and validation</li>
+</ul>
+
+<h3 id="for-production"><strong>For Production</strong></h3>
+<ul>
+  <li><strong>Cloud-Ready</strong>: Seamless S3 integration for cloud deployments</li>
+  <li><strong>CDN Support</strong>: Built-in CDN URL generation</li>
+  <li><strong>Scalable</strong>: Object storage scales with application needs</li>
+  <li><strong>Persistent</strong>: Files persist across deployments</li>
+</ul>
+
+<h3 id="for-deployment"><strong>For Deployment</strong></h3>
+<ul>
+  <li><strong>Environment-Based</strong>: Automatic backend selection</li>
+  <li><strong>LeapCell Compatible</strong>: Works with LeapCell Object Storage</li>
+  <li><strong>AWS Compatible</strong>: Works with AWS S3</li>
+  <li><strong>Flexible</strong>: Easy to add new storage backends</li>
+</ul>
+
+<h2 id="-demo-assets-integration">🔄 Demo Assets Integration</h2>
+
+<h3 id="save-workflow"><strong>Save Workflow</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppdemo.py save
+<span class="c"># → Saves services/storage/ to demo_assets/services/storage/</span>
+</code></pre></div></div>
+
+<h3 id="restore-workflow"><strong>Restore Workflow</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppdemo.py restore
+<span class="c"># → Restores services/storage/ from demo_assets/services/storage/</span>
+</code></pre></div></div>
+
+<h3 id="destroy-workflow"><strong>Destroy Workflow</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppdemo.py destroy
+<span class="c"># → Removes services/ directory (including storage/)</span>
+</code></pre></div></div>
+
+<h3 id="diff-workflow"><strong>Diff Workflow</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppdemo.py diff
+<span class="c"># → Shows differences in services/storage/ module</span>
+</code></pre></div></div>
+
+<h2 id="-usage-examples">🚀 Usage Examples</h2>
+
+<h3 id="basic-usage"><strong>Basic Usage</strong></h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">services.storage</span> <span class="kn">import</span> <span class="n">get_storage</span>
+
+<span class="c1"># Get configured storage instance
+</span><span class="n">storage</span> <span class="o">=</span> <span class="n">get_storage</span><span class="p">()</span>
+
+<span class="c1"># Ensure directories exist
+</span><span class="n">storage</span><span class="p">.</span><span class="n">ensure_directories</span><span class="p">(</span><span class="s">"photos"</span><span class="p">,</span> <span class="s">"sample_photos"</span><span class="p">)</span>
+
+<span class="c1"># Save a file
+</span><span class="n">photo_url</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">save_file</span><span class="p">(</span>
+    <span class="n">content</span><span class="o">=</span><span class="n">image_bytes</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s">"photos/avatar.jpg"</span><span class="p">,</span>
+    <span class="n">content_type</span><span class="o">=</span><span class="s">"image/jpeg"</span>
+<span class="p">)</span>
+
+<span class="c1"># Check if file exists
+</span><span class="k">if</span> <span class="n">storage</span><span class="p">.</span><span class="n">file_exists</span><span class="p">(</span><span class="s">"photos/avatar.jpg"</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"File exists!"</span><span class="p">)</span>
+
+<span class="c1"># Get file content
+</span><span class="n">image_data</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">get_file</span><span class="p">(</span><span class="s">"photos/avatar.jpg"</span><span class="p">)</span>
+
+<span class="c1"># Get public URL
+</span><span class="n">public_url</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">get_file_url</span><span class="p">(</span><span class="s">"photos/avatar.jpg"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="advanced-usage"><strong>Advanced Usage</strong></h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">services.storage</span> <span class="kn">import</span> <span class="n">get_storage</span>
+
+<span class="n">storage</span> <span class="o">=</span> <span class="n">get_storage</span><span class="p">()</span>
+
+<span class="c1"># List files with prefix
+</span><span class="n">photos</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">list_files</span><span class="p">(</span><span class="s">"photos/"</span><span class="p">)</span>
+
+<span class="c1"># Delete a file
+</span><span class="n">success</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">delete_file</span><span class="p">(</span><span class="s">"photos/old_avatar.jpg"</span><span class="p">)</span>
+
+<span class="c1"># Check storage type
+</span><span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">FilesystemStorage</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Using local filesystem"</span><span class="p">)</span>
+<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">S3Storage</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Using S3 object storage"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="-quality-assurance">✅ Quality Assurance</h2>
+
+<h3 id="code-quality"><strong>Code Quality</strong></h3>
+<ul>
+  <li><strong>Linting</strong>: All code passes linting checks</li>
+  <li><strong>Type Safety</strong>: Full type hints throughout</li>
+  <li><strong>Error Handling</strong>: Comprehensive error handling</li>
+  <li><strong>Documentation</strong>: Complete docstrings and comments</li>
+</ul>
+
+<h3 id="testing"><strong>Testing</strong></h3>
+<ul>
+  <li><strong>Unit Tests</strong>: Storage system functionality tested</li>
+  <li><strong>Integration Tests</strong>: Demo workflow integration tested</li>
+  <li><strong>Environment Tests</strong>: Multiple environment configurations tested</li>
+  <li><strong>Error Tests</strong>: Error conditions and edge cases tested</li>
+</ul>
+
+<h3 id="documentation"><strong>Documentation</strong></h3>
+<ul>
+  <li><strong>README</strong>: Comprehensive documentation with examples</li>
+  <li><strong>Code Comments</strong>: Clear comments explaining complex logic</li>
+  <li><strong>Type Hints</strong>: Full type annotations for IDE support</li>
+  <li><strong>Examples</strong>: Practical usage examples throughout</li>
+</ul>
+
+<h2 id="-summary">🎉 Summary</h2>
+
+<ol>
+  <li><strong>Clean Architecture</strong>: Abstract interface with concrete implementations</li>
+  <li><strong>Environment Flexibility</strong>: Automatic backend selection based on configuration</li>
+  <li><strong>Production Ready</strong>: Full S3 support for cloud deployments</li>
+  <li><strong>Development Friendly</strong>: Zero-configuration filesystem storage</li>
+  <li><strong>Demo Integration</strong>: Seamless integration with demo assets workflow</li>
+  <li><strong>Comprehensive Documentation</strong>: Complete usage and configuration guide</li>
+</ol>
+
+<p>The storage system is now a first-class citizen in the application, providing a clean abstraction for file operations while maintaining backward compatibility and adding powerful new capabilities for production deployments.</p>
+
+    </div>
+    
+    <!-- Post Footer -->
+    <footer class="mt-12 pt-8 border-t border-gray-200">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div class="mb-4 sm:mb-0">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">About the Author</h3>
+                <p class="text-gray-600">
+                    Craig Oda is a partner at Oppkey and an active contributor to FastOpp
+                </p>
+            </div>
+            
+            <div class="flex space-x-4">
+                <a href="https://github.com/Oppkey/FastOpp" 
+                   class="text-gray-600 hover:text-ai-blue transition-colors"
+                   target="_blank" rel="noopener">
+                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+</article>
+
+<!-- Navigation -->
+<nav class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <div class="flex justify-between">
+        
+        <a href="/fastopp/2025/10/07/postgresql-async/" 
+           class="flex items-center text-ai-blue hover:text-blue-700 transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Previous: Architectural Consistency When Working with a PostgreSQL Async Database
+        </a>
+        
+        
+        
+    </div>
+</nav>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <div class="mb-4">
+                            <span class="text-xl font-bold">FastOpp Blog</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/Oppkey/FastOpp" 
+                               class="text-gray-300 hover:text-white transition-colors"
+                               target="_blank" rel="noopener">
+                                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                        <ul class="space-y-2">
+                            <li><a href="/fastopp/" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+                            <li><a href="/fastopp/about/" class="text-gray-300 hover:text-white transition-colors">About</a></li>
+                            <li><a href="/fastopp/posts/" class="text-gray-300 hover:text-white transition-colors">Blog Posts</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">GitHub Repository</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                        <ul class="space-y-2">
+                            <li><a href="https://github.com/Oppkey/FastOpp#-quick-start-for-students" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Quick Start Guide</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp#-management-commands" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Documentation</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp#-troubleshooting" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Troubleshooting</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                    <p class="text-gray-400">
+                        &copy; 2025 Oppkey. Built with FastOpp and Jekyll.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

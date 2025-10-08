@@ -1,4 +1,344 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://oppkey.github.io/fastopp/feed.xml" rel="self" type="application/atom+xml" /><link href="https://oppkey.github.io/fastopp/" rel="alternate" type="text/html" /><updated>2025-10-07T23:20:41+00:00</updated><id>https://oppkey.github.io/fastopp/feed.xml</id><title type="html">FastOpp Blog</title><subtitle>Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</subtitle><author><name>Oppkey</name></author><entry><title type="html">Architectural Consistency When Working with a PostgreSQL Async Database</title><link href="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/" rel="alternate" type="text/html" title="Architectural Consistency When Working with a PostgreSQL Async Database" /><published>2025-10-07T00:00:00+00:00</published><updated>2025-10-07T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/07/postgresql-async</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/"><![CDATA[<h2 id="postgresql-failing-with-async-in-production-although-sqlite-works-on-my-mac">PostgreSQL Failing with Async in Production Although SQLite Works on my Mac</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://oppkey.github.io/fastopp/feed.xml" rel="self" type="application/atom+xml" /><link href="https://oppkey.github.io/fastopp/" rel="alternate" type="text/html" /><updated>2025-10-08T16:57:00+00:00</updated><id>https://oppkey.github.io/fastopp/feed.xml</id><title type="html">FastOpp Blog</title><subtitle>Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</subtitle><author><name>Oppkey</name></author><entry><title type="html">File Upload Demo Now Runs on S3 in Addition to Local Files</title><link href="https://oppkey.github.io/fastopp/2025/10/08/modularize-storage-system/" rel="alternate" type="text/html" title="File Upload Demo Now Runs on S3 in Addition to Local Files" /><published>2025-10-08T00:00:00+00:00</published><updated>2025-10-08T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/08/modularize-storage-system</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/08/modularize-storage-system/"><![CDATA[<h2 id="-overview">🎯 Overview</h2>
+
+<p>FastOpp demo system moved to a modular storage system that abstracts file storage operations, supporting both local filesystem and S3-compatible object storage. The system is designed to work seamlessly in development (filesystem) and production (S3) environments, with automatic backend selection based on environment variables.</p>
+
+<h2 id="-key-features">🚀 Key Features</h2>
+
+<h3 id="modular-storage-architecture"><strong>Modular Storage Architecture</strong></h3>
+<ul>
+  <li><strong>Abstract Interface</strong>: Clean abstraction for storage operations</li>
+  <li><strong>Multiple Backends</strong>: Filesystem and S3-compatible storage</li>
+  <li><strong>Environment-Based Configuration</strong>: Automatic backend selection</li>
+  <li><strong>Production-Ready</strong>: Supports LeapCell Object Storage and AWS S3</li>
+</ul>
+
+<h3 id="demo-assets-integration"><strong>Demo Assets Integration</strong></h3>
+<ul>
+  <li><strong>Save/Restore Support</strong>: Storage system included in demo workflow</li>
+  <li><strong>Destroy/Restore Cycle</strong>: Storage system can be removed and restored</li>
+  <li><strong>Change Detection</strong>: Storage system changes tracked in diff operations</li>
+</ul>
+
+<h2 id="-files-added">📁 Files Added</h2>
+
+<h3 id="storage-system-core"><strong>Storage System Core</strong></h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/__init__.py</code> - Module exports and imports</li>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/base.py</code> - Abstract storage interface</li>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/filesystem.py</code> - Filesystem storage implementation</li>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/s3.py</code> - S3-compatible storage implementation</li>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/factory.py</code> - Storage factory for backend selection</li>
+  <li><code class="language-plaintext highlighter-rouge">services/storage/README.md</code> - Comprehensive documentation</li>
+</ul>
+
+<h2 id="-files-modified">🔄 Files Modified</h2>
+
+<h3 id="core-application-files"><strong>Core Application Files</strong></h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">oppdemo.py</code> - Updated to use modular storage system
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">ensure_upload_dirs()</code> now uses storage abstraction</li>
+      <li>Added storage system to save/restore/destroy workflow</li>
+      <li>Added storage system to diff comparison</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="scripts-updated"><strong>Scripts Updated</strong></h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">scripts/download_sample_photos.py</code> - Updated to use storage abstraction</li>
+  <li><code class="language-plaintext highlighter-rouge">demo_scripts/download_sample_photos.py</code> - Updated to use storage abstraction</li>
+</ul>
+
+<h3 id="configuration"><strong>Configuration</strong></h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">example.env</code> - Added comprehensive storage configuration options
+    <ul>
+      <li>Storage type selection (<code class="language-plaintext highlighter-rouge">STORAGE_TYPE</code>)</li>
+      <li>Filesystem storage options (<code class="language-plaintext highlighter-rouge">UPLOAD_DIR</code>)</li>
+      <li>S3 storage options (access keys, bucket, endpoint, CDN)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="️-files-removed">🗑️ Files Removed</h2>
+
+<h3 id="cleanup"><strong>Cleanup</strong></h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">storage/</code> (project root) - Redundant folder removed
+    <ul>
+      <li>Contained only <code class="language-plaintext highlighter-rouge">base.py</code> which was identical to <code class="language-plaintext highlighter-rouge">services/storage/base.py</code></li>
+      <li>No code references to old location</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="-technical-implementation">🔧 Technical Implementation</h2>
+
+<h3 id="storage-interface"><strong>Storage Interface</strong></h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">StorageInterface</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">ensure_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span>
+    <span class="k">def</span> <span class="nf">save_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">content_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+    <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span>
+    <span class="k">def</span> <span class="nf">file_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+    <span class="k">def</span> <span class="nf">delete_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+    <span class="k">def</span> <span class="nf">list_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">get_file_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div></div>
+
+<h3 id="backend-implementations"><strong>Backend Implementations</strong></h3>
+
+<h4 id="filesystemstorage"><strong>FilesystemStorage</strong></h4>
+<ul>
+  <li>Local file storage for development</li>
+  <li>Automatic directory creation</li>
+  <li>Static file serving via FastAPI mounts</li>
+  <li>URL generation for static file access</li>
+</ul>
+
+<h4 id="s3storage"><strong>S3Storage</strong></h4>
+<ul>
+  <li>S3-compatible object storage for production</li>
+  <li>Supports AWS S3, LeapCell Object Storage, and other S3-compatible services</li>
+  <li>CDN URL support for public file access</li>
+  <li>Automatic content type detection</li>
+</ul>
+
+<h3 id="factory-pattern"><strong>Factory Pattern</strong></h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_storage</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">StorageInterface</span><span class="p">:</span>
+    <span class="n">storage_type</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">getenv</span><span class="p">(</span><span class="s">"STORAGE_TYPE"</span><span class="p">,</span> <span class="s">"filesystem"</span><span class="p">).</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">storage_type</span> <span class="o">==</span> <span class="s">"s3"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_create_s3_storage</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_create_filesystem_storage</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2 id="-environment-configuration">🌍 Environment Configuration</h2>
+
+<h3 id="development-default"><strong>Development (Default)</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># No configuration needed - uses filesystem storage</span>
+<span class="nv">STORAGE_TYPE</span><span class="o">=</span>filesystem
+<span class="nv">UPLOAD_DIR</span><span class="o">=</span>static/uploads
+</code></pre></div></div>
+
+<h3 id="production-with-leapcell"><strong>Production with LeapCell</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">STORAGE_TYPE</span><span class="o">=</span>s3
+<span class="nv">S3_ACCESS_KEY</span><span class="o">=</span>your_leapcell_access_key
+<span class="nv">S3_SECRET_KEY</span><span class="o">=</span>your_leapcell_secret_key
+<span class="nv">S3_BUCKET</span><span class="o">=</span>your_bucket_name
+<span class="nv">S3_ENDPOINT_URL</span><span class="o">=</span>https://objstorage.leapcell.io
+<span class="nv">S3_CDN_URL</span><span class="o">=</span>https://your-account.leapcellobj.com/your-bucket
+</code></pre></div></div>
+
+<h3 id="production-with-aws-s3"><strong>Production with AWS S3</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">STORAGE_TYPE</span><span class="o">=</span>s3
+<span class="nv">S3_ACCESS_KEY</span><span class="o">=</span>your_aws_access_key
+<span class="nv">S3_SECRET_KEY</span><span class="o">=</span>your_aws_secret_key
+<span class="nv">S3_BUCKET</span><span class="o">=</span>your_bucket_name
+<span class="nv">S3_REGION</span><span class="o">=</span>us-west-2
+</code></pre></div></div>
+
+<h2 id="-migration-guide">🔄 Migration Guide</h2>
+
+<h3 id="from-hardcoded-paths"><strong>From Hardcoded Paths</strong></h3>
+<p><strong>Before:</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">upload_dir</span> <span class="o">=</span> <span class="s">"static/uploads"</span>
+<span class="n">photo_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">upload_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s">"photos"</span> <span class="o">/</span> <span class="n">filename</span>
+<span class="n">photo_path</span><span class="p">.</span><span class="n">parent</span><span class="p">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">photo_path</span><span class="p">,</span> <span class="s">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>After:</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">services.storage</span> <span class="kn">import</span> <span class="n">get_storage</span>
+<span class="n">storage</span> <span class="o">=</span> <span class="n">get_storage</span><span class="p">()</span>
+<span class="n">storage</span><span class="p">.</span><span class="n">ensure_directories</span><span class="p">(</span><span class="s">"photos"</span><span class="p">)</span>
+<span class="n">photo_url</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">save_file</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="sa">f</span><span class="s">"photos/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s">"</span><span class="p">,</span> <span class="s">"image/jpeg"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="from-environment-variables"><strong>From Environment Variables</strong></h3>
+<p><strong>Before:</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">upload_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">getenv</span><span class="p">(</span><span class="s">"UPLOAD_DIR"</span><span class="p">,</span> <span class="s">"static/uploads"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>After:</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">services.storage</span> <span class="kn">import</span> <span class="n">get_storage</span>
+<span class="n">storage</span> <span class="o">=</span> <span class="n">get_storage</span><span class="p">()</span>  <span class="c1"># Automatically configured based on environment
+</span></code></pre></div></div>
+
+<h2 id="-testing">🧪 Testing</h2>
+
+<h3 id="storage-system-tests"><strong>Storage System Tests</strong></h3>
+<ul>
+  <li>✅ Filesystem storage functionality</li>
+  <li>✅ S3 storage configuration (without actual S3 access)</li>
+  <li>✅ Environment detection and backend selection</li>
+  <li>✅ Import path validation</li>
+  <li>✅ Demo assets integration</li>
+</ul>
+
+<h3 id="demo-workflow-tests"><strong>Demo Workflow Tests</strong></h3>
+<ul>
+  <li>✅ Save functionality includes storage system</li>
+  <li>✅ Restore functionality restores storage system</li>
+  <li>✅ Destroy functionality removes storage system</li>
+  <li>✅ Diff functionality compares storage system</li>
+  <li>✅ No differences found after save/restore cycle</li>
+</ul>
+
+<h2 id="-documentation">📚 Documentation</h2>
+
+<h3 id="comprehensive-readme"><strong>Comprehensive README</strong></h3>
+<ul>
+  <li><strong>Quick Start Guide</strong>: Development and production setup</li>
+  <li><strong>Environment Variables</strong>: Complete configuration reference</li>
+  <li><strong>Usage Examples</strong>: Basic and advanced usage patterns</li>
+  <li><strong>Migration Guide</strong>: Step-by-step migration instructions</li>
+  <li><strong>Configuration Examples</strong>: Development, LeapCell, and AWS S3 setups</li>
+  <li><strong>Error Handling</strong>: Consistent error handling across backends</li>
+</ul>
+
+<h3 id="code-documentation"><strong>Code Documentation</strong></h3>
+<ul>
+  <li><strong>Type Hints</strong>: Full type annotations for all methods</li>
+  <li><strong>Docstrings</strong>: Comprehensive documentation for all classes and methods</li>
+  <li><strong>Examples</strong>: Usage examples in docstrings</li>
+  <li><strong>Error Handling</strong>: Clear error messages and exception handling</li>
+</ul>
+
+<h2 id="-benefits">🎯 Benefits</h2>
+
+<h3 id="for-development"><strong>For Development</strong></h3>
+<ul>
+  <li><strong>Zero Configuration</strong>: Works out of the box with filesystem storage</li>
+  <li><strong>Easy Testing</strong>: Simple to mock and test</li>
+  <li><strong>Clear Separation</strong>: Storage logic separated from business logic</li>
+  <li><strong>Type Safety</strong>: Full type hints and validation</li>
+</ul>
+
+<h3 id="for-production"><strong>For Production</strong></h3>
+<ul>
+  <li><strong>Cloud-Ready</strong>: Seamless S3 integration for cloud deployments</li>
+  <li><strong>CDN Support</strong>: Built-in CDN URL generation</li>
+  <li><strong>Scalable</strong>: Object storage scales with application needs</li>
+  <li><strong>Persistent</strong>: Files persist across deployments</li>
+</ul>
+
+<h3 id="for-deployment"><strong>For Deployment</strong></h3>
+<ul>
+  <li><strong>Environment-Based</strong>: Automatic backend selection</li>
+  <li><strong>LeapCell Compatible</strong>: Works with LeapCell Object Storage</li>
+  <li><strong>AWS Compatible</strong>: Works with AWS S3</li>
+  <li><strong>Flexible</strong>: Easy to add new storage backends</li>
+</ul>
+
+<h2 id="-demo-assets-integration">🔄 Demo Assets Integration</h2>
+
+<h3 id="save-workflow"><strong>Save Workflow</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppdemo.py save
+<span class="c"># → Saves services/storage/ to demo_assets/services/storage/</span>
+</code></pre></div></div>
+
+<h3 id="restore-workflow"><strong>Restore Workflow</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppdemo.py restore
+<span class="c"># → Restores services/storage/ from demo_assets/services/storage/</span>
+</code></pre></div></div>
+
+<h3 id="destroy-workflow"><strong>Destroy Workflow</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppdemo.py destroy
+<span class="c"># → Removes services/ directory (including storage/)</span>
+</code></pre></div></div>
+
+<h3 id="diff-workflow"><strong>Diff Workflow</strong></h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv run python oppdemo.py diff
+<span class="c"># → Shows differences in services/storage/ module</span>
+</code></pre></div></div>
+
+<h2 id="-usage-examples">🚀 Usage Examples</h2>
+
+<h3 id="basic-usage"><strong>Basic Usage</strong></h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">services.storage</span> <span class="kn">import</span> <span class="n">get_storage</span>
+
+<span class="c1"># Get configured storage instance
+</span><span class="n">storage</span> <span class="o">=</span> <span class="n">get_storage</span><span class="p">()</span>
+
+<span class="c1"># Ensure directories exist
+</span><span class="n">storage</span><span class="p">.</span><span class="n">ensure_directories</span><span class="p">(</span><span class="s">"photos"</span><span class="p">,</span> <span class="s">"sample_photos"</span><span class="p">)</span>
+
+<span class="c1"># Save a file
+</span><span class="n">photo_url</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">save_file</span><span class="p">(</span>
+    <span class="n">content</span><span class="o">=</span><span class="n">image_bytes</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s">"photos/avatar.jpg"</span><span class="p">,</span>
+    <span class="n">content_type</span><span class="o">=</span><span class="s">"image/jpeg"</span>
+<span class="p">)</span>
+
+<span class="c1"># Check if file exists
+</span><span class="k">if</span> <span class="n">storage</span><span class="p">.</span><span class="n">file_exists</span><span class="p">(</span><span class="s">"photos/avatar.jpg"</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"File exists!"</span><span class="p">)</span>
+
+<span class="c1"># Get file content
+</span><span class="n">image_data</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">get_file</span><span class="p">(</span><span class="s">"photos/avatar.jpg"</span><span class="p">)</span>
+
+<span class="c1"># Get public URL
+</span><span class="n">public_url</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">get_file_url</span><span class="p">(</span><span class="s">"photos/avatar.jpg"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="advanced-usage"><strong>Advanced Usage</strong></h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">services.storage</span> <span class="kn">import</span> <span class="n">get_storage</span>
+
+<span class="n">storage</span> <span class="o">=</span> <span class="n">get_storage</span><span class="p">()</span>
+
+<span class="c1"># List files with prefix
+</span><span class="n">photos</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">list_files</span><span class="p">(</span><span class="s">"photos/"</span><span class="p">)</span>
+
+<span class="c1"># Delete a file
+</span><span class="n">success</span> <span class="o">=</span> <span class="n">storage</span><span class="p">.</span><span class="n">delete_file</span><span class="p">(</span><span class="s">"photos/old_avatar.jpg"</span><span class="p">)</span>
+
+<span class="c1"># Check storage type
+</span><span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">FilesystemStorage</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Using local filesystem"</span><span class="p">)</span>
+<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">S3Storage</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Using S3 object storage"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="-quality-assurance">✅ Quality Assurance</h2>
+
+<h3 id="code-quality"><strong>Code Quality</strong></h3>
+<ul>
+  <li><strong>Linting</strong>: All code passes linting checks</li>
+  <li><strong>Type Safety</strong>: Full type hints throughout</li>
+  <li><strong>Error Handling</strong>: Comprehensive error handling</li>
+  <li><strong>Documentation</strong>: Complete docstrings and comments</li>
+</ul>
+
+<h3 id="testing"><strong>Testing</strong></h3>
+<ul>
+  <li><strong>Unit Tests</strong>: Storage system functionality tested</li>
+  <li><strong>Integration Tests</strong>: Demo workflow integration tested</li>
+  <li><strong>Environment Tests</strong>: Multiple environment configurations tested</li>
+  <li><strong>Error Tests</strong>: Error conditions and edge cases tested</li>
+</ul>
+
+<h3 id="documentation"><strong>Documentation</strong></h3>
+<ul>
+  <li><strong>README</strong>: Comprehensive documentation with examples</li>
+  <li><strong>Code Comments</strong>: Clear comments explaining complex logic</li>
+  <li><strong>Type Hints</strong>: Full type annotations for IDE support</li>
+  <li><strong>Examples</strong>: Practical usage examples throughout</li>
+</ul>
+
+<h2 id="-summary">🎉 Summary</h2>
+
+<ol>
+  <li><strong>Clean Architecture</strong>: Abstract interface with concrete implementations</li>
+  <li><strong>Environment Flexibility</strong>: Automatic backend selection based on configuration</li>
+  <li><strong>Production Ready</strong>: Full S3 support for cloud deployments</li>
+  <li><strong>Development Friendly</strong>: Zero-configuration filesystem storage</li>
+  <li><strong>Demo Integration</strong>: Seamless integration with demo assets workflow</li>
+  <li><strong>Comprehensive Documentation</strong>: Complete usage and configuration guide</li>
+</ol>
+
+<p>The storage system is now a first-class citizen in the application, providing a clean abstraction for file operations while maintaining backward compatibility and adding powerful new capabilities for production deployments.</p>]]></content><author><name>Craig Oda</name></author><summary type="html"><![CDATA[Moved image upload storage from only files to include S3]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://oppkey.github.io/fastopp/assets/images/2025_10/run.jpg" /><media:content medium="image" url="https://oppkey.github.io/fastopp/assets/images/2025_10/run.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Architectural Consistency When Working with a PostgreSQL Async Database</title><link href="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/" rel="alternate" type="text/html" title="Architectural Consistency When Working with a PostgreSQL Async Database" /><published>2025-10-07T00:00:00+00:00</published><updated>2025-10-07T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/07/postgresql-async</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/"><![CDATA[<h2 id="postgresql-failing-with-async-in-production-although-sqlite-works-on-my-mac">PostgreSQL Failing with Async in Production Although SQLite Works on my Mac</h2>
 
 <p>Last week, I was working on our FastOpp project and ran into a classic developer problem: “It works on my machine, but not in production.” Specifically, our FastAPI application worked perfectly with SQLite during development, but when I tried to switch to PostgreSQL in production on Leapcell using the Leapcell PostgreSQL service,
 database access broke.</p>
