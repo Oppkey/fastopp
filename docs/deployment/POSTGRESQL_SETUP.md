@@ -86,6 +86,19 @@ DATABASE_URL=postgresql+asyncpg://fastopp_user:your_password@localhost/fastopp_d
 - Vector database support with pgvector
 - Better for team development
 
+#### Option C: PostgreSQL with SSL (For Cloud Providers)
+
+```bash
+# .env - For cloud providers like Leapcell, Railway, etc.
+DATABASE_URL=postgresql+asyncpg://username:password@host:port/database?sslmode=require
+```
+
+**SSL Modes:**
+- `sslmode=require` - SSL required (most cloud providers)
+- `sslmode=prefer` - SSL preferred but not required
+- `sslmode=verify-full` - SSL required with certificate verification
+- `sslmode=disable` - SSL disabled (not recommended for production)
+
 ### Production Setup
 
 For production, your `.env` file would contain:

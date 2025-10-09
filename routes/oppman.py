@@ -63,7 +63,11 @@ async def ensure_database_initialized() -> bool:
                 return True
             return True
     except Exception as e:
+        import traceback
         print(f"Error initializing database: {e}")
+        print(f"Error type: {type(e).__name__}")
+        print(f"Full traceback:")
+        traceback.print_exc()
         return False
 
 
