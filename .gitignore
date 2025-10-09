@@ -20,6 +20,8 @@ test.db.*
 .env
 .env.local
 .env.*.local
+# Allow example.env to be committed as a template
+!example.env
 
 # Backup files
 # Ignore timestamped backups like main.py.20250808_144836

@@ -176,35 +176,30 @@ FastOpp comes with an optional basic UI design system to accelerate AI applicati
   right now for maximum package compatibility.
 * [uv](https://docs.astral.sh/uv/) package manager
 
-## What you’ll do
+### 1. Fork, Clone, Add Upstream, Sync
 
-Use this guide to create your own repo from the FastOpp template, develop independently, and deploy. Do not open pull requests to the FastOpp repo.
+Fork it!
 
-* Create your own repo from the template
-* Clone your repo locally
-* Code, commit, and push to your repo
+Go to https://github.com/Oppkey/fastopp  
+Click Fork in GitHub UI    
+You'll get github.com/yourusername/fastopp  
 
-### 1. Create your repo from the template
+Clone your fork down to your local machine
 
-1. Open this repo: `https://github.com/Oppkey/FastOpp`
-2. Click blue button, upper right, called **Use this template** → **Create a new repository**
-3. Name it (e.g., `fastopp-<yourproject>`)
-4. Choose Public
-5. Click **Create repository from template**
+`git clone https://github.com/yourusername/fastopp.git`  
+`cd fastopp`
 
-> Result: you now have your **own** repo. It is **not** a fork of FastOpp.
+Add upstream remote
 
-### 2. Clone your repo
+`git remote add upstream https://github.com/Oppkey/fastopp.git`
 
-```bash
-git clone https://github.com/<YOUR_USERNAME>/fastopp-<yourproject>.git
-cd fastopp-<yourproject>
+Sync your fork with upstream before new work
 
-# Install dependencies
-uv sync
-```
+`git fetch upstream`  
+`git checkout main`  
+`git merge upstream/main`  
 
-### 3. Environment Configuration
+### 2. Environment Configuration
 
 Create a `.env` file in your project root:
 
@@ -245,6 +240,18 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 EOF
 ```
 
+**Using the example configuration:**
+
+```bash
+# Copy the example environment file
+cp example.env .env
+
+# Edit the .env file with your values
+nano .env  # or use your preferred editor
+```
+
+The `example.env` file contains all available configuration options with detailed comments and examples.
+
 **Or manually create `.env`:**
 
 ```bash
@@ -262,7 +269,7 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 * Keep your SECRET_KEY secure and private
 * Use different SECRET_KEYs for different environments
 
-### 4. One-Command Setup
+### 3. One-Command Setup
 
 ```bash
 # Complete setup with one command
@@ -297,7 +304,7 @@ uv run python oppdemo.py init
 
 **Note**: Demo data initialization commands have been moved from `oppman.py` to `oppdemo.py` for better separation of concerns.
 
-### 5. Start Development Server
+### 4. Start Development Server
 
 ```bash
 # Start the server
@@ -477,6 +484,46 @@ FastOpp now uses two separate management tools for better organization and separ
 4. **Apply Migration**: `uv run python oppman.py migrate upgrade`
 5. **Verify**: `uv run python oppman.py migrate current`
 
+### Making a Pull Request
+
+Create a feature branch
+
+`git checkout -b feature/your-change`
+
+Make changes → commit
+
+`git add .`  
+`git commit -m "Your change description"`
+
+Push feature branch to your fork
+
+`git push origin feature/your-change`
+
+Open a Pull Request (PR)
+
+In GitHub, go to your fork yourusername/fastopp.  
+Click “Compare & pull request”.  
+
+Base: Oppkey/fastopp:main  
+Head: yourusername/fastopp:feature/your-change  
+
+Fill title, description, link issues. Submit.  
+
+If upstream changes during review, sync your branch  
+
+`git fetch upstream`  
+`git checkout feature/your-change`  
+`git merge upstream/main`  
+`git push origin feature/your-change`  
+
+After PR is merged  
+
+`git checkout main`  
+`git fetch upstream`  
+`git merge upstream/main`  
+`git branch -d feature/your-change`  
+`git push origin --delete feature/your-change`  
+
 ## 🚨 Troubleshooting
 
 ### Common Issues
@@ -638,6 +685,8 @@ uv run python oppdemo.py diff
 * [Deploy FastAPI and SQLite to Fly for Cheap Hosting](https://youtu.be/k-6xxE6k7Fs) - published August 26, 2025
 * [Permanent Photo Uploads on Fly with FastAPI Static Files on Fly Volume](https://youtu.be/YKC3ZSA2Eh8) - published August 29, 2025
 * [Free FastAPI Deployment - No Credit Card - Railway](https://youtu.be/7vxroD-tyo8) - published Sept 3, 2025
+* [FastAPI Deploy to Leapcell - free hosting tier](https://youtu.be/xhOALd640tA)
+* [Free  Deploy to Leapcell with FastAPI, PostgreSQL and Object Storage](https://youtu.be/GoKpQTHE-1A)
 
 ### Tutorials
 
@@ -654,6 +703,7 @@ uv run python oppdemo.py diff
 * [Architecture Overview](docs/ARCHITECTURE.md) - MVS Architecture and code organization
 * [Database](docs/DATABASE.md)
 * [Authentication](docs/AUTHENTICATION.md)
+* [Emergency Access](docs/EMERGENCY_ACCESS.md) - Password recovery system for admin access
 * [Features](docs/FEATURES.md)
 
 ## Guidelines

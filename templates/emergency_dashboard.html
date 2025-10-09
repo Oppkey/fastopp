@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Dashboard - FastOpp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body class="bg-base-200 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="navbar bg-base-100 rounded-lg shadow-sm mb-6">
+            <div class="flex-1">
+                <h1 class="text-xl font-bold text-error">🚨 Emergency Dashboard</h1>
+            </div>
+            <div class="flex-none">
+                <button 
+                    hx-post="/oppman/emergency/logout" 
+                    hx-confirm="Are you sure you want to logout from emergency access?"
+                    class="btn btn-sm btn-outline btn-error"
+                >
+                    Logout from Emergency Access
+                </button>
+            </div>
+        </div>
+
+        <!-- Warning Banner -->
+        <div class="alert alert-warning mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <div>
+                <h3 class="font-bold">Emergency Access Active</h3>
+                <div class="text-xs">
+                    You are currently using emergency access. The database will be automatically initialized if needed. 
+                    Please reset your admin password and disable this access when done.
+                </div>
+            </div>
+        </div>
+
+        <!-- Superuser Creation Section -->
+        <div class="card bg-base-100 shadow-xl mb-6">
+            <div class="card-body">
+                <h2 class="card-title text-lg mb-4">Create Superuser</h2>
+                
+                <form hx-post="/oppman/emergency/create-superuser" hx-target="#superuser-result" hx-indicator="#superuser-loading">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">Email Address</span>
+                            </label>
+                            <input 
+                                type="email" 
+                                name="email" 
+                                placeholder="admin@example.com" 
+                                class="input input-bordered w-full" 
+                                required
+                            />
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">Password</span>
+                            </label>
+                            <input 
+                                type="password" 
+                                name="password" 
+                                placeholder="Enter password" 
+                                class="input input-bordered w-full" 
+                                minlength="6"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-control">
+                        <button type="submit" class="btn btn-primary">
+                            <span id="superuser-loading" class="loading loading-spinner loading-sm htmx-indicator"></span>
+                            Create Superuser
+                        </button>
+                    </div>
+                </form>
+
+                <div id="superuser-result" class="mt-4"></div>
+            </div>
+        </div>
+
+        <!-- Password Reset Section -->
+        <div class="card bg-base-100 shadow-xl mb-6">
+            <div class="card-body">
+                <h2 class="card-title text-lg mb-4">Reset User Password</h2>
+                
+                <form hx-post="/oppman/emergency/reset-password" hx-target="#password-result" hx-indicator="#password-loading">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">User Email</span>
+                            </label>
+                            <select name="email" class="select select-bordered w-full" required>
+                                <option value="">Select a user...</option>
+                                {% for user in users %}
+                                <option value="{{ user.email }}">
+                                    {{ user.email }} 
+                                    {% if user.is_superuser %}(Superuser){% endif %}
+                                    {% if user.is_staff %}(Staff){% endif %}
+                                    {% if not user.is_active %}(Inactive){% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">New Password</span>
+                            </label>
+                            <input 
+                                type="password" 
+                                name="new_password" 
+                                placeholder="Enter new password" 
+                                class="input input-bordered w-full" 
+                                minlength="6"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-control">
+                        <button type="submit" class="btn btn-primary">
+                            <span id="password-loading" class="loading loading-spinner loading-sm htmx-indicator"></span>
+                            Reset Password
+                        </button>
+                    </div>
+                </form>
+
+                <div id="password-result" class="mt-4"></div>
+            </div>
+        </div>
+
+        <!-- Users List -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-lg mb-4">All Users</h2>
+                
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Role</th>
+                                <th>Group</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td class="font-mono text-sm">{{ user.email }}</td>
+                                <td>
+                                    {% if user.is_active %}
+                                        <span class="badge badge-success">Active</span>
+                                    {% else %}
+                                        <span class="badge badge-error">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.is_superuser %}
+                                        <span class="badge badge-primary">Superuser</span>
+                                    {% elif user.is_staff %}
+                                        <span class="badge badge-secondary">Staff</span>
+                                    {% else %}
+                                        <span class="badge badge-ghost">User</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.group %}
+                                        <span class="badge badge-outline">{{ user.group }}</span>
+                                    {% else %}
+                                        <span class="text-base-content/50">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card bg-base-100 shadow-xl mt-6">
+            <div class="card-body">
+                <h2 class="card-title text-lg mb-4">Quick Actions</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="/oppman/" class="btn btn-outline">
+                        Go to Oppman Dashboard
+                    </a>
+                    <a href="/admin/" class="btn btn-outline">
+                        Go to Admin Panel
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-sm text-base-content/60">
+            <p>Emergency access granted via SECRET_KEY authentication</p>
+            <p class="mt-1">Remember to disable emergency access when you're done!</p>
+        </div>
+    </div>
+
+    <script>
+        // Handle successful password reset and superuser creation
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            if (evt.detail.xhr.status === 200) {
+                const response = JSON.parse(evt.detail.xhr.responseText);
+                if (response.success) {
+                    // Clear the form that was submitted
+                    const form = evt.target.closest('form');
+                    if (form) {
+                        form.reset();
+                    }
+                }
+            }
+        });
+
+        // Handle emergency access logout
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            if (evt.detail.xhr.status === 200 && evt.detail.xhr.responseURL.includes('/emergency/logout')) {
+                const response = JSON.parse(evt.detail.xhr.responseText);
+                if (response.success) {
+                    alert('Emergency access logout successful. You will be redirected to the login page.');
+                    window.location.href = '/login';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

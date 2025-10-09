@@ -100,7 +100,13 @@ async def login_form(
 
     # Create session token using dependency injection
     token = create_user_token(user, settings)
-    response = RedirectResponse(url="/webinar-registrants", status_code=302)
+    
+    # Check if there's a redirect URL in the form or default to home
+    redirect_url = form.get("next", "/")
+    if not redirect_url.startswith("/"):
+        redirect_url = "/"
+    
+    response = RedirectResponse(url=redirect_url, status_code=302)
     response.set_cookie(key="access_token", value=token, httponly=True, max_age=1800)  # 30 minutes
     return response
 

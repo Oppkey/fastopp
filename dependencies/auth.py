@@ -102,6 +102,18 @@ async def get_current_staff_or_admin(
     return current_user
 
 
+async def get_current_superuser(
+    current_user: User = Depends(get_current_user_from_cookies)
+) -> User:
+    """Get current authenticated user with superuser privileges"""
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Superuser privileges required",
+        )
+    return current_user
+
+
 def create_user_token(user: User, settings: Settings = Depends(get_settings)) -> str:
     """Create a JWT token for the user using dependency injection"""
     token_data = {

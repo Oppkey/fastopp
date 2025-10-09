@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oppdemo Dashboard - FastOpp</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/favicon.ico') }}">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- HTMX CDN -->
+    <script src="https://unpkg.com/htmx.org@2.0.6"></script>
+    
+    <!-- Alpine.js CDN -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ai-blue': '#3B82F6',
+                        'ai-purple': '#8B5CF6'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-ai-blue to-ai-purple text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">🚀 Oppdemo Dashboard</h1>
+                    <p class="text-blue-100">Demo data management and initialization tools</p>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="/oppman/" 
+                       class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-200">
+                        Oppman
+                    </a>
+                    <a href="/" 
+                       class="bg-white text-ai-blue px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                        Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+
+        <!-- Main Actions -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Full Initialization -->
+            <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-ai-blue rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">🎯 Full Demo Initialization</h2>
+                        <p class="text-gray-600">Complete setup with all sample data</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 mb-6">
+                    Complete setup with all sample data: database, users, products, webinars, and registrants.
+                </p>
+                <div class="flex justify-end">
+                    <button 
+                        hx-post="/oppdemo/init" 
+                        hx-target="#results"
+                        hx-indicator="#loading"
+                        class="bg-ai-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                        onclick="this.disabled=true; setTimeout(() => this.disabled=false, 10000);"
+                    >
+                        Initialize Full Demo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Demo Data Management -->
+            <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">👥 Test Users</h2>
+                        <p class="text-gray-600">Add test users for development</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 mb-6">
+                    Add test users for development and testing purposes.
+                </p>
+                <div class="space-y-3">
+                    <button 
+                        hx-post="/oppdemo/users" 
+                        hx-target="#results"
+                        hx-indicator="#loading"
+                        class="w-full bg-green-500 text-white px-4 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors"
+                    >
+                        Add Test Users
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Sample Data -->
+            <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">📊 Sample Data</h2>
+                        <p class="text-gray-600">Add sample products, webinars, and photos</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 mb-6">
+                    Add sample products, webinars, and registrants.
+                </p>
+                <div class="space-y-3">
+                    <button 
+                        hx-post="/oppdemo/products" 
+                        hx-target="#results"
+                        hx-indicator="#loading"
+                        class="w-full bg-orange-500 text-white px-4 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                    >
+                        Add Sample Products
+                    </button>
+                    <button 
+                        hx-post="/oppdemo/webinars" 
+                        hx-target="#results"
+                        hx-indicator="#loading"
+                        class="w-full bg-blue-500 text-white px-4 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+                    >
+                        Add Sample Webinars
+                    </button>
+                    <button 
+                        hx-post="/oppdemo/download-photos" 
+                        hx-target="#results"
+                        hx-indicator="#loading"
+                        class="w-full bg-green-500 text-white px-4 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors"
+                    >
+                        Load Photos into Storage
+                    </button>
+                </div>
+            </div>
+
+            <!-- Registrants Management -->
+            <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-ai-purple rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">👥 Registrants</h2>
+                        <p class="text-gray-600">Manage webinar registrants and their data</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 mb-6">
+                    Manage webinar registrants and their data.
+                </p>
+                <div class="space-y-3">
+                    <button 
+                        hx-post="/oppdemo/registrants" 
+                        hx-target="#results"
+                        hx-indicator="#loading"
+                        class="w-full bg-ai-purple text-white px-4 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+                    >
+                        Add Sample Registrants
+                    </button>
+                    <button 
+                        hx-post="/oppdemo/clear-registrants" 
+                        hx-target="#results"
+                        hx-indicator="#loading"
+                        class="w-full bg-red-500 text-white px-4 py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors"
+                    >
+                        Clear & Add Fresh Registrants
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Checks -->
+        <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow mb-8">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">🔍 System Checks</h2>
+                    <p class="text-gray-600">Verify system status and authentication</p>
+                </div>
+            </div>
+            <p class="text-sm text-gray-600 mb-6">
+                Verify system status and authentication.
+            </p>
+            <div class="flex flex-wrap gap-3">
+                <button 
+                    hx-get="/oppdemo/check-users" 
+                    hx-target="#results"
+                    hx-indicator="#loading"
+                    class="bg-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-yellow-600 transition-colors"
+                >
+                    Check Users
+                </button>
+                <button 
+                    hx-get="/oppdemo/test-auth" 
+                    hx-target="#results"
+                    hx-indicator="#loading"
+                    class="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+                >
+                    Test Authentication
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="htmx-indicator">
+            <div class="flex justify-center items-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-ai-blue"></div>
+                <span class="ml-3 text-lg text-gray-600">Processing...</span>
+            </div>
+        </div>
+
+        <!-- Results Display -->
+        <div id="results" class="mt-6">
+            <!-- Results will be displayed here -->
+        </div>
+
+        <!-- Quick Links -->
+        <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow mt-8">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">🔗 Quick Links</h2>
+                    <p class="text-gray-600">Access demo pages and management interfaces</p>
+                </div>
+            </div>
+            <p class="text-sm text-gray-600 mb-6">
+                Access demo pages and management interfaces.
+            </p>
+            <div class="flex flex-wrap gap-3">
+                <a href="/oppman/" class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition-colors">Oppman</a>
+                <a href="/admin/" class="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition-colors">Admin Panel</a>
+                <a href="/ai-demo" class="bg-ai-blue text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">AI Demo</a>
+                <a href="/database-demo" class="bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-600 transition-colors">Database Demo</a>
+                <a href="/design-demo" class="bg-purple-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 transition-colors">Design Demo</a>
+                <a href="/webinar-demo" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 transition-colors">Webinar Demo</a>
+                <a href="/webinar-registrants" class="bg-ai-purple text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition-colors">Webinar Management</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-hide loading indicator after 30 seconds
+            setTimeout(() => {
+                const loading = document.getElementById('loading');
+                if (loading && loading.style.display !== 'none') {
+                    loading.style.display = 'none';
+                }
+            }, 30000);
+        });
+
+        // Handle HTMX responses
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            // Re-enable buttons after request
+            const buttons = document.querySelectorAll('button[disabled]');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes('Initialize Full Demo')) {
+                    btn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

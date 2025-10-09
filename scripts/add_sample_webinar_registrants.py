@@ -4,17 +4,18 @@ Script to add sample webinar registrants with photos for testing the photo uploa
 """
 
 import asyncio
+import os
 import uuid
 import shutil
 from pathlib import Path
 from datetime import datetime, timezone
 from db import AsyncSessionLocal
-from models import WebinarRegistrants
 
 
 async def add_sample_registrants():
     """Add sample webinar registrants to the database with photos"""
-    
+    from models import WebinarRegistrants  # Import inside function to avoid module-level import error
+
     sample_registrants = [
         {
             "name": "John Smith",
@@ -72,12 +73,13 @@ async def add_sample_registrants():
                       "Needs to implement OAuth2 and JWT token validation for compliance requirements.")
         }
     ]
-    
-    # Setup photo directories
-    sample_photos_dir = Path("static/uploads/sample_photos")
-    photos_dir = Path("static/uploads/photos")
-    photos_dir.mkdir(exist_ok=True)
-    
+
+    # Setup photo directories using environment variable
+    upload_dir = os.getenv("UPLOAD_DIR", "static/uploads")
+    sample_photos_dir = Path(upload_dir) / "sample_photos"
+    photos_dir = Path(upload_dir) / "photos"
+    photos_dir.mkdir(parents=True, exist_ok=True)
+
     async with AsyncSessionLocal() as session:
         for registrant_data in sample_registrants:
             # Check if registrant already exists
@@ -88,24 +90,24 @@ async def add_sample_registrants():
             if existing.scalar_one_or_none():
                 print(f"Registrant {registrant_data['email']} already exists, skipping...")
                 continue
-            
+
             # Copy sample photo if it exists
             photo_url = None
             photo_filename = registrant_data.pop('photo_filename')
             sample_photo_path = sample_photos_dir / photo_filename
-            
+
             if sample_photo_path.exists():
                 # Generate unique filename for the photo
                 unique_filename = f"{uuid.uuid4()}_{photo_filename}"
                 photo_dest_path = photos_dir / unique_filename
-                
+
                 # Copy the sample photo
                 shutil.copy2(sample_photo_path, photo_dest_path)
                 photo_url = f"/static/uploads/photos/{unique_filename}"
                 print(f"✓ Copied photo for {registrant_data['name']}")
             else:
                 print(f"⚠ Sample photo not found: {photo_filename}")
-            
+
             # Create new registrant
             registrant = WebinarRegistrants(
                 id=uuid.uuid4(),
@@ -118,13 +120,13 @@ async def add_sample_registrants():
                 notes=registrant_data['notes'],
                 photo_url=photo_url
             )
-            
+
             session.add(registrant)
             print(f"Added registrant: {registrant_data['name']} ({registrant_data['email']})")
-        
+
         await session.commit()
         print(f"\nSuccessfully added {len(sample_registrants)} sample webinar registrants with photos!")
 
 
 if __name__ == "__main__":
-    asyncio.run(add_sample_registrants()) 
+    asyncio.run(add_sample_registrants())

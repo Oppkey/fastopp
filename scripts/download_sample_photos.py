@@ -3,6 +3,7 @@
 Script to download sample fake people images for the webinar registrants demo
 """
 
+import os
 import requests
 from pathlib import Path
 
@@ -38,33 +39,42 @@ SAMPLE_PHOTOS = [
 
 def download_sample_photos():
     """Download sample photos for the demo"""
-    sample_dir = Path("static/uploads/sample_photos")
-    sample_dir.mkdir(exist_ok=True)
+    from services.storage import get_storage
     
+    # Use modular storage system
+    storage = get_storage()
+    
+    # Ensure sample_photos directory exists
+    storage.ensure_directories("sample_photos")
+
     print("Downloading sample photos...")
-    
+
     for photo in SAMPLE_PHOTOS:
-        filename = sample_dir / photo["filename"]
+        photo_path = f"sample_photos/{photo['filename']}"
         
-        if filename.exists():
+        if storage.file_exists(photo_path):
             print(f"✓ {photo['filename']} already exists")
             continue
-            
+
         try:
             response = requests.get(photo["url"], timeout=10)
             response.raise_for_status()
-            
-            with open(filename, "wb") as f:
-                f.write(response.content)
-            
-            print(f"✓ Downloaded {photo['filename']}")
-            
+
+            # Save using storage system
+            photo_url = storage.save_file(
+                content=response.content,
+                path=photo_path,
+                content_type="image/jpeg"
+            )
+
+            print(f"✓ Downloaded {photo['filename']} to {photo_url}")
+
         except Exception as e:
             print(f"✗ Failed to download {photo['filename']}: {e}")
-    
-    print(f"\nSample photos downloaded to: {sample_dir}")
+
+    print(f"\nSample photos downloaded using {type(storage).__name__} storage")
     print("You can now use these in your initialization script!")
 
 
 if __name__ == "__main__":
-    download_sample_photos() 
+    download_sample_photos()

@@ -279,29 +279,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
 **Root Cause**: 
 - App uses async SQLAlchemy: `sqlite+aiosqlite:////data/test.db`
-- Alembic needs sync operations during migrations
-- URL mismatch causing async context errors
+- Alembic was using sync operations during migrations
+- Async context errors when mixing sync/async operations
 
-**Solution**: URL conversion in `alembic/env.py`:
+**Solution**: Updated `alembic/env.py` to use async patterns:
 
 ```python
-def run_migrations_offline() -> None:
-    url = os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
-    
-    # Convert async SQLite URL to regular SQLite URL for migrations
-    if url and "aiosqlite" in url:
-        url = url.replace("sqlite+aiosqlite://", "sqlite://")
-    
-    context.configure(url=url, ...)
+# Updated alembic/env.py uses async patterns
+import asyncio
+from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.engine import Connection
+
+def do_run_migrations(connection: Connection) -> None:
+    context.configure(connection=connection, target_metadata=target_metadata)
+    with context.begin_transaction():
+        context.run_migrations()
+
+async def run_async_migrations() -> None:
+    connectable = async_engine_from_config(
+        config.get_section(config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
+    async with connectable.connect() as connection:
+        await connection.run_sync(do_run_migrations)
+    await connectable.dispose()
 
 def run_migrations_online() -> None:
-    database_url = os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
-    
-    # Convert async SQLite URL to regular SQLite URL for migrations
-    if database_url and "aiosqlite" in url:
-        database_url = database_url.replace("sqlite+aiosqlite://", "sqlite://")
-    
-    config.set_main_option("sqlalchemy.url", database_url)
+    asyncio.run(run_async_migrations())
 ```
 
 #### 3. Database Connection Issues

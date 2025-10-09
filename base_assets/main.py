@@ -17,6 +17,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from admin.setup import setup_admin
 from base_assets.routes.auth import router as auth_router
 from base_assets.routes.pages import router as pages_router
+try:
+    from base_assets.routes.oppman import router as oppman_router
+except Exception:
+    oppman_router = None  # Optional during partial restores
 
 app = FastAPI(
     title="FastOpp Base Assets",
@@ -41,6 +45,8 @@ templates = Jinja2Templates(directory="templates")
 # Include routers
 app.include_router(auth_router)
 app.include_router(pages_router)
+if oppman_router:
+    app.include_router(oppman_router, prefix="/oppman")
 
 # Add exception handler for authentication
 

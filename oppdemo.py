@@ -23,19 +23,24 @@ try:
     from scripts.check_users import check_users
     from scripts.test_auth import test_auth
     from scripts.change_password import list_users, change_password_interactive
-    
-    # Demo-specific scripts (moved to demo_scripts/ directory)
+except ImportError as e:
+    print(f"❌ Import error: {e}")
+    print("Make sure all script files are in the scripts/ directory")
+    sys.exit(1)
+
+# Demo-specific scripts (from demo_scripts/ directory)
+demo_scripts_available = True
+try:
     from demo_scripts.add_test_users import add_test_users
     from demo_scripts.add_sample_products import add_sample_products
     from demo_scripts.add_sample_webinars import add_sample_webinars
     from demo_scripts.add_sample_webinar_registrants import add_sample_registrants
     from demo_scripts.clear_and_add_registrants import clear_and_add_registrants
     from demo_scripts.download_sample_photos import download_sample_photos
-except ImportError as e:
-    print(f"❌ Import error: {e}")
-    print("Make sure all script files are in the scripts/ directory")
-    print("Demo scripts should be in demo_scripts/ directory")
-    sys.exit(1)
+except ImportError:
+    demo_scripts_available = False
+    print("ℹ️  Demo scripts not available (demo_scripts/ directory not found)")
+    print("   Run 'uv run python oppdemo.py restore' to restore demo scripts")
 
 
 def ensure_backup_dir():
@@ -47,13 +52,11 @@ def ensure_backup_dir():
 
 def ensure_upload_dirs():
     """Ensure static upload directories exist regardless of current working directory."""
-    project_root = Path(__file__).resolve().parent
-    uploads_root = project_root / "static" / "uploads"
-    photos_dir = uploads_root / "photos"
-    sample_photos_dir = uploads_root / "sample_photos"
-    uploads_root.mkdir(parents=True, exist_ok=True)
-    photos_dir.mkdir(parents=True, exist_ok=True)
-    sample_photos_dir.mkdir(parents=True, exist_ok=True)
+    from services.storage import get_storage
+    
+    # Use modular storage system
+    storage = get_storage()
+    storage.ensure_directories("photos", "sample_photos")
 
 
 def create_backup_path(original_file: Path, operation: str) -> Path:
@@ -87,6 +90,10 @@ async def run_superuser():
 
 async def run_users():
     """Add test users"""
+    if not demo_scripts_available:
+        print("❌ Demo scripts not available. Run 'uv run python oppdemo.py restore' first.")
+        return
+    
     print("🔄 Adding test users...")
     await add_test_users()
     print("✅ Test users creation complete")
@@ -94,6 +101,10 @@ async def run_users():
 
 async def run_products():
     """Add sample products"""
+    if not demo_scripts_available:
+        print("❌ Demo scripts not available. Run 'uv run python oppdemo.py restore' first.")
+        return
+    
     print("🔄 Adding sample products...")
     await add_sample_products()
     print("✅ Sample products creation complete")
@@ -101,6 +112,10 @@ async def run_products():
 
 async def run_webinars():
     """Add sample webinars"""
+    if not demo_scripts_available:
+        print("❌ Demo scripts not available. Run 'uv run python oppdemo.py restore' first.")
+        return
+    
     print("🔄 Adding sample webinars...")
     await add_sample_webinars()
     print("✅ Sample webinars creation complete")
@@ -108,6 +123,10 @@ async def run_webinars():
 
 async def run_download_photos():
     """Download sample photos for webinar registrants"""
+    if not demo_scripts_available:
+        print("❌ Demo scripts not available. Run 'uv run python oppdemo.py restore' first.")
+        return
+    
     print("🔄 Downloading sample photos...")
     ensure_upload_dirs()
     download_sample_photos()
@@ -116,6 +135,10 @@ async def run_download_photos():
 
 async def run_registrants():
     """Add sample webinar registrants with photos"""
+    if not demo_scripts_available:
+        print("❌ Demo scripts not available. Run 'uv run python oppdemo.py restore' first.")
+        return
+    
     print("🔄 Adding sample webinar registrants...")
     await add_sample_registrants()
     print("✅ Sample webinar registrants creation complete")
@@ -123,6 +146,10 @@ async def run_registrants():
 
 async def run_clear_registrants():
     """Clear and add fresh webinar registrants with photos"""
+    if not demo_scripts_available:
+        print("❌ Demo scripts not available. Run 'uv run python oppdemo.py restore' first.")
+        return
+    
     print("🔄 Clearing and adding fresh webinar registrants...")
     await clear_and_add_registrants()
     print("✅ Fresh webinar registrants creation complete")
@@ -306,6 +333,19 @@ def save_demo_files():
                 print(f"  ✅ {service_file}")
                 files_copied += 1
         
+        # Backup storage system
+        print("💾 Backing up storage system...")
+        storage_src = Path("services/storage")
+        if storage_src.exists():
+            storage_dst = demo_assets / "services/storage"
+            if storage_dst.exists():
+                shutil.rmtree(storage_dst)
+            shutil.copytree(storage_src, storage_dst)
+            print("  ✅ services/storage/")
+            files_copied += 1
+        else:
+            print("  ℹ️  services/storage/ directory not found (skipping storage backup)")
+        
         # Backup main.py and models.py (application entrypoint and models)
         print("📄 Backing up main.py and models.py...")
         main_src = Path("main.py")
@@ -326,7 +366,8 @@ def save_demo_files():
         script_files = [
             "scripts/add_sample_products.py",
             "scripts/add_sample_webinar_registrants.py",
-            "scripts/download_sample_photos.py"
+            "scripts/download_sample_photos.py",
+            "scripts/emergency_access.py"
         ]
         
         for script_file in script_files:
@@ -336,6 +377,20 @@ def save_demo_files():
                 shutil.copy2(src, dst)
                 print(f"  ✅ {script_file}")
                 files_copied += 1
+        
+        # Backup demo_scripts directory (demo-specific scripts)
+        print("📝 Backing up demo_scripts...")
+        demo_scripts_src = Path("demo_scripts")
+        if demo_scripts_src.exists():
+            # Copy to demo_assets/scripts (scripts will be used directly from here)
+            demo_scripts_dst = demo_assets / "scripts"
+            if demo_scripts_dst.exists():
+                shutil.rmtree(demo_scripts_dst)
+            shutil.copytree(demo_scripts_src, demo_scripts_dst)
+            print("  ✅ scripts/ (demo scripts)")
+            files_copied += 1
+        else:
+            print("  ℹ️  demo_scripts/ directory not found (skipping demo_scripts backup)")
         
         # Backup admin files
         print("🔧 Backing up admin files...")
@@ -545,6 +600,20 @@ def restore_demo_files():
                 print(f"  ✅ Restored {service_file.name}")
                 files_restored += 1
         
+        # Restore storage system
+        print("💾 Restoring storage system...")
+        storage_src = demo_assets / "services/storage"
+        storage_dest = Path("services/storage")
+        
+        if storage_src.exists():
+            if storage_dest.exists():
+                shutil.rmtree(storage_dest)
+            shutil.copytree(storage_src, storage_dest)
+            print("  ✅ Restored services/storage/")
+            files_restored += 1
+        else:
+            print("  ℹ️  services/storage/ not found in backup (skipping storage restoration)")
+        
         # Restore models
         print("📊 Restoring models...")
         models_src = demo_assets / "models.py"
@@ -566,6 +635,20 @@ def restore_demo_files():
                 shutil.copy2(script_file, dest_file)
                 print(f"  ✅ Restored {script_file.name}")
                 files_restored += 1
+        
+        # Restore demo_scripts directory (demo-specific scripts)
+        print("📝 Restoring demo_scripts...")
+        demo_scripts_src = demo_assets / "scripts"
+        demo_scripts_dest = Path("demo_scripts")
+        
+        if demo_scripts_src.exists():
+            if demo_scripts_dest.exists():
+                shutil.rmtree(demo_scripts_dest)
+            shutil.copytree(demo_scripts_src, demo_scripts_dest)
+            print("  ✅ Restored demo_scripts/")
+            files_restored += 1
+        else:
+            print("  ℹ️  scripts/ not found in backup (skipping demo_scripts restore)")
 
         # Supplement missing required files from original working copy if available
         print("🔍 Checking original working copy for missing files...")
@@ -707,12 +790,12 @@ async def destroy_demo_files():
         shutil.copy2(base_models, current_models)
         print("  ✅ Copied base_assets/models.py to models.py")
         
-        # Step 2: Remove services directory
+        # Step 2: Remove services directory (including storage system)
         print("🔧 Removing services directory...")
         services_dir = Path("services")
         if services_dir.exists():
             shutil.rmtree(services_dir)
-            print("  ✅ Removed services/")
+            print("  ✅ Removed services/ (including storage system)")
         else:
             print("  ℹ️  services/ directory not found")
         
@@ -1013,6 +1096,29 @@ def diff_demo_files():
                 src_file = services_src / backup_file.name
                 if not src_file.exists():
                     differences['deleted'].append(f"services/{backup_file.name}")
+        
+        # Compare storage system
+        print("💾 Comparing storage system...")
+        storage_src = Path("services/storage")
+        storage_backup = demo_assets / "services/storage"
+        
+        if storage_src.exists() and storage_backup.exists():
+            for storage_file in storage_src.rglob("*.py"):
+                relative_path = storage_file.relative_to(storage_src)
+                backup_file = storage_backup / relative_path
+                if not backup_file.exists():
+                    differences['added'].append(f"services/storage/{relative_path}")
+                else:
+                    if not filecmp.cmp(storage_file, backup_file, shallow=False):
+                        differences['modified'].append(f"services/storage/{relative_path}")
+            
+            for backup_file in storage_backup.rglob("*.py"):
+                relative_path = backup_file.relative_to(storage_backup)
+                src_file = storage_src / relative_path
+                if not src_file.exists():
+                    differences['deleted'].append(f"services/storage/{relative_path}")
+        elif storage_src.exists() and not storage_backup.exists():
+            differences['missing_backup'].append("services/storage/")
         
         # Compare models.py
         print("📊 Comparing models...")

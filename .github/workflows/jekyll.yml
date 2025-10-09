@@ -3,6 +3,8 @@ name: Deploy Jekyll Blog to gh-pages
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'blog/**'
   workflow_dispatch:
 
 permissions:

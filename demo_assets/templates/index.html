@@ -21,6 +21,12 @@
             }
         }
     </script>
+    
+    <!-- Custom CSS for dropdowns -->
+    <style>
+        .dropdown-menu { display: none; }
+        .dropdown-menu:not(.hidden) { display: block; }
+    </style>
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen flex flex-col">
@@ -167,6 +173,28 @@
                                class="inline-block bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors">
                                 View Docs
                             </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Setup Guidance -->
+                <div class="mt-16 max-w-4xl mx-auto">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-lg">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-blue-800 mb-2">First Time Setup</h3>
+                                <div class="text-blue-700">
+                                    <p class="mb-2">To get started with FastOpp, you'll need to set up the database and create a superuser account:</p>
+                                    <p class="text-sm mb-2">We recommend you run <code class="bg-blue-100 px-1 rounded">oppdemo.py init</code> from the command line. You can do this on Fly, Railway, Digital Ocean droplets and other services. If you cannot access the shell in a serverless environment such as Leapcell, then you can use <a href="/oppman/emergency" class="underline font-semibold hover:text-blue-800">Emergency Access</a> to create a superuser and initialize the database. You can use emergency access with your SECRET_KEY. The EMERGENCY_ACCESS_ENABLED must be set to true on the server (such as Leapcell).</p>
+                                    <p class="text-sm mb-2">Login with your superuser credentials to access admin features</p>
+                                    <p class="text-xs text-blue-600"><a href="https://github.com/Oppkey/fastopp/blob/main/docs/EMERGENCY_ACCESS.md" class="underline hover:text-blue-800" target="_blank">View Emergency Access documentation for more details</a></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

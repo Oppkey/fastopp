@@ -10,8 +10,8 @@ This guide covers setting up PostgreSQL for the FastOpp project, including datab
 # Add environment variable support
 uv add python-dotenv
 
-# Add PostgreSQL support (optional for development)
-uv add asyncpg
+# PostgreSQL support is already included in pyproject.toml
+# No additional packages needed - asyncpg is already installed
 ```
 
 ### 2. Environment-Based Database Configuration
@@ -196,6 +196,7 @@ DATABASE_URL = "postgresql+asyncpg://user:password@localhost/fastopp_db"
 - Ensure database is accessible
 - Check Alembic configuration
 - Verify model imports in `alembic/env.py`
+- **Note**: Alembic is configured for async operations with both SQLite and PostgreSQL
 
 #### 4. HTMX Loading Issues
 If you encounter automatic loading problems:

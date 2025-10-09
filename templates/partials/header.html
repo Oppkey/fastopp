@@ -1,9 +1,9 @@
 <!-- Navigation -->
-<nav class="bg-white shadow-lg" x-data="{ mobileMenuOpen: false }">
+<nav class="bg-white shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex items-center">
-                <a href="/" class="flex items-center hover:opacity-80 transition-opacity">
+                <a href="/" onclick="closeAllDropdowns()" class="flex items-center hover:opacity-80 transition-opacity">
                     <img src="{{ url_for('static', path='/images/oppkey_logo.jpg') }}" 
                          alt="Oppkey Logo" 
                          class="h-8 w-auto mr-3">
@@ -11,29 +11,66 @@
                 </a>
             </div>
             
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="/design-demo" 
-                   class="{% if current_page == 'design-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue transition-colors{% endif %}">Design Demo</a>
-                <a href="/database-demo" 
-                   class="{% if current_page == 'database-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue transition-colors{% endif %}">Database Demo</a>
-                <a href="/webinar-demo" 
-                   class="{% if current_page == 'webinar-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue transition-colors{% endif %}">Webinar Demo</a>
-                <a href="/ai-demo" 
-                   class="{% if current_page == 'ai-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue transition-colors{% endif %}">AI Demo</a>
-                <span class="text-gray-400">|</span>
-                <a href="/webinar-registrants" 
-                   class="{% if current_page == 'webinar-registrants' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue transition-colors{% endif %}">Webinar Manage</a>
-                <a href="/admin/" 
-                   class="{% if current_page == 'admin' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue transition-colors{% endif %}">Admin</a>
-                {% if request.cookies.get('access_token') %}
-                <a href="/logout" 
-                   class="text-red-600 hover:text-red-700 transition-colors">Logout</a>
-                {% endif %}
-            </div>
+                    <div class="hidden lg:flex items-center space-x-6">
+                        <!-- Demo Pages -->
+                        <div class="relative group">
+                            <button onclick="toggleDropdown('demos')" 
+                                    class="flex items-center text-gray-600 hover:text-ai-blue transition-colors">
+                                Demos
+                                <svg id="demos-chevron" class="w-4 h-4 ml-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="demos-dropdown" 
+                                 class="dropdown-menu absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden">
+                                <a href="/design-demo" onclick="closeAllDropdowns()"
+                                   class="block px-4 py-2 text-sm {% if current_page == 'design-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Design Demo</a>
+                                <a href="/database-demo" onclick="closeAllDropdowns()"
+                                   class="block px-4 py-2 text-sm {% if current_page == 'database-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Database Demo</a>
+                                <a href="/webinar-demo" onclick="closeAllDropdowns()"
+                                   class="block px-4 py-2 text-sm {% if current_page == 'webinar-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Webinar Demo</a>
+                                <a href="/ai-demo" onclick="closeAllDropdowns()"
+                                   class="block px-4 py-2 text-sm {% if current_page == 'ai-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">AI Demo</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Management - Only show when logged in -->
+                        {% if request.cookies.get('access_token') %}
+                        <div class="relative group">
+                            <button onclick="toggleDropdown('management')" 
+                                    class="flex items-center text-gray-600 hover:text-ai-blue transition-colors">
+                                Management
+                                <svg id="management-chevron" class="w-4 h-4 ml-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="management-dropdown" 
+                                 class="dropdown-menu absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden">
+                                <a href="/webinar-registrants" onclick="closeAllDropdowns()"
+                                   class="block px-4 py-2 text-sm {% if current_page == 'webinar-registrants' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Webinar Management</a>
+                                <a href="/admin/" onclick="closeAllDropdowns()"
+                                   class="block px-4 py-2 text-sm {% if current_page == 'admin' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Admin Panel</a>
+                                <a href="/oppman/" onclick="closeAllDropdowns()"
+                                   class="block px-4 py-2 text-sm {% if current_page == 'oppman' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Oppman</a>
+                                <a href="/oppdemo/" onclick="closeAllDropdowns()"
+                                   class="block px-4 py-2 text-sm {% if current_page == 'oppdemo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Oppdemo</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Login/Logout -->
+                        {% if request.cookies.get('access_token') %}
+                        <a href="/logout" 
+                           class="text-red-600 hover:text-red-700 transition-colors">Logout</a>
+                        {% else %}
+                        <a href="/login" 
+                           class="text-ai-blue hover:text-blue-700 transition-colors font-medium">Login</a>
+                        {% endif %}
+                    </div>
             
             <!-- Mobile menu button -->
-            <div class="md:hidden flex items-center">
-                <button @click="mobileMenuOpen = !mobileMenuOpen" 
+            <div class="lg:hidden flex items-center">
+                <button onclick="toggleMobileMenu()" 
                         class="text-gray-600 hover:text-ai-blue">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -42,31 +79,108 @@
             </div>
         </div>
         
-        <!-- Mobile menu -->
-        <div x-show="mobileMenuOpen" 
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 transform -translate-y-2"
-             x-transition:enter-end="opacity-100 transform translate-y-0"
-             class="md:hidden">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="/design-demo" 
-                   class="block px-3 py-2 {% if current_page == 'design-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Design Demo</a>
-                <a href="/database-demo" 
-                   class="block px-3 py-2 {% if current_page == 'database-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Database Demo</a>
-                <a href="/webinar-demo" 
-                   class="block px-3 py-2 {% if current_page == 'webinar-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Webinar Demo</a>
-                <a href="/ai-demo" 
-                   class="block px-3 py-2 {% if current_page == 'ai-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">AI Demo</a>
-                <div class="border-t border-gray-300 my-2"></div>
-                <a href="/webinar-registrants" 
-                   class="block px-3 py-2 {% if current_page == 'webinar-registrants' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Webinar Manage</a>
-                <a href="/admin/" 
-                   class="block px-3 py-2 {% if current_page == 'admin' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Admin</a>
-                {% if request.cookies.get('access_token') %}
-                <a href="/logout" 
-                   class="block px-3 py-2 text-red-600 hover:text-red-700">Logout</a>
-                {% endif %}
-            </div>
-        </div>
+                <!-- Mobile menu -->
+                <div id="mobile-menu" class="lg:hidden hidden">
+                    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Demos</div>
+                        <a href="/design-demo" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 {% if current_page == 'design-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Design Demo</a>
+                        <a href="/database-demo" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 {% if current_page == 'database-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Database Demo</a>
+                        <a href="/webinar-demo" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 {% if current_page == 'webinar-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Webinar Demo</a>
+                        <a href="/ai-demo" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 {% if current_page == 'ai-demo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">AI Demo</a>
+                        
+                        <!-- Management - Only show when logged in -->
+                        {% if request.cookies.get('access_token') %}
+                        <div class="border-t border-gray-300 my-2"></div>
+                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Management</div>
+                        <a href="/webinar-registrants" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 {% if current_page == 'webinar-registrants' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Webinar Management</a>
+                        <a href="/admin/" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 {% if current_page == 'admin' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Admin Panel</a>
+                        <a href="/oppman/" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 {% if current_page == 'oppman' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Oppman</a>
+                        <a href="/oppdemo/" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 {% if current_page == 'oppdemo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Oppdemo</a>
+                        {% endif %}
+                        
+                        <!-- Login/Logout -->
+                        {% if request.cookies.get('access_token') %}
+                        <div class="border-t border-gray-300 my-2"></div>
+                        <a href="/logout" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 text-red-600 hover:text-red-700">Logout</a>
+                        {% else %}
+                        <div class="border-t border-gray-300 my-2"></div>
+                        <a href="/login" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 text-ai-blue hover:text-blue-700 font-medium">Login</a>
+                        {% endif %}
+                    </div>
+                </div>
     </div>
-</nav> 
+</nav>
+
+<script>
+// Simple vanilla JavaScript dropdown management
+function toggleDropdown(dropdownName) {
+    const dropdown = document.getElementById(dropdownName + '-dropdown');
+    const chevron = document.getElementById(dropdownName + '-chevron');
+    
+    // Close all other dropdowns first
+    closeAllDropdowns();
+    
+    // Toggle current dropdown
+    if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden');
+        chevron.classList.add('rotate-180');
+    } else {
+        dropdown.classList.add('hidden');
+        chevron.classList.remove('rotate-180');
+    }
+}
+
+function closeAllDropdowns() {
+    // Close demos dropdown
+    const demosDropdown = document.getElementById('demos-dropdown');
+    const demosChevron = document.getElementById('demos-chevron');
+    if (demosDropdown) {
+        demosDropdown.classList.add('hidden');
+        demosChevron.classList.remove('rotate-180');
+    }
+    
+    // Close management dropdown
+    const managementDropdown = document.getElementById('management-dropdown');
+    const managementChevron = document.getElementById('management-chevron');
+    if (managementDropdown) {
+        managementDropdown.classList.add('hidden');
+        managementChevron.classList.remove('rotate-180');
+    }
+}
+
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.remove('hidden');
+    } else {
+        mobileMenu.classList.add('hidden');
+    }
+}
+
+function closeMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenu.classList.add('hidden');
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.relative.group')) {
+        closeAllDropdowns();
+    }
+});
+
+// Ensure dropdowns start closed on page load
+document.addEventListener('DOMContentLoaded', function() {
+    closeAllDropdowns();
+});
+</script> 

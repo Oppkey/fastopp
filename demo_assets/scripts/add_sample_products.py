@@ -3,11 +3,12 @@
 # =========================
 import asyncio
 from db import AsyncSessionLocal
-from models import Product
 
 
 async def add_sample_products():
     """Add sample products to the database"""
+    from models import Product  # Import inside function to avoid module-level import error
+    
     async with AsyncSessionLocal() as session:
         # Sample product data
         sample_products = [

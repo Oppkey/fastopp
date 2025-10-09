@@ -7,7 +7,12 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/favicon.ico') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@2.0.6"></script>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <!-- Custom CSS for dropdowns -->
+    <style>
+        .dropdown-menu { display: none; }
+        .dropdown-menu:not(.hidden) { display: block; }
+    </style>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -30,10 +35,17 @@
             <div class="max-w-md w-full space-y-8">
                 <div>
                     <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Sign in to access Webinar Registrants
+                        Sign in to your account
                     </h2>
                     <p class="mt-2 text-center text-sm text-gray-600">
                         Staff or admin access required
+                    </p>
+                    <p class="mt-1 text-center text-xs text-gray-500">
+                        {% if request.query_params.get('next') %}
+                            After login, you'll be redirected to: {{ request.query_params.get('next') }}
+                        {% else %}
+                            After login, you'll be redirected to the home page
+                        {% endif %}
                     </p>
                 </div>
                 
@@ -44,6 +56,7 @@
                 {% endif %}
                 
                 <form class="mt-8 space-y-6" method="POST" action="/login">
+                    <input type="hidden" name="next" value="{{ request.query_params.get('next', '/oppdemo/') }}">
                     <div class="rounded-md shadow-sm -space-y-px">
                         <div>
                             <label for="username" class="sr-only">Email address</label>
