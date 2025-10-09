@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Process for Testing and Contributing to FastOpp - FastOpp Blog</title>
+    <meta name="description" content="Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/fastopp/assets/images/fastopp_logo.webp">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ai-blue': '#3B82F6',
+                        'ai-purple': '#8B5CF6',
+                        'ai-green': '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/fastopp/assets/css/main.css">
+    
+    <!-- SEO -->
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Our Process for Testing and Contributing to FastOpp | FastOpp Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Our Process for Testing and Contributing to FastOpp" />
+<meta name="author" content="Ethan Luke Kim" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A quick guide and personal notes on testing the FastOpp framework, including the essential git commands for contributing." />
+<meta property="og:description" content="A quick guide and personal notes on testing the FastOpp framework, including the essential git commands for contributing." />
+<link rel="canonical" href="https://oppkey.github.io/fastopp/2025/10/08/testing-fastopp/" />
+<meta property="og:url" content="https://oppkey.github.io/fastopp/2025/10/08/testing-fastopp/" />
+<meta property="og:site_name" content="FastOpp Blog" />
+<meta property="og:image" content="https://lh3.googleusercontent.com/gg-dl/AJfQ9KRhVzJiKWNAJOaSeVa5NZQ6zEz3NjCnj9UNhTUB-oPwUhod6Iq0-VN3qLoNyrm4ZRxxLM_ASBfqI4JriGx6L2wVRBhgIyyqL1RYpTdzpaOnseMICQcLI9PaCE5PZUV0n0voR41gzmiMLbtn-xeM1RCIhulEnhIPvkNF0bRhw8kulA1zjQ=s1024-rj" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-10-08T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://lh3.googleusercontent.com/gg-dl/AJfQ9KRhVzJiKWNAJOaSeVa5NZQ6zEz3NjCnj9UNhTUB-oPwUhod6Iq0-VN3qLoNyrm4ZRxxLM_ASBfqI4JriGx6L2wVRBhgIyyqL1RYpTdzpaOnseMICQcLI9PaCE5PZUV0n0voR41gzmiMLbtn-xeM1RCIhulEnhIPvkNF0bRhw8kulA1zjQ=s1024-rj" />
+<meta property="twitter:title" content="Our Process for Testing and Contributing to FastOpp" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Ethan Luke Kim"},"dateModified":"2025-10-08T00:00:00+00:00","datePublished":"2025-10-08T00:00:00+00:00","description":"A quick guide and personal notes on testing the FastOpp framework, including the essential git commands for contributing.","headline":"Our Process for Testing and Contributing to FastOpp","image":"https://lh3.googleusercontent.com/gg-dl/AJfQ9KRhVzJiKWNAJOaSeVa5NZQ6zEz3NjCnj9UNhTUB-oPwUhod6Iq0-VN3qLoNyrm4ZRxxLM_ASBfqI4JriGx6L2wVRBhgIyyqL1RYpTdzpaOnseMICQcLI9PaCE5PZUV0n0voR41gzmiMLbtn-xeM1RCIhulEnhIPvkNF0bRhw8kulA1zjQ=s1024-rj","mainEntityOfPage":{"@type":"WebPage","@id":"https://oppkey.github.io/fastopp/2025/10/08/testing-fastopp/"},"url":"https://oppkey.github.io/fastopp/2025/10/08/testing-fastopp/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    
+    <!-- Feed -->
+    <link rel="alternate" type="application/rss+xml" title="FastOpp Blog" href="/fastopp/feed.xml">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center">
+                        <a href="/fastopp/" class="text-2xl font-bold text-gray-900 hover:text-ai-blue transition-colors">
+                            FastOpp Blog
+                        </a>
+                    </div>
+                    
+                    <nav class="hidden md:flex space-x-8">
+                        <a href="/fastopp/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            Home
+                        </a>
+                        <a href="/fastopp/about/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            About
+                        </a>
+                        <a href="/fastopp/posts/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            Posts
+                        </a>
+                        <a href="https://github.com/Oppkey/FastOpp" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium"
+                           target="_blank" rel="noopener">
+                            GitHub
+                        </a>
+                    </nav>
+                    
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden">
+                        <button type="button" class="text-gray-700 hover:text-ai-blue focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Post Header -->
+    <header class="mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Our Process for Testing and Contributing to FastOpp</h1>
+        
+        <div class="flex items-center text-gray-600 mb-6">
+            <time datetime="2025-10-08T00:00:00+00:00" class="mr-4">
+                October 08, 2025
+            </time>
+            <span class="mr-4">•</span>
+            <span>By Ethan Luke Kim</span>
+        </div>
+        
+        
+        <img src="https://lh3.googleusercontent.com/gg-dl/AJfQ9KRhVzJiKWNAJOaSeVa5NZQ6zEz3NjCnj9UNhTUB-oPwUhod6Iq0-VN3qLoNyrm4ZRxxLM_ASBfqI4JriGx6L2wVRBhgIyyqL1RYpTdzpaOnseMICQcLI9PaCE5PZUV0n0voR41gzmiMLbtn-xeM1RCIhulEnhIPvkNF0bRhw8kulA1zjQ=s1024-rj" 
+             alt="Our Process for Testing and Contributing to FastOpp" 
+             class="w-full h-64 object-cover rounded-lg shadow-lg">
+        
+    </header>
+    
+    <!-- Post Content -->
+    <div class="prose prose-lg max-w-none">
+        <p>First Impressions: Putting a New LLM to the Test
+I recently had the opportunity to try FastOpp’s AI Chat assistant and decided to test it using different procedures. My goal was to test its performance across a variety of tasks, from its raw speed and accuracy to its conversational memory. Here’s a look at how it performed.</p>
+
+<p>Speed and Versatility: The Bright Spots</p>
+
+<p>Right away, I was impressed by the LLM’s results. It handled a diverse set of prompts, tackling controversial topics, generating specific coding examples, and even constructing travel plans around a given timeframe and location of interest. The speed was great, too. Most responses were generated in a quick 3 to 5 seconds.</p>
+
+<p>The model also proved its accuracy in specific tasks. I tested its summarization ability with a short, four-sentence paragraph about the sun and asked it to condense it into a single sentence. It passed perfectly, creating one concise sentence that captured all the necessary information without losing accuracy.</p>
+
+<p>A Few Hiccups:</p>
+
+<p>While I enjoyed tinkering with the LLM, a prototype wouldn’t be a prototype without things it can improve on.</p>
+
+<p>First, I noticed that response times weren’t always consistent. Some simple prompts took longer than expected (6-10 seconds), while, interestingly, some complex requests (e.g., debugging a recursive function) took around the same time a simple prompt would.</p>
+
+<p>Second, during longer sessions, particularly after about 30 prompts, the model would sometimes run into errors and temporarily refuse to accept a new prompt. However, to my surprise, after a short 5-to-10-second wait, the LLM would again accept prompts as if nothing had happened.</p>
+
+<p>I also dug into its conversational memory (or at least I attempted to). My procedure was simple. First, I fed the LLM a simple fact: I told the LLM that my cat’s name is Kathy. Afterward, I would ask the LLM to write some simple code for minor tasks such as writing a sentence or printing a range of numbers.</p>
+
+<p>My tests showed it could reliably remember the context of a conversation for up to 8 messages, but it struggled beyond that. Later, I tried again with more complex prompts. It could not remember the simple fact after 10, 20, or 30 messages, regardless of prompt complexity. This was even though I manually changed the message history limit through Visual Studio Code on my local machine.</p>
+
+<p>Final Thoughts:</p>
+
+<p>Overall, my experience with the AI Chat Assistant was very promising. It demonstrates a powerful and fast core capability while able to handle tasks with impressive detail. The occasional errors are expected of a prototype. Personally, they were no hindrance in assisting me with my daily activities. The foundation is clearly solid, and I’m excited to see how this LLM can help users accomplish more in a quick and cost-efficient manner.</p>
+
+    </div>
+    
+    <!-- Post Footer -->
+    <footer class="mt-12 pt-8 border-t border-gray-200">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div class="mb-4 sm:mb-0">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">About the Author</h3>
+                <p class="text-gray-600">
+                    Ethan Luke Kim is a student at UC Berkeley and a contributor to the FastOpp project.
+                </p>
+            </div>
+            
+            <div class="flex space-x-4">
+                <a href="https://github.com/Oppkey/FastOpp" 
+                   class="text-gray-600 hover:text-ai-blue transition-colors"
+                   target="_blank" rel="noopener">
+                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+</article>
+
+<!-- Navigation -->
+<nav class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <div class="flex justify-between">
+        
+        <a href="/fastopp/2025/10/08/modularize-storage-system/" 
+           class="flex items-center text-ai-blue hover:text-blue-700 transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Previous: File Upload Demo Now Runs on S3 in Addition to Local Files
+        </a>
+        
+        
+        
+    </div>
+</nav>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <div class="mb-4">
+                            <span class="text-xl font-bold">FastOpp Blog</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/Oppkey/FastOpp" 
+                               class="text-gray-300 hover:text-white transition-colors"
+                               target="_blank" rel="noopener">
+                                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                        <ul class="space-y-2">
+                            <li><a href="/fastopp/" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+                            <li><a href="/fastopp/about/" class="text-gray-300 hover:text-white transition-colors">About</a></li>
+                            <li><a href="/fastopp/posts/" class="text-gray-300 hover:text-white transition-colors">Blog Posts</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">GitHub Repository</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                        <ul class="space-y-2">
+                            <li><a href="https://github.com/Oppkey/FastOpp#-quick-start-for-students" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Quick Start Guide</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp#-management-commands" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Documentation</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp#-troubleshooting" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Troubleshooting</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                    <p class="text-gray-400">
+                        &copy; 2025 Oppkey. Built with FastOpp and Jekyll.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
