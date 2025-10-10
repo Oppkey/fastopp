@@ -2,6 +2,7 @@
 S3-compatible object storage implementation.
 """
 
+import os
 from typing import Optional, List
 from urllib.parse import quote
 
