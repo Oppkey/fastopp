@@ -50,10 +50,15 @@ def is_emergency_access_enabled() -> bool:
 async def ensure_database_initialized() -> bool:
     """Ensure database is initialized, create tables if they don't exist"""
     try:
-        # Check if users table exists
+        # Check if users table exists using database-agnostic approach
         async with AsyncSessionLocal() as session:
-            result = await session.execute(text("SELECT name FROM sqlite_master WHERE type='table' AND name='users'"))
-            table_exists = result.fetchone() is not None
+            # Try to query the users table directly - this works for both SQLite and PostgreSQL
+            try:
+                result = await session.execute(text("SELECT COUNT(*) FROM users LIMIT 1"))
+                table_exists = True
+            except Exception:
+                # Table doesn't exist, we need to create it
+                table_exists = False
             
             if not table_exists:
                 # Create all tables
@@ -451,6 +456,74 @@ async def emergency_create_superuser(
                 "success": False,
                 "message": f"Error creating superuser: {str(e)}"
             })
+
+
+@router.post("/emergency/drop-tables")
+async def emergency_drop_tables(request: Request):
+    """Drop all tables to clear prepared statements and reset database"""
+    if not is_emergency_access_enabled():
+        raise HTTPException(status_code=404, detail="Emergency access is disabled")
+
+    # Check if user has emergency access
+    if not request.session.get("emergency_access"):
+        raise HTTPException(status_code=403, detail="Emergency access required")
+
+    try:
+        # Use a fresh engine with prepared statements disabled to avoid cached prepared statements
+        from sqlalchemy.ext.asyncio import create_async_engine
+        from db import DATABASE_URL
+
+        # Create a fresh engine with prepared statements disabled
+        connect_args = {
+            "prepare_threshold": None  # Disable prepared statements
+        }
+
+        fresh_engine = create_async_engine(
+            DATABASE_URL,
+            echo=False,
+            connect_args=connect_args,
+            pool_size=1,  # Minimal pool
+            max_overflow=0,  # No overflow
+            pool_timeout=30,
+            pool_recycle=0,  # Don't recycle connections
+            pool_pre_ping=False  # Disable pre-ping
+        )
+
+        async with fresh_engine.begin() as conn:
+            # Drop all tables in reverse dependency order to avoid foreign key constraints
+            await conn.execute(text("DROP TABLE IF EXISTS audit_logs CASCADE"))
+            await conn.execute(text("DROP TABLE IF EXISTS webinar_registrants CASCADE"))
+            await conn.execute(text("DROP TABLE IF EXISTS products CASCADE"))
+            await conn.execute(text("DROP TABLE IF EXISTS users CASCADE"))
+
+            # Clear any remaining prepared statements
+            try:
+                await conn.execute(text("DEALLOCATE ALL"))
+            except Exception:
+                # Ignore if DEALLOCATE ALL fails
+                pass
+
+        # Dispose the fresh engine to close all connections
+        await fresh_engine.dispose()
+
+        # Also try to clear the main application's connection pool
+        try:
+            from db import async_engine
+            await async_engine.dispose()
+        except Exception:
+            # Ignore if this fails
+            pass
+
+        return JSONResponse({
+            "success": True,
+            "message": "All tables dropped successfully. Prepared statements cleared. You can now create a superuser."
+        })
+
+    except Exception as e:
+        return JSONResponse({
+            "success": False,
+            "message": f"Error dropping tables: {str(e)}"
+        })
 
 
 @router.post("/emergency/logout")

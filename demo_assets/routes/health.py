@@ -6,7 +6,9 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy", "message": "FastOpp Demo app is running"}
+@router.get("/kaithhealthcheck")  # leapcell (correct spelling)
+@router.get("/kaithheathcheck")   # leapcell (misspelled - for compatibility)
+@router.get("/health")  # generic
+@router.get("/healthz")  # kubernetes
+async def healthcheck():
+    return {"status": "ok"}

@@ -95,9 +95,9 @@ async def oppdemo_init(
                 result = await session.execute(
                     select(User).where(User.is_superuser)
                 )
-                existing_superuser = result.scalar_one_or_none()
+                existing_superusers = result.scalars().all()
 
-                if not existing_superuser:
+                if not existing_superusers:
                     await create_superuser()
                     results.append({
                         "step": "Superuser Creation",
@@ -108,7 +108,7 @@ async def oppdemo_init(
                     results.append({
                         "step": "Superuser Creation",
                         "status": "skipped",
-                        "message": "Superuser already exists"
+                        "message": f"Superuser(s) already exist: {', '.join([u.email for u in existing_superusers])}"
                     })
         except Exception as e:
             results.append({

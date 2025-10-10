@@ -21,46 +21,15 @@ async def init_db():
         ssl_mode = query_params.get('sslmode', ['prefer'])[0]
         print(f"🔍 SSL Mode: {ssl_mode}")
 
-        # Remove sslmode from URL to avoid passing it to asyncpg
+        # Use the DATABASE_URL as-is (psycopg3 handles sslmode in URL properly)
         clean_url = DATABASE_URL
-        if 'sslmode=' in clean_url:
-            # Remove sslmode parameter from URL
-            if '?' in clean_url and 'sslmode=' in clean_url:
-                base_url, query_string = clean_url.split('?', 1)
-                query_parts = query_string.split('&')
-                filtered_parts = [part for part in query_parts if not part.startswith('sslmode=')]
-                if filtered_parts:
-                    clean_url = f"{base_url}?{'&'.join(filtered_parts)}"
-                else:
-                    clean_url = base_url
-        
         print(f"🔍 Clean URL: {clean_url}")
 
-        # Create engine with SSL configuration
-        connect_args = {}
-        if parsed_url.scheme.startswith('postgresql'):
-            # Configure SSL for PostgreSQL connections
-            if ssl_mode == 'require':
-                connect_args['ssl'] = 'require'
-            elif ssl_mode == 'prefer':
-                connect_args['ssl'] = 'prefer'
-            elif ssl_mode == 'disable':
-                connect_args['ssl'] = False
-            elif ssl_mode == 'allow':
-                connect_args['ssl'] = 'allow'
-            elif ssl_mode == 'verify-ca':
-                connect_args['ssl'] = 'verify-ca'
-            elif ssl_mode == 'verify-full':
-                connect_args['ssl'] = 'verify-full'
-            
-            # Add connection timeout settings for cloud providers
-            connect_args['command_timeout'] = 10
-            connect_args['server_settings'] = {
-                'application_name': 'fastopp',
-                'tcp_keepalives_idle': '600',
-                'tcp_keepalives_interval': '30',
-                'tcp_keepalives_count': '3'
-            }
+        # Create engine with minimal psycopg3 configuration
+        connect_args = {
+            # Disable prepared statements for psycopg3
+            "prepare_threshold": None
+        }
         
         print(f"🔍 Connect args: {connect_args}")
 
@@ -68,17 +37,18 @@ async def init_db():
             clean_url, 
             echo=True, 
             connect_args=connect_args,
-            pool_size=5,
-            max_overflow=10,
-            pool_timeout=30,
-            pool_recycle=3600,
+            pool_size=3,  # Reduced pool size for stability
+            max_overflow=5,  # Reduced overflow for stability
+            pool_timeout=30,  # Conservative timeout
+            pool_recycle=1800,  # 30 minutes recycle
             pool_pre_ping=True
         )
 
         print("🔍 Testing database connection...")
         async with engine.begin() as conn:
             # Test connection with a simple query
-            result = await conn.execute("SELECT 1 as test")
+            from sqlalchemy import text
+            result = await conn.execute(text("SELECT 1 as test"))
             row = result.fetchone()
             print(f"🔍 Connection test successful: {row[0]}")
             

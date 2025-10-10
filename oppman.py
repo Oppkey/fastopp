@@ -229,7 +229,7 @@ def run_server():
     try:
         # Start uvicorn with reload
         subprocess.run([
-            "uv", "run", "uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"
+            "uv", "run", "python", "-m", "uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"
         ], check=True)
     except subprocess.CalledProcessError as e:
         print(f"❌ Failed to start server: {e}")
