@@ -15,8 +15,10 @@ def setup_admin(app: FastAPI, secret_key: str):
     is_production = (os.getenv("RAILWAY_ENVIRONMENT") or
                      os.getenv("PRODUCTION") or
                      os.getenv("FORCE_HTTPS") or
-                     os.getenv("ENVIRONMENT") == "production")
-    
+                     os.getenv("ENVIRONMENT") == "production" or
+                     os.getenv("LEAPCELL_ENVIRONMENT") or
+                     "leapcell" in os.getenv("DATABASE_URL", "").lower())
+
     # Configure admin with HTTPS support for production
     if is_production:
         admin = Admin(
@@ -33,7 +35,7 @@ def setup_admin(app: FastAPI, secret_key: str):
             engine=async_engine,
             authentication_backend=AdminAuth(secret_key=secret_key)
         )
-    
+
     # Register admin views (Users only for base application)
     admin.add_view(UserAdmin)
     return admin

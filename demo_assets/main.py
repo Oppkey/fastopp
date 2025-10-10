@@ -3,7 +3,7 @@
 # =========================
 from pathlib import Path
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBasic
@@ -94,12 +94,45 @@ if settings.upload_dir != "static/uploads":
 # Mount static files (MUST come after /static/uploads to avoid conflicts)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Mount SQLAdmin static files for proper icon and CSS serving
+# This ensures SQLAdmin assets are accessible in production deployments
+try:
+    import sqladmin
+    import os
+    sqladmin_static_path = os.path.join(os.path.dirname(sqladmin.__file__), "statics")
+    if os.path.exists(sqladmin_static_path):
+        app.mount("/sqladmin/static", StaticFiles(directory=sqladmin_static_path), name="sqladmin_static")
+        print(f"✅ SQLAdmin static files mounted at: {sqladmin_static_path}")
+    else:
+        print(f"⚠️  SQLAdmin static path not found: {sqladmin_static_path}")
+except ImportError:
+    print("⚠️  SQLAdmin not available for static file mounting")
+except Exception as e:
+    print(f"⚠️  Error mounting SQLAdmin static files: {e}")
+
 templates = Jinja2Templates(directory="templates")
 security = HTTPBasic()
 
 
 # Setup admin interface
 setup_admin(app, settings.secret_key)
+
+# Add custom route for SQLAdmin static files as fallback
+@app.get("/sqladmin/static/{file_path:path}")
+async def sqladmin_static_fallback(file_path: str):
+    """Fallback handler for SQLAdmin static files"""
+    try:
+        import sqladmin
+        import os
+        sqladmin_static_path = os.path.join(os.path.dirname(sqladmin.__file__), "statics")
+        full_path = os.path.join(sqladmin_static_path, file_path)
+
+        if os.path.exists(full_path) and os.path.isfile(full_path):
+            return FileResponse(full_path)
+        else:
+            raise HTTPException(status_code=404, detail="File not found")
+    except Exception:
+        raise HTTPException(status_code=404, detail="SQLAdmin static file not available")
 
 # Include routers
 app.include_router(health_router)

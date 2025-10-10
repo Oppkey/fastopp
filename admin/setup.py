@@ -15,13 +15,15 @@ def setup_admin(app: FastAPI, secret_key: str):
     # Get settings and create database engine using dependency injection
     settings = get_settings()
     engine = create_database_engine(settings)
-    
+
     # Check if we're in production (HTTPS environment)
     is_production = (os.getenv("RAILWAY_ENVIRONMENT") or
                      os.getenv("PRODUCTION") or
                      os.getenv("FORCE_HTTPS") or
-                     os.getenv("ENVIRONMENT") == "production")
-    
+                     os.getenv("ENVIRONMENT") == "production" or
+                     os.getenv("LEAPCELL_ENVIRONMENT") or
+                     "leapcell" in os.getenv("DATABASE_URL", "").lower())
+
     # Configure admin with HTTPS support for production
     if is_production:
         admin = Admin(
@@ -38,7 +40,7 @@ def setup_admin(app: FastAPI, secret_key: str):
             engine=engine,
             authentication_backend=AdminAuth(secret_key=secret_key)
         )
-    
+
     # Register admin views (all features for demo application)
     admin.add_view(UserAdmin)
     admin.add_view(ProductAdmin)
