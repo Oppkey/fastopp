@@ -105,19 +105,41 @@ class S3Storage(StorageInterface):
         """Check if a file exists in S3."""
         try:
             print(f"DEBUG: Checking if file exists: {path} in bucket: {self.bucket}")
-            response = self.client.head_object(Bucket=self.bucket, Key=path)
-            print(f"DEBUG: File exists: {path}")
-            return True
-        except ClientError as e:
-            print(f"DEBUG: ClientError for {path}: {e}")
-            if e.response["Error"]["Code"] == "404":
-                print(f"DEBUG: File not found (404): {path}")
+            
+            # Try head_object first (preferred method)
+            try:
+                response = self.client.head_object(Bucket=self.bucket, Key=path)
+                print(f"DEBUG: File exists (head_object): {path}")
+                return True
+            except ClientError as e:
+                if e.response["Error"]["Code"] == "404":
+                    print(f"DEBUG: File not found (404): {path}")
+                    return False
+                # For other errors, fall back to list_files method
+                print(f"DEBUG: HeadObject failed, trying list_files: {e}")
+            
+            # Fallback: Use list_files to check existence
+            # This is less efficient but more reliable
+            try:
+                # Get directory path for the file
+                if "/" in path:
+                    prefix = path.rsplit("/", 1)[0] + "/"
+                else:
+                    prefix = ""
+                
+                print(f"DEBUG: Using list_files fallback with prefix: '{prefix}'")
+                files = self.list_files(prefix)
+                file_exists = path in files
+                print(f"DEBUG: File exists (list_files): {path} = {file_exists}")
+                return file_exists
+                
+            except Exception as list_error:
+                print(f"DEBUG: List files also failed: {list_error}")
                 return False
-            print(f"DEBUG: Other S3 error: {e}")
-            raise RuntimeError(f"Failed to check file existence in S3: {e}")
+                
         except Exception as e:
             print(f"DEBUG: Unexpected error checking {path}: {e}")
-            raise RuntimeError(f"Failed to check file existence in S3: {e}")
+            return False
     
     def delete_file(self, path: str) -> bool:
         """Delete a file from S3."""
