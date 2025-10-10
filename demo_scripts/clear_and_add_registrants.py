@@ -91,15 +91,23 @@ async def clear_and_add_registrants():
             sample_photo_path = f"sample_photos/{photo_filename}"
 
             print(f"Looking for sample photo: {sample_photo_path}")
+            # Try with prefix first, then without prefix (for backward compatibility)
+            actual_photo_path = None
             if storage.file_exists(sample_photo_path):
-                print(f"✓ Found sample photo: {sample_photo_path}")
+                actual_photo_path = sample_photo_path
+                print(f"✓ Found sample photo with prefix: {sample_photo_path}")
+            elif storage.file_exists(photo_filename):
+                actual_photo_path = photo_filename
+                print(f"✓ Found sample photo without prefix: {photo_filename}")
+            
+            if actual_photo_path:
                 # Generate unique filename for the photo
                 unique_filename = f"{uuid.uuid4()}_{photo_filename}"
                 storage_path = f"photos/{unique_filename}"
                 print(f"Will copy to: {storage_path}")
 
                 # Read the sample photo from storage and save to photos directory
-                photo_content = storage.get_file(sample_photo_path)
+                photo_content = storage.get_file(actual_photo_path)
                 print(f"Read {len(photo_content)} bytes from sample photo")
                 
                 photo_url = storage.save_file(
