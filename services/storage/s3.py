@@ -112,30 +112,44 @@ class S3Storage(StorageInterface):
                 print(f"DEBUG: File exists (head_object): {path}")
                 return True
             except ClientError as e:
+                print(f"DEBUG: ClientError for {path} (head_object): {e}")
                 if e.response["Error"]["Code"] == "404":
-                    print(f"DEBUG: File not found (404): {path}")
-                    return False
-                # For other errors, fall back to list_files method
-                print(f"DEBUG: HeadObject failed, trying list_files: {e}")
-            
-            # Fallback: Use list_files to check existence
-            # This is less efficient but more reliable
-            try:
-                # Get directory path for the file
-                if "/" in path:
-                    prefix = path.rsplit("/", 1)[0] + "/"
+                    print(f"DEBUG: File not found (404), trying list_files fallback for {path}")
+                    
+                    # Fallback: Use list_files to check existence
+                    # This is less efficient but more reliable
+                    try:
+                        # Get directory path for the file
+                        if "/" in path:
+                            prefix = path.rsplit("/", 1)[0] + "/"
+                        else:
+                            prefix = ""
+                        
+                        print(f"DEBUG: Using list_files fallback with prefix: '{prefix}'")
+                        files = self.list_files(prefix)
+                        
+                        # Check if the full path exists in the list of keys
+                        if path in files:
+                            print(f"DEBUG: Found {path} via list_files (full key match)")
+                            return True
+                        
+                        # If not found by full key, check if the filename exists in the list of filenames
+                        filename = os.path.basename(path)
+                        files_in_dir_filenames = [os.path.basename(key) for key in files]
+                        if filename in files_in_dir_filenames:
+                            print(f"DEBUG: Found {filename} via list_files (filename match)")
+                            return True
+                        
+                        print(f"DEBUG: {path} not found via list_files")
+                        return False
+                        
+                    except Exception as list_error:
+                        print(f"DEBUG: List files also failed: {list_error}")
+                        return False
                 else:
-                    prefix = ""
-                
-                print(f"DEBUG: Using list_files fallback with prefix: '{prefix}'")
-                files = self.list_files(prefix)
-                file_exists = path in files
-                print(f"DEBUG: File exists (list_files): {path} = {file_exists}")
-                return file_exists
-                
-            except Exception as list_error:
-                print(f"DEBUG: List files also failed: {list_error}")
-                return False
+                    # For other errors, don't fall back
+                    print(f"DEBUG: Other S3 error: {e}")
+                    raise RuntimeError(f"Failed to check file existence in S3: {e}")
                 
         except Exception as e:
             print(f"DEBUG: Unexpected error checking {path}: {e}")
