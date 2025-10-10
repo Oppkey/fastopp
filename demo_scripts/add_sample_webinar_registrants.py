@@ -6,10 +6,10 @@ Script to add sample webinar registrants with photos for testing the photo uploa
 import asyncio
 import os
 import uuid
-import shutil
 from pathlib import Path
 from datetime import datetime, timezone
 from db import AsyncSessionLocal
+from services.storage import get_storage
 
 
 async def add_sample_registrants():
@@ -74,11 +74,8 @@ async def add_sample_registrants():
         }
     ]
 
-    # Setup photo directories using environment variable
-    upload_dir = os.getenv("UPLOAD_DIR", "static/uploads")
-    sample_photos_dir = Path(upload_dir) / "sample_photos"
-    photos_dir = Path(upload_dir) / "photos"
-    photos_dir.mkdir(parents=True, exist_ok=True)
+    # Get storage instance
+    storage = get_storage()
 
     async with AsyncSessionLocal() as session:
         for registrant_data in sample_registrants:
@@ -94,19 +91,43 @@ async def add_sample_registrants():
             # Copy sample photo if it exists
             photo_url = None
             photo_filename = registrant_data.pop('photo_filename')
-            sample_photo_path = sample_photos_dir / photo_filename
+            sample_photo_path = f"sample_photos/{photo_filename}"
 
-            if sample_photo_path.exists():
+            print(f"Looking for sample photo: {sample_photo_path}")
+            # Try with prefix first, then without prefix (for backward compatibility)
+            actual_photo_path = None
+            if storage.file_exists(sample_photo_path):
+                actual_photo_path = sample_photo_path
+                print(f"✓ Found sample photo with prefix: {sample_photo_path}")
+            elif storage.file_exists(photo_filename):
+                actual_photo_path = photo_filename
+                print(f"✓ Found sample photo without prefix: {photo_filename}")
+            
+            if actual_photo_path:
                 # Generate unique filename for the photo
                 unique_filename = f"{uuid.uuid4()}_{photo_filename}"
-                photo_dest_path = photos_dir / unique_filename
+                storage_path = f"photos/{unique_filename}"
+                print(f"Will copy to: {storage_path}")
 
-                # Copy the sample photo
-                shutil.copy2(sample_photo_path, photo_dest_path)
-                photo_url = f"/static/uploads/photos/{unique_filename}"
-                print(f"✓ Copied photo for {registrant_data['name']}")
+                # Read the sample photo from storage and save to photos directory
+                photo_content = storage.get_file(actual_photo_path)
+                print(f"Read {len(photo_content)} bytes from sample photo")
+                
+                photo_url = storage.save_file(
+                    content=photo_content,
+                    path=storage_path,
+                    content_type="image/jpeg"
+                )
+                print(f"✓ Copied photo for {registrant_data['name']} to {photo_url}")
             else:
-                print(f"⚠ Sample photo not found: {photo_filename}")
+                print(f"⚠ Sample photo not found: {sample_photo_path}")
+                # Let's also check what files exist in sample_photos directory
+                try:
+                    if hasattr(storage, 'list_files'):
+                        files = storage.list_files("sample_photos/")
+                        print(f"Available files in sample_photos/: {files}")
+                except Exception as e:
+                    print(f"Error listing files: {e}")
 
             # Create new registrant
             registrant = WebinarRegistrants(

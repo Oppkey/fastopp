@@ -6,10 +6,10 @@ Script to add sample webinar registrants with photos for testing the photo uploa
 import asyncio
 import os
 import uuid
-import shutil
 from pathlib import Path
 from datetime import datetime, timezone
 from db import AsyncSessionLocal
+from services.storage import get_storage
 
 
 async def add_sample_registrants():
@@ -77,8 +77,9 @@ async def add_sample_registrants():
     # Setup photo directories using environment variable
     upload_dir = os.getenv("UPLOAD_DIR", "static/uploads")
     sample_photos_dir = Path(upload_dir) / "sample_photos"
-    photos_dir = Path(upload_dir) / "photos"
-    photos_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Get storage instance
+    storage = get_storage()
 
     async with AsyncSessionLocal() as session:
         for registrant_data in sample_registrants:
@@ -99,11 +100,17 @@ async def add_sample_registrants():
             if sample_photo_path.exists():
                 # Generate unique filename for the photo
                 unique_filename = f"{uuid.uuid4()}_{photo_filename}"
-                photo_dest_path = photos_dir / unique_filename
+                storage_path = f"photos/{unique_filename}"
 
-                # Copy the sample photo
-                shutil.copy2(sample_photo_path, photo_dest_path)
-                photo_url = f"/static/uploads/photos/{unique_filename}"
+                # Read the sample photo and save to storage
+                with open(sample_photo_path, "rb") as f:
+                    photo_content = f.read()
+                
+                photo_url = storage.save_file(
+                    content=photo_content,
+                    path=storage_path,
+                    content_type="image/jpeg"
+                )
                 print(f"✓ Copied photo for {registrant_data['name']}")
             else:
                 print(f"⚠ Sample photo not found: {photo_filename}")
