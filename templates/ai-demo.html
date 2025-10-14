@@ -134,12 +134,60 @@
                 inputMessage: '',
                 isLoading: false,
                 currentStreamingMessage: null,
+                apiKeyAvailable: true,
+                init() {
+                    this.checkApiKeyStatus();
+                },
+                async checkApiKeyStatus() {
+                    try {
+                        const response = await fetch('/api/chat/test');
+                        const data = await response.json();
+                        this.apiKeyAvailable = data.status === 'success';
+                        
+                        if (!this.apiKeyAvailable) {
+                            this.showApiKeyWarning(data.message || 'OpenRouter API key not configured');
+                        }
+                    } catch (error) {
+                        console.error('Error checking API key status:', error);
+                        this.apiKeyAvailable = false;
+                        this.showApiKeyWarning('Unable to verify API key configuration');
+                    }
+                },
+                showApiKeyWarning(message) {
+                    const warningHtml = `
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-yellow-700">
+                                        <strong>API Key Missing:</strong> ${message}. This demo requires a valid OPENROUTER_API_KEY environment variable.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Insert the warning at the top of the chat container
+                    const chatContainer = document.querySelector('.max-w-4xl.mx-auto');
+                    if (chatContainer) {
+                        chatContainer.insertAdjacentHTML('afterbegin', warningHtml);
+                    }
+                },
                 formatMessage(content) {
                     // Content is already HTML from server-side markdown processing
                     return content;
                 },
                 sendMessage() {
                     if (!this.inputMessage.trim()) return;
+                    
+                    if (!this.apiKeyAvailable) {
+                        this.showApiKeyWarning('OpenRouter API key not configured');
+                        return;
+                    }
                     
                     const userMessage = this.inputMessage;
                     this.messages.push({
@@ -249,7 +297,15 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        this.currentStreamingMessage.content = 'Sorry, I encountered an error. Please try again.';
+                        
+                        // Check if it's an API key error
+                        if (error.message && error.message.includes('API key')) {
+                            this.apiKeyAvailable = false;
+                            this.showApiKeyWarning('OpenRouter API key not configured');
+                        } else {
+                            this.currentStreamingMessage.content = 'Sorry, I encountered an error. Please try again.';
+                        }
+                        
                         this.isLoading = false;
                         this.currentStreamingMessage = null;
                     });
