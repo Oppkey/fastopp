@@ -7,6 +7,7 @@ import os
 from .base import StorageInterface
 from .filesystem import FilesystemStorage
 from .s3 import S3Storage
+from .noop import NoOpStorage
 
 
 def get_storage() -> StorageInterface:
@@ -34,10 +35,17 @@ def get_storage() -> StorageInterface:
         return _create_filesystem_storage()
 
 
-def _create_filesystem_storage() -> FilesystemStorage:
+def _create_filesystem_storage() -> StorageInterface:
     """Create filesystem storage instance."""
     upload_dir = os.getenv("UPLOAD_DIR", "static/uploads")
-    return FilesystemStorage(base_path=upload_dir)
+    
+    try:
+        return FilesystemStorage(base_path=upload_dir)
+    except RuntimeError as e:
+        # If filesystem storage fails (e.g., in serverless), fall back to NoOpStorage
+        print(f"Warning: Filesystem storage failed: {e}")
+        print("Falling back to NoOpStorage for serverless compatibility")
+        return NoOpStorage()
 
 
 def _create_s3_storage() -> S3Storage:

@@ -37,11 +37,12 @@ async_engine = create_async_engine(
     pool_pre_ping=True
 )
 
-# Event listener to disable prepared statements for all connections
+# Event listener to disable prepared statements for PostgreSQL connections only
 @event.listens_for(async_engine.sync_engine, "do_connect")
 def _set_prepare_threshold(dialect, conn_rec, cargs, cparams):
-    # Inject driver-specific args before psycopg3 connects
-    cparams["prepare_threshold"] = None
+    # Only inject prepare_threshold for PostgreSQL connections
+    if "postgresql" in DATABASE_URL or "postgres" in DATABASE_URL:
+        cparams["prepare_threshold"] = None
 
 # Session factory
 AsyncSessionLocal = async_sessionmaker(

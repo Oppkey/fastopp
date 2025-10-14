@@ -269,6 +269,98 @@ async def oppdemo_superuser(
         })
 
 
+@router.post("/oppdemo/debug-storage")
+async def oppdemo_debug_storage(
+    request: Request,
+    current_user: User = Depends(get_current_superuser)
+):
+    """Debug storage system"""
+    try:
+        import os
+        from services.storage import get_storage
+        
+        debug_info = {
+            "environment": {
+                "STORAGE_TYPE": os.getenv('STORAGE_TYPE', 'NOT SET'),
+                "S3_ACCESS_KEY": 'SET' if os.getenv('S3_ACCESS_KEY') else 'NOT SET',
+                "S3_SECRET_KEY": 'SET' if os.getenv('S3_SECRET_KEY') else 'NOT SET',
+                "S3_BUCKET": os.getenv('S3_BUCKET', 'NOT SET'),
+                "S3_CDN_URL": os.getenv('S3_CDN_URL', 'NOT SET'),
+            },
+            "storage_type": None,
+            "sample_photos": {},
+            "test_operations": {}
+        }
+        
+        storage = get_storage()
+        debug_info["storage_type"] = type(storage).__name__
+        
+        # Check sample photos
+        sample_photos = [
+            "sample_photos/john_smith.jpg",
+            "sample_photos/sarah_johnson.jpg", 
+            "sample_photos/michael_chen.jpg",
+            "sample_photos/emily_davis.jpg",
+            "sample_photos/david_wilson.jpg"
+        ]
+        
+        for photo_path in sample_photos:
+            try:
+                exists = storage.file_exists(photo_path)
+                debug_info["sample_photos"][photo_path] = {
+                    "exists": exists,
+                    "error": None
+                }
+                if exists:
+                    try:
+                        content = storage.get_file(photo_path)
+                        debug_info["sample_photos"][photo_path]["size"] = len(content)
+                    except Exception as e:
+                        debug_info["sample_photos"][photo_path]["error"] = str(e)
+            except Exception as e:
+                debug_info["sample_photos"][photo_path] = {
+                    "exists": False,
+                    "error": str(e)
+                }
+        
+        # Test file operations
+        try:
+            test_content = b"test content"
+            test_path = "sample_photos/debug_test.txt"
+            
+            # Save test file
+            url = storage.save_file(test_content, test_path, "text/plain")
+            debug_info["test_operations"]["save"] = {"success": True, "url": url}
+            
+            # Check if it exists
+            exists = storage.file_exists(test_path)
+            debug_info["test_operations"]["exists"] = {"success": True, "exists": exists}
+            
+            # Read it back
+            if exists:
+                content = storage.get_file(test_path)
+                debug_info["test_operations"]["read"] = {"success": True, "size": len(content)}
+            
+            # Clean up
+            storage.delete_file(test_path)
+            debug_info["test_operations"]["cleanup"] = {"success": True}
+            
+        except Exception as e:
+            debug_info["test_operations"]["error"] = str(e)
+        
+        return JSONResponse({
+            "success": True,
+            "message": "Storage debug completed",
+            "debug_info": debug_info
+        })
+        
+    except Exception as e:
+        return JSONResponse({
+            "success": False,
+            "message": f"Storage debug failed: {str(e)}"
+        })
+
+
 @router.post("/oppdemo/users")
 async def oppdemo_users(
     request: Request,
