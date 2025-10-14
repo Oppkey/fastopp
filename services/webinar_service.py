@@ -6,9 +6,11 @@ from typing import Optional
 from uuid import UUID
 import uuid
 from sqlmodel import select
+from sqlalchemy.exc import OperationalError, DatabaseError
 from db import AsyncSessionLocal
 from models import WebinarRegistrants
 from services.storage import get_storage
+from dependencies.database_health import get_fallback_registrants, get_fallback_attendees
 
 
 class WebinarService:
@@ -16,50 +18,58 @@ class WebinarService:
     
     @staticmethod
     async def get_all_registrants():
-        """Get all webinar registrants with their photos"""
-        async with AsyncSessionLocal() as session:
-            result = await session.execute(select(WebinarRegistrants))
-            registrants = result.scalars().all()
-            
-            return [
-                {
-                    "id": str(registrant.id),
-                    "name": registrant.name,
-                    "email": registrant.email,
-                    "company": registrant.company,
-                    "webinar_title": registrant.webinar_title,
-                    "webinar_date": registrant.webinar_date.isoformat(),
-                    "status": registrant.status,
-                    "photo_url": registrant.photo_url,
-                    "notes": registrant.notes,
-                    "registration_date": registrant.registration_date.isoformat()
-                }
-                for registrant in registrants
-            ]
+        """Get all webinar registrants with their photos, with graceful database failure handling"""
+        try:
+            async with AsyncSessionLocal() as session:
+                result = await session.execute(select(WebinarRegistrants))
+                registrants = result.scalars().all()
+                
+                return [
+                    {
+                        "id": str(registrant.id),
+                        "name": registrant.name,
+                        "email": registrant.email,
+                        "company": registrant.company,
+                        "webinar_title": registrant.webinar_title,
+                        "webinar_date": registrant.webinar_date.isoformat(),
+                        "status": registrant.status,
+                        "photo_url": registrant.photo_url,
+                        "notes": registrant.notes,
+                        "registration_date": registrant.registration_date.isoformat()
+                    }
+                    for registrant in registrants
+                ]
+        except (OperationalError, DatabaseError, Exception) as e:
+            print(f"Database error in WebinarService.get_all_registrants: {e}")
+            return get_fallback_registrants()
     
     @staticmethod
     async def get_webinar_attendees():
-        """Get webinar attendees for the marketing demo page"""
-        async with AsyncSessionLocal() as session:
-            result = await session.execute(select(WebinarRegistrants))
-            registrants = result.scalars().all()
-            
-            return [
-                {
-                    "id": str(registrant.id),
-                    "name": registrant.name,
-                    "email": registrant.email,
-                    "company": registrant.company,
-                    "webinar_title": registrant.webinar_title,
-                    "webinar_date": registrant.webinar_date.isoformat(),
-                    "status": registrant.status,
-                    "group": registrant.group,
-                    "notes": registrant.notes,
-                    "photo_url": registrant.photo_url,
-                    "created_at": registrant.created_at.isoformat()
-                }
-                for registrant in registrants
-            ]
+        """Get webinar attendees for the marketing demo page, with graceful database failure handling"""
+        try:
+            async with AsyncSessionLocal() as session:
+                result = await session.execute(select(WebinarRegistrants))
+                registrants = result.scalars().all()
+                
+                return [
+                    {
+                        "id": str(registrant.id),
+                        "name": registrant.name,
+                        "email": registrant.email,
+                        "company": registrant.company,
+                        "webinar_title": registrant.webinar_title,
+                        "webinar_date": registrant.webinar_date.isoformat(),
+                        "status": registrant.status,
+                        "group": registrant.group,
+                        "notes": registrant.notes,
+                        "photo_url": registrant.photo_url,
+                        "created_at": registrant.created_at.isoformat()
+                    }
+                    for registrant in registrants
+                ]
+        except (OperationalError, DatabaseError, Exception) as e:
+            print(f"Database error in WebinarService.get_webinar_attendees: {e}")
+            return get_fallback_attendees()
     
     @staticmethod
     async def upload_photo(registrant_id: str, photo_content: bytes, filename: str) -> tuple[bool, str, Optional[str]]:

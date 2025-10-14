@@ -33,7 +33,7 @@ async def login_form(
     session: AsyncSession = Depends(get_db_session),
     settings: Settings = Depends(get_settings)
 ):
-    """Handle login form submission using dependency injection"""
+    """Handle login form submission using dependency injection with graceful database failure handling"""
     form = await request.form()
     username = form.get("username")
     password = form.get("password")
@@ -46,69 +46,79 @@ async def login_form(
             "error": "Please provide both email and password"
         })
     
-    # Use injected database session
-    result = await session.execute(
-        select(User).where(User.email == username)
-    )
-    user = result.scalar_one_or_none()
+    try:
+        # Use injected database session
+        result = await session.execute(
+            select(User).where(User.email == username)
+        )
+        user = result.scalar_one_or_none()
 
-    if not user:
+        if not user:
+            return templates.TemplateResponse("login.html", {
+                "request": request,
+                "title": "Login",
+                "current_page": "login",
+                "error": "Invalid email or password"
+            })
+
+        password_helper = PasswordHelper()
+        print(f"🔐 Password verification - Input password: {password}")
+        print(f"🔐 Stored hash: {user.hashed_password}")
+        print(f"🔐 User email: {user.email}")
+        
+        is_valid = password_helper.verify_and_update(str(password), user.hashed_password)
+        print(f"🔐 Password verification result: {is_valid}")
+        
+        # verify_and_update returns (bool, str) - we need the first element
+        if isinstance(is_valid, tuple):
+            is_valid = is_valid[0]
+        
+        print(f"🔐 Final verification result: {is_valid}")
+        
+        if not is_valid:
+            return templates.TemplateResponse("login.html", {
+                "request": request,
+                "title": "Login",
+                "current_page": "login",
+                "error": "Invalid email or password"
+            })
+
+        if not user.is_active:
+            return templates.TemplateResponse("login.html", {
+                "request": request,
+                "title": "Login",
+                "current_page": "login",
+                "error": "Account is inactive"
+            })
+
+        if not (user.is_staff or user.is_superuser):
+            return templates.TemplateResponse("login.html", {
+                "request": request,
+                "title": "Login",
+                "current_page": "login",
+                "error": "Access denied. Staff or admin privileges required."
+            })
+
+        # Create session token using dependency injection
+        token = create_user_token(user, settings)
+        
+        # Check if there's a redirect URL in the form or default to home
+        redirect_url = form.get("next", "/")
+        if not redirect_url.startswith("/"):
+            redirect_url = "/"
+        
+        response = RedirectResponse(url=redirect_url, status_code=302)
+        response.set_cookie(key="access_token", value=token, httponly=True, max_age=1800)  # 30 minutes
+        return response
+        
+    except Exception as e:
+        print(f"Database error during login: {e}")
         return templates.TemplateResponse("login.html", {
             "request": request,
             "title": "Login",
             "current_page": "login",
-            "error": "Invalid email or password"
+            "error": "Database is currently unavailable. Please check your database configuration and try again later."
         })
-
-    password_helper = PasswordHelper()
-    print(f"🔐 Password verification - Input password: {password}")
-    print(f"🔐 Stored hash: {user.hashed_password}")
-    print(f"🔐 User email: {user.email}")
-    
-    is_valid = password_helper.verify_and_update(str(password), user.hashed_password)
-    print(f"🔐 Password verification result: {is_valid}")
-    
-    # verify_and_update returns (bool, str) - we need the first element
-    if isinstance(is_valid, tuple):
-        is_valid = is_valid[0]
-    
-    print(f"🔐 Final verification result: {is_valid}")
-    
-    if not is_valid:
-        return templates.TemplateResponse("login.html", {
-            "request": request,
-            "title": "Login",
-            "current_page": "login",
-            "error": "Invalid email or password"
-        })
-
-    if not user.is_active:
-        return templates.TemplateResponse("login.html", {
-            "request": request,
-            "title": "Login",
-            "current_page": "login",
-            "error": "Account is inactive"
-        })
-
-    if not (user.is_staff or user.is_superuser):
-        return templates.TemplateResponse("login.html", {
-            "request": request,
-            "title": "Login",
-            "current_page": "login",
-            "error": "Access denied. Staff or admin privileges required."
-        })
-
-    # Create session token using dependency injection
-    token = create_user_token(user, settings)
-    
-    # Check if there's a redirect URL in the form or default to home
-    redirect_url = form.get("next", "/")
-    if not redirect_url.startswith("/"):
-        redirect_url = "/"
-    
-    response = RedirectResponse(url=redirect_url, status_code=302)
-    response.set_cookie(key="access_token", value=token, httponly=True, max_age=1800)  # 30 minutes
-    return response
 
 
 @router.get("/logout")

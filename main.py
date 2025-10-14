@@ -3,7 +3,7 @@
 # =========================
 from pathlib import Path
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse, RedirectResponse, FileResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBasic
@@ -276,4 +276,25 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail},
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Handle global exceptions, especially database connection errors"""
+    from dependencies.database_health import is_database_available
+    
+    # Check if this is a database-related error
+    if "database" in str(exc).lower() or "sqlite" in str(exc).lower() or "operational" in str(exc).lower():
+        # Check if database is available
+        db_available = await is_database_available()
+        
+        if not db_available:
+            # Redirect to database status page for database issues
+            return RedirectResponse(url="/database-status", status_code=302)
+    
+    # For other exceptions, return a generic error
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error. Please try again later."}
     )
