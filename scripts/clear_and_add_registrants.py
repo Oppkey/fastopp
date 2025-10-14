@@ -75,10 +75,6 @@ async def clear_and_add_registrants():
         }
     ]
 
-    # Setup photo directories using environment variable
-    upload_dir = os.getenv("UPLOAD_DIR", "static/uploads")
-    sample_photos_dir = Path(upload_dir) / "sample_photos"
-    
     # Get storage instance
     storage = get_storage()
 
@@ -92,25 +88,43 @@ async def clear_and_add_registrants():
             photo_url = None
             photo_filename = registrant_data.pop('photo_filename')
             assert isinstance(photo_filename, str)
-            sample_photo_path = sample_photos_dir / photo_filename
+            sample_photo_path = f"sample_photos/{photo_filename}"
 
-            if sample_photo_path.exists():
+            print(f"Looking for sample photo: {sample_photo_path}")
+            # Try with prefix first, then without prefix (for backward compatibility)
+            actual_photo_path = None
+            if storage.file_exists(sample_photo_path):
+                actual_photo_path = sample_photo_path
+                print(f"✓ Found sample photo with prefix: {sample_photo_path}")
+            elif storage.file_exists(photo_filename):
+                actual_photo_path = photo_filename
+                print(f"✓ Found sample photo without prefix: {photo_filename}")
+            
+            if actual_photo_path:
                 # Generate unique filename for the photo
                 unique_filename = f"{uuid.uuid4()}_{photo_filename}"
                 storage_path = f"photos/{unique_filename}"
+                print(f"Will copy to: {storage_path}")
 
-                # Read the sample photo and save to storage
-                with open(sample_photo_path, "rb") as f:
-                    photo_content = f.read()
+                # Read the sample photo from storage and save to photos directory
+                photo_content = storage.get_file(actual_photo_path)
+                print(f"Read {len(photo_content)} bytes from sample photo")
                 
                 photo_url = storage.save_file(
                     content=photo_content,
                     path=storage_path,
                     content_type="image/jpeg"
                 )
-                print(f"✓ Copied photo for {registrant_data['name']}")
+                print(f"✓ Copied photo for {registrant_data['name']} to {photo_url}")
             else:
-                print(f"⚠ Sample photo not found: {photo_filename}")
+                print(f"⚠ Sample photo not found: {sample_photo_path}")
+                # Let's also check what files exist in sample_photos directory
+                try:
+                    if hasattr(storage, 'list_files'):
+                        files = storage.list_files("sample_photos/")
+                        print(f"Available files in sample_photos/: {files}")
+                except Exception as e:
+                    print(f"Error listing files: {e}")
 
             # Create new registrant
             registrant = WebinarRegistrants(
