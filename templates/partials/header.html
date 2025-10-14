@@ -58,6 +58,10 @@
                         </div>
                         {% endif %}
                         
+                        <!-- Database Status -->
+                        <a href="/database-status" 
+                           class="text-gray-600 hover:text-ai-blue transition-colors">Database Status</a>
+                        
                         <!-- Login/Logout -->
                         {% if request.cookies.get('access_token') %}
                         <a href="/logout" 
@@ -105,6 +109,11 @@
                         <a href="/oppdemo/" onclick="closeMobileMenu()"
                            class="block px-3 py-2 {% if current_page == 'oppdemo' %}text-ai-blue font-medium{% else %}text-gray-600 hover:text-ai-blue{% endif %}">Oppdemo</a>
                         {% endif %}
+                        
+                        <!-- Database Status -->
+                        <div class="border-t border-gray-300 my-2"></div>
+                        <a href="/database-status" onclick="closeMobileMenu()"
+                           class="block px-3 py-2 text-gray-600 hover:text-ai-blue">Database Status</a>
                         
                         <!-- Login/Logout -->
                         {% if request.cookies.get('access_token') %}

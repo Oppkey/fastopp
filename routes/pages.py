@@ -101,3 +101,17 @@ async def license_page(request: Request):
         "request": request,
         "title": "MIT License"
     })
+
+
+@router.get("/database-status")
+async def database_status_page(request: Request):
+    """Database status page for troubleshooting"""
+    from dependencies.database_health import get_database_status
+    
+    status = await get_database_status()
+    
+    return templates.TemplateResponse("database-status.html", {
+        "request": request,
+        "title": "Database Status",
+        "status": status
+    })

@@ -1,8 +1,34 @@
 # PostgreSQL Setup and Database Configuration
 
-This guide covers setting up PostgreSQL for the FastOpp project, including database configuration, environment variables, and the differences between development and production setups.
+This guide covers setting up PostgreSQL for the FastOpp project, including database configuration, environment variables, and the differences between development and production setups. It also includes database error handling and serverless deployment considerations.
 
 ## Quick Start
+
+### 🚀 **For Serverless Deployment (Leapcell, Vercel, etc.)**
+```bash
+# .env (serverless - PostgreSQL required)
+DATABASE_URL=postgresql+psycopg://username:password@host:port/database?sslmode=require
+SECRET_KEY=your_secure_secret_key
+ENVIRONMENT=production
+```
+
+### 🖥️ **For Traditional Deployment (Fly, Railway, Digital Ocean)**
+```bash
+# .env (traditional deployment - SQLite or PostgreSQL)
+DATABASE_URL=sqlite+aiosqlite:///./test.db
+# OR
+DATABASE_URL=postgresql+psycopg://username:password@host:port/database
+SECRET_KEY=your_secure_secret_key
+ENVIRONMENT=production
+```
+
+### 💻 **For Local Development**
+```bash
+# .env (development)
+DATABASE_URL=sqlite+aiosqlite:///./test.db
+SECRET_KEY=your_development_secret_key
+ENVIRONMENT=development
+```
 
 ### 1. Install Dependencies
 
@@ -13,87 +39,76 @@ uv add python-dotenv
 # PostgreSQL support is already included in pyproject.toml
 # No additional packages needed - asyncpg is already installed
 ```
-
 ### 2. Environment-Based Database Configuration
 
 Create a `.env` file in your project root:
 
 ```bash
-# .env (development)
+# .env (development - local only)
 DATABASE_URL=sqlite+aiosqlite:///./test.db
 SECRET_KEY=your_development_secret_key_here
 ENVIRONMENT=development
 ```
 
-Update your `db.py` to use environment variables:
+**⚠️ Important**: SQLite works for local development and traditional deployments (Fly, Railway, Digital Ocean). For serverless deployments (Leapcell, Vercel), you MUST use PostgreSQL with `postgresql+psycopg` driver.
 
-```python
-# db.py
-import os
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-# Get database URL from environment (defaults to SQLite for development)
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./test.db")
-
-# Create async engine
-async_engine = create_async_engine(
-    DATABASE_URL,
-    echo=True,  # set to False in production
-    future=True
-)
-
-# Session factory
-AsyncSessionLocal = async_sessionmaker(
-    bind=async_engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    autoflush=False,
-    autocommit=False
-)
-```
+**Note**: The existing `db.py` already handles environment variables automatically.
 
 ## Database Configuration
 
 ### Development Setup
 
-#### Option A: SQLite (Default - Recommended for Development)
+#### Option A: SQLite (Development and Traditional Deployments)
 
 ```bash
-# .env
+# .env (development and traditional deployments)
 DATABASE_URL=sqlite+aiosqlite:///./test.db
 ```
 
 **Benefits:**
+
 - No additional software installation required
 - Fast development iteration
 - File-based storage
 - Perfect for prototyping and development
+- Works on Fly, Railway, Digital Ocean droplets
 
-#### Option B: PostgreSQL (For Testing PostgreSQL Features)
+**⚠️ Important**: SQLite does NOT work in serverless environments (Leapcell, Vercel) due to filesystem limitations. Use PostgreSQL for serverless deployments.
+
+**Note**: On Fly and Railway, SQLite files are ephemeral by default. For production, consider using PostgreSQL or configuring Fly Volumes for persistent storage.
+
+#### Option B: PostgreSQL (Recommended for Production)
 
 ```bash
 # .env
-DATABASE_URL=postgresql+asyncpg://fastopp_user:your_password@localhost/fastopp_db
+DATABASE_URL=postgresql+psycopg://fastopp_user:your_password@localhost/fastopp_db
 ```
+
+**Note**: Use `postgresql+psycopg` driver (tested with Leapcell). `asyncpg` and `psycopg2` are not supported.
+
+**Fly.io Managed Postgres**: Fly.io offers [Managed Postgres](https://fly.io/docs/database-storage-guides/) but we haven't tested it yet. If you test it successfully, please submit a pull request to update this documentation.
 
 **Benefits:**
+
 - Production-like environment
 - Test PostgreSQL-specific features
-- Vector database support with pgvector
+- Vector database support with pgvector (no examples provided)
 - Better for team development
+- Required for serverless deployments
+- Better performance for high-traffic applications
+- Fly.io Managed Postgres available (untested)
 
-#### Option C: PostgreSQL with SSL (For Cloud Providers)
+#### Option C: PostgreSQL with SSL (For Serverless Deployments)
 
 ```bash
-# .env - For cloud providers like Leapcell, Railway, etc.
-DATABASE_URL=postgresql+asyncpg://username:password@host:port/database?sslmode=require
+# .env - For serverless providers like Leapcell, Vercel, etc.
+DATABASE_URL=postgresql+psycopg://username:password@host:port/database?sslmode=require
 ```
 
+**Note**: Use `postgresql+psycopg` driver for serverless deployments. Only PostgreSQL has been tested with Leapcell.
+
 **SSL Modes:**
+
 - `sslmode=require` - SSL required (most cloud providers)
 - `sslmode=prefer` - SSL preferred but not required
 - `sslmode=verify-full` - SSL required with certificate verification
@@ -105,7 +120,7 @@ For production, your `.env` file would contain:
 
 ```bash
 # .env (production)
-DATABASE_URL=postgresql+asyncpg://fastopp_user:your_secure_password@localhost/fastopp_db
+DATABASE_URL=postgresql+psycopg://fastopp_user:your_secure_password@localhost/fastopp_db
 SECRET_KEY=your_very_secure_production_secret_key_here
 ENVIRONMENT=production
 ```
@@ -116,7 +131,7 @@ ENVIRONMENT=production
 
 | Variable | Development | Production | Description |
 |----------|-------------|------------|-------------|
-| `DATABASE_URL` | `sqlite+aiosqlite:///./test.db` | `postgresql+asyncpg://...` | Database connection string |
+| `DATABASE_URL` | `sqlite+aiosqlite:///./test.db` | `postgresql+psycopg://...` | Database connection string |
 | `SECRET_KEY` | `dev_secret_key` | `very_secure_key` | JWT and session encryption |
 | `ENVIRONMENT` | `development` | `production` | Environment identifier |
 
@@ -135,7 +150,7 @@ ENVIRONMENT=production
 
 | Component | Development | Production |
 |-----------|-------------|------------|
-| **Database** | SQLite + aiosqlite | PostgreSQL + asyncpg |
+| **Database** | SQLite + aiosqlite | PostgreSQL + psycopg |
 | **Server** | uvicorn --reload | Gunicorn + Uvicorn |
 | **Process Manager** | None (manual) | Systemd |
 | **Reverse Proxy** | None | Nginx |
@@ -182,13 +197,47 @@ DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
 ### Production (PostgreSQL)
 ```python
-DATABASE_URL = "postgresql+asyncpg://user:password@localhost/fastopp_db"
+DATABASE_URL = "postgresql+psycopg://user:password@localhost/fastopp_db"
 ```
 
 ### PostgreSQL with pgvector (AI Features)
 ```python
-DATABASE_URL = "postgresql+asyncpg://user:password@localhost/fastopp_db"
+DATABASE_URL = "postgresql+psycopg://user:password@localhost/fastopp_db"
 # pgvector extension must be enabled separately
+```
+
+## Database Error Handling
+
+The application includes comprehensive database error handling for graceful degradation:
+
+### Database Status Page
+Visit `/database-status` to check your database connection and get troubleshooting guidance.
+
+### Health Check Endpoint
+```bash
+# Check database status via API
+curl http://localhost:8000/health/database
+```
+
+### Serverless Deployment Considerations
+
+#### Leapcell Deployment
+- **SQLite Limitations**: SQLite cannot write to filesystem in serverless environments
+- **PostgreSQL Required**: Use PostgreSQL with `postgresql+psycopg` driver
+- **Tested Configuration**: Only PostgreSQL has been tested with Leapcell
+
+#### Environment Variables for Serverless
+```bash
+# .env for serverless deployment
+DATABASE_URL=postgresql+psycopg://username:password@host:port/database?sslmode=require
+SECRET_KEY=your_secure_secret_key
+ENVIRONMENT=production
+```
+
+#### Database Initialization
+```bash
+# Initialize database (corrected command)
+uv run python oppman.py db
 ```
 
 ## Troubleshooting
@@ -196,9 +245,10 @@ DATABASE_URL = "postgresql+asyncpg://user:password@localhost/fastopp_db"
 ### Common Issues
 
 #### 1. Database Connection Errors
-- Verify `DATABASE_URL` format
+- Verify `DATABASE_URL` format (use `postgresql+psycopg` for serverless)
 - Check database service is running
 - Ensure proper permissions
+- Visit `/database-status` for detailed troubleshooting
 
 #### 2. Environment Variable Issues
 - Verify `.env` file exists in project root
@@ -211,7 +261,14 @@ DATABASE_URL = "postgresql+asyncpg://user:password@localhost/fastopp_db"
 - Verify model imports in `alembic/env.py`
 - **Note**: Alembic is configured for async operations with both SQLite and PostgreSQL
 
-#### 4. HTMX Loading Issues
+#### 4. Serverless Deployment Issues
+- **SQLite Errors**: SQLite cannot write to filesystem in serverless environments (Leapcell, Vercel)
+- **Solution**: Use PostgreSQL with `postgresql+psycopg` driver
+- **Database Status**: Visit `/database-status` for serverless-specific guidance
+- **Driver Support**: Only `psycopg` is supported (not `asyncpg` or `psycopg2`)
+- **Note**: SQLite works fine on traditional deployments (Fly, Railway, Digital Ocean). On Fly.io, consider using Fly Volumes for persistent SQLite storage.
+
+#### 5. HTMX Loading Issues
 If you encounter automatic loading problems:
 
 ```javascript
