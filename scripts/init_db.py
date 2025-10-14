@@ -25,11 +25,12 @@ async def init_db():
         clean_url = DATABASE_URL
         print(f"🔍 Clean URL: {clean_url}")
 
-        # Create engine with minimal psycopg3 configuration
-        connect_args = {
-            # Disable prepared statements for psycopg3
-            "prepare_threshold": None
-        }
+        # Create engine with database-specific configuration
+        connect_args = {}
+        
+        # Only add prepare_threshold for PostgreSQL connections
+        if "postgresql" in DATABASE_URL or "postgres" in DATABASE_URL:
+            connect_args["prepare_threshold"] = None
         
         print(f"🔍 Connect args: {connect_args}")
 

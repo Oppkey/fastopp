@@ -24,7 +24,15 @@ class FilesystemStorage(StorageInterface):
             base_path: Base directory for file storage
         """
         self.base_path = Path(base_path)
-        self.base_path.mkdir(parents=True, exist_ok=True)
+        try:
+            self.base_path.mkdir(parents=True, exist_ok=True)
+        except (OSError, PermissionError) as e:
+            raise RuntimeError(
+                f"Cannot create upload directory '{base_path}': {e}. "
+                "This may be due to serverless environment restrictions. "
+                "To enable file uploads, configure S3 storage by setting STORAGE_TYPE=s3 and "
+                "providing S3_ACCESS_KEY, S3_SECRET_KEY, and S3_BUCKET environment variables."
+            )
     
     def ensure_directories(self, *paths: str) -> None:
         """Ensure that the specified directories exist."""

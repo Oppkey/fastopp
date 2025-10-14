@@ -1,7 +1,6 @@
 """
 Webinar service for handling webinar registrant business logic
 """
-import os
 from pathlib import Path
 from typing import Optional
 from uuid import UUID
@@ -9,6 +8,7 @@ import uuid
 from sqlmodel import select
 from db import AsyncSessionLocal
 from models import WebinarRegistrants
+from services.storage import get_storage
 
 
 class WebinarService:
@@ -70,29 +70,13 @@ class WebinarService:
             tuple: (success, message, photo_url)
         """
         try:
-            # Generate unique filename
-            file_extension = Path(filename).suffix if filename else '.jpg'
-            unique_filename = f"{uuid.uuid4()}{file_extension}"
-            file_path = Path(os.getenv("UPLOAD_DIR", "static/uploads")) / "photos" / unique_filename
-            
-            # Save file
-            with open(file_path, "wb") as buffer:
-                buffer.write(photo_content)
-            
-            # Update database
-            photo_url = f"/static/uploads/photos/{unique_filename}"
-            
-            # Convert string to UUID
+            # Convert string to UUID first to validate
             try:
                 registrant_uuid = UUID(registrant_id)
             except ValueError:
-                # Clean up file if UUID is invalid
-                try:
-                    file_path.unlink()
-                except Exception:
-                    pass
                 return False, "Invalid registrant ID", None
             
+            # Check if registrant exists before uploading
             async with AsyncSessionLocal() as session:
                 result = await session.execute(
                     select(WebinarRegistrants).where(WebinarRegistrants.id == registrant_uuid)
@@ -100,15 +84,35 @@ class WebinarService:
                 registrant = result.scalar_one_or_none()
                 
                 if not registrant:
-                    # Clean up file if registrant not found
-                    try:
-                        file_path.unlink()
-                    except Exception:
-                        pass
                     return False, "Registrant not found", None
+            
+            # Generate unique filename
+            file_extension = Path(filename).suffix if filename else '.jpg'
+            unique_filename = f"{uuid.uuid4()}{file_extension}"
+            storage_path = f"photos/{unique_filename}"
+            
+            # Get storage instance and save file
+            storage = get_storage()
+            try:
+                photo_url = storage.save_file(
+                    content=photo_content,
+                    path=storage_path,
+                    content_type="image/jpeg"
+                )
+            except RuntimeError as e:
+                # Handle storage errors (e.g., NoOpStorage in serverless mode)
+                return False, str(e), None
+            
+            # Update database with the photo URL
+            async with AsyncSessionLocal() as session:
+                result = await session.execute(
+                    select(WebinarRegistrants).where(WebinarRegistrants.id == registrant_uuid)
+                )
+                registrant = result.scalar_one_or_none()
                 
-                registrant.photo_url = photo_url
-                await session.commit()
+                if registrant:
+                    registrant.photo_url = photo_url
+                    await session.commit()
             
             return True, "Photo uploaded successfully!", photo_url
             
@@ -191,4 +195,4 @@ class WebinarService:
             return True, "Photo deleted successfully!"
             
         except Exception as e:
-            return False, f"Error deleting photo: {str(e)}" 
+            return False, f"Error deleting photo: {str(e)}"

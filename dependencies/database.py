@@ -32,11 +32,12 @@ def create_database_engine(settings: Settings = Depends(get_settings)):
         pool_pre_ping=True
     )
 
-    # Event listener to disable prepared statements for all connections
+    # Event listener to disable prepared statements for PostgreSQL connections only
     @event.listens_for(engine.sync_engine, "do_connect")
     def _set_prepare_threshold(dialect, conn_rec, cargs, cparams):
-        # Inject driver-specific args before psycopg3 connects
-        cparams["prepare_threshold"] = None
+        # Only inject prepare_threshold for PostgreSQL connections
+        if "postgresql" in settings.database_url or "postgres" in settings.database_url:
+            cparams["prepare_threshold"] = None
 
     return engine
 

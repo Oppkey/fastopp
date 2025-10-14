@@ -93,11 +93,15 @@ class WebinarService:
             
             # Get storage instance and save file
             storage = get_storage()
-            photo_url = storage.save_file(
-                content=photo_content,
-                path=storage_path,
-                content_type="image/jpeg"
-            )
+            try:
+                photo_url = storage.save_file(
+                    content=photo_content,
+                    path=storage_path,
+                    content_type="image/jpeg"
+                )
+            except RuntimeError as e:
+                # Handle storage errors (e.g., NoOpStorage in serverless mode)
+                return False, str(e), None
             
             # Update database with the photo URL
             async with AsyncSessionLocal() as session:
