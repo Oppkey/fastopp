@@ -41,11 +41,15 @@ load_dotenv()
 # Get settings using dependency injection
 settings = get_settings()
 
-# Create upload directories
-UPLOAD_DIR = Path(settings.upload_dir)
-UPLOAD_DIR.mkdir(exist_ok=True)
-PHOTOS_DIR = UPLOAD_DIR / "photos"
-PHOTOS_DIR.mkdir(exist_ok=True)
+# Initialize storage system (handles directory creation gracefully)
+try:
+    from services.storage import get_storage
+    storage = get_storage()
+    # Ensure required directories exist
+    storage.ensure_directories("photos", "sample_photos")
+except Exception as e:
+    print(f"Warning: Storage initialization failed: {e}")
+    print("Application will continue but file uploads may not work.")
 
 # from users import fastapi_users, auth_backend  # type: ignore
 
@@ -89,7 +93,12 @@ setup_dependencies(app)
 # Mount uploads directory based on environment (MUST come before /static mount)
 if settings.upload_dir != "static/uploads":
     # In production environments, mount the uploads directory separately
-    app.mount("/static/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+    # Only mount if the directory exists (serverless environments may not have writable directories)
+    upload_path = Path(settings.upload_dir)
+    if upload_path.exists():
+        app.mount("/static/uploads", StaticFiles(directory=settings.upload_dir), name="uploads")
+    else:
+        print(f"Warning: Upload directory '{settings.upload_dir}' does not exist. Skipping static file mounting.")
 
 # Mount static files (MUST come after /static/uploads to avoid conflicts)
 app.mount("/static", StaticFiles(directory="static"), name="static")
