@@ -1,14 +1,14 @@
 ---
 layout: post
-title: "Python Development with Asynchronous SQLite and PosgreSQL"
-date: 2025-10-08
+title: "Python Development with Asynchronous SQLite and PostgreSQL"
+date: 2025-10-14
 author: Craig Oda
 author_bio: "Craig Oda is a partner at Oppkey and an active contributor to FastOpp"
-image: /assets/images/2025_10/run.jpg
-excerpt: "Solving security, database connector, and prepared statement problems with PostgreSQL"
+image: /assets/images/2025_10/time.jpg
+excerpt: "Solving SQL security, database connector, and prepared statement problems with Asynchronous PostgresSQL"
 ---
 
-After years of working with the comfort of Python and Django,
+After years of working from the comfort of Python and Django,
 I moved to the wild asynchronous world of FastAPI to improve
 latency in web-based AI applications. I started with FastAPI
 and built an open source stack called [FastOpp](https://github.com/Oppkey/fastopp) which adds command line and web tools similar to Django.
@@ -56,27 +56,43 @@ and everything would work.
 
 I was wrong.
 
-## psycopg2, psycopg3 or asyncpg
+## Problems Moving to Asynchronous Database Connections psycopg2, psycopg3 or asyncpg
 
 The default way to connect to Python for many people is psycopg2.
 This is a very proven way.  It is the default usage in most Django applications.
 Unfortunately, it is synchronous. The most common asynchronous PostgresSQL connector is asyncpg.
-Initially, I used psycopg2 and rewrote the database connection to be synchronous.
+Initially, I used psycopg2 and rewrote the database connection to be synchronous and 
+have everything around the connection be asynchronous. 
 As the latency with the LLM is much higher than the latency with the database,
-this seemed like a reasonable solution at the time.
+this seemed like a reasonable solution at the time.  I just had to await
+for the database to send me back the response and then I was free to deal
+with other asynchronous problems such as LLM query and Internet search
+status updates.
+
+This is great in theory and I'm sure that other more experienced Python
+developers can easily solve this problem and keep the synchronous and asynchronous
+code nicely separated with clean use of async and await.
 
 However, I ran into problems with organizing my code to be synchronous
 connections to the database within asynchronous methods that were talking
 to the LLM and storing the history in the database.
 
-Next I moved to asyncpg.  
+As I was familiar with async/await from using Dart for many years,
+I was pretty surprised I was having these problems.  The problem
+I had might have been due to my lack of experience understanding
+which pre-made Python modules were sending back synchronous versus asynchronous responses.
+
+I think that other Python developers might be able to understand my pain.
+
+To keep to an asynchronous database connection for both SQLite and PostgresSQL,
+I moved to asyncpg.  
 
 
 ## SSL Security Not Needed in SQLite, But Needed in PostgresSQL Production
 
 The asyncpg connector worked fine in development but not in production.
 
-Although this seems obvious, I didn't really appreciate this because
+Although establishing an SSL network connection seems obvious, I didn't really appreciate this because
 I had been deploying to sites like Fly.io, Railway and DigitalOcean Droplets with SQLite.
 For small prototype applications, SQLite works surprisingly well with FastAPI.
 I was trying to deploy to the free version, hobby tier, of Leapcell to set up a
@@ -118,3 +134,25 @@ SQLAlchemy already does statement caching on the Python side.
 The real world impact of disabling the prepared statement in PostgreSQL
 appears to be negligible.
 
+## Summary
+
+Using SQLite in asynchronous mode has been quite easy.  Getting PostgresSQL to work has been more difficult.
+There were three areas that I had trouble with for PostgresSQL:
+
+1. Asynchronous connection. How write asynchronous Python code effectively to await the return data.
+2. Security. How to deal with both SQLite that doesn't require a SSL and PostgresSQL in production that does require a SSL.
+3. Prepared statements. I needed to learn to rely on the SQLAlchemy statement caching instead of the built-in prepared statements on the PostgresSQL server.
+
+
+I like FastAPI and there are many huge advantages to using it that I got in the first hour of use.
+I'm going to continue using it instead of Django.  However, I'm starting to really appreciate how much Django shielded me from much of the infrastructure setup for my applications.
+
+FastAPI is unopinionated in things like the database, the connectors, authentication and models,
+I find it difficult to gain expertise in any one area.  Thus, I am focusing on a smaller set of open source components that work with FastAPI so that I can gain a deeper understanding of how to use these components.
+
+I feel that many other Python developers are on a similar journey to experiment more with asynchronous Python web applications.  I would appreciate feedback and ideas on which open source components or techniques to use to build effective asynchronous AI applications.
+
+## Resources
+
+* [FastOpp](https://github.com/Oppkey/fastopp) - Open source stack I am building around FastAPI
+* [FastAPI](https://fastapi.tiangolo.com/) - A better Flask
