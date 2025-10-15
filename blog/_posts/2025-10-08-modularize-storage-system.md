@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "File Upload Demo Now Runs on S3 in Addition to Local Files"
-date: 2025-10-08
+date: 2025-10-09
 author: Craig Oda
 author_bio: "Craig Oda is a partner at Oppkey and an active contributor to FastOpp"
 image: /assets/images/2025_10/run.jpg
