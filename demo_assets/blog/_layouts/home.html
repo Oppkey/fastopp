@@ -1,0 +1,136 @@
+---
+layout: default
+---
+
+<!-- Hero Section -->
+<section class="bg-gradient-to-br from-ai-blue to-ai-purple text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-5xl font-bold mb-6">{{ site.title }}</h1>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">
+                {{ site.description }}
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://github.com/Oppkey/FastOpp" 
+                   class="bg-white text-ai-blue px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                   target="_blank" rel="noopener">
+                    View on GitHub
+                </a>
+                <a href="{{ '/posts/' | relative_url }}" 
+                   class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-ai-blue transition-colors">
+                    Read Blog Posts
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Developer and Student Resources Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Developer and Student Resources</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Learn FastOpp with comprehensive tutorials, guides, and video content designed for students and developers.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- YouTube Playlist Card -->
+            <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow border-2 border-transparent hover:border-ai-blue">
+                <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-4 text-gray-900">FastOpp Tutorial Playlist</h3>
+                <p class="text-gray-600 mb-6">
+                    Comprehensive video tutorials covering FastAPI, SQLAlchemy, AI integration, and deployment strategies. Perfect for students learning modern web development.
+                </p>
+                <a href="https://www.youtube.com/playlist?list=PLxvyAnoL-vu7k4KEX3gqMlu55ahp1icT5" 
+                   class="inline-flex items-center bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                   target="_blank" rel="noopener">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                    Watch Tutorials
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Posts Section -->
+{% if site.posts.size > 0 %}
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Latest Posts</h2>
+            <p class="text-xl text-gray-600">
+                Stay updated with the latest FastOpp developments and tutorials.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for post in site.posts limit:3 %}
+            <article class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                {% if post.image %}
+                <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+                {% endif %}
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <time datetime="{{ post.date | date_to_xmlschema }}">
+                            {{ post.date | date: "%B %d, %Y" }}
+                        </time>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-900">
+                        <a href="{{ post.url | relative_url }}" class="hover:text-ai-blue transition-colors">
+                            {{ post.title }}
+                        </a>
+                    </h3>
+                    <p class="text-gray-600 mb-4">
+                        {{ post.excerpt | strip_html | truncate: 120 }}
+                    </p>
+                    <a href="{{ post.url | relative_url }}" 
+                       class="inline-flex items-center text-ai-blue hover:text-blue-700 font-medium">
+                        Read more
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="{{ '/posts/' | relative_url }}" 
+               class="inline-block bg-ai-blue text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                View All Posts
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-r from-ai-blue to-ai-purple text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold mb-6">Ready to Get Started?</h2>
+        <p class="text-xl mb-8 max-w-3xl mx-auto">
+            Create your own FastAPI AI application with FastOpp. Perfect for students, hobbyists, and entrepreneurs.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="https://github.com/Oppkey/fastopp/archive/refs/heads/main.zip" 
+               class="bg-white text-ai-blue px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+               target="_blank" rel="noopener">
+                Download FastOpp
+            </a>
+            <a href="https://github.com/Oppkey/FastOpp#-quick-start-for-students" 
+               class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-ai-blue transition-colors"
+               target="_blank" rel="noopener">
+                Quick Start Guide
+            </a>
+        </div>
+    </div>
+</section>

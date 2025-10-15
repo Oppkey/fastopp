@@ -431,6 +431,24 @@ def save_demo_files():
         else:
             print("  ℹ️  auth/ directory not found (skipping auth backup)")
         
+        # Backup blog directory (demo content)
+        print("📝 Backing up blog directory...")
+        blog_src = Path("blog")
+        if blog_src.exists():
+            blog_dst = demo_assets / "blog"
+            if blog_dst.exists():
+                shutil.rmtree(blog_dst)
+            
+            # Copy blog directory but exclude _site (Jekyll build output)
+            def ignore_site_dir(dir, files):
+                return ['_site'] if '_site' in files else []
+            
+            shutil.copytree(blog_src, blog_dst, ignore=ignore_site_dir)
+            print("  ✅ blog/ (excluding _site/)")
+            files_copied += 1
+        else:
+            print("  ℹ️  blog/ directory not found (skipping blog backup)")
+        
         print("\n✅ Demo save completed successfully!")
         print(f"📊 Total files saved: {files_copied}")
         print(f"📁 Save location: {demo_assets.absolute()}")
@@ -728,6 +746,25 @@ def restore_demo_files():
         else:
             print("  ℹ️  demo_assets/auth not found (skipping auth restoration)")
         
+        # Restore blog directory (demo content)
+        print("📝 Restoring blog directory...")
+        blog_src = demo_assets / "blog"
+        blog_dest = Path("blog")
+        
+        if blog_src.exists():
+            if blog_dest.exists():
+                shutil.rmtree(blog_dest)
+            
+            # Copy blog directory but exclude _site (Jekyll build output)
+            def ignore_site_dir(dir, files):
+                return ['_site'] if '_site' in files else []
+            
+            shutil.copytree(blog_src, blog_dest, ignore=ignore_site_dir)
+            print("  ✅ Restored blog/ (excluding _site/)")
+            files_restored += 1
+        else:
+            print("  ℹ️  demo_assets/blog not found (skipping blog restoration)")
+        
         print("\n✅ Demo restoration completed successfully!")
         print(f"📊 Total files restored: {files_restored}")
         print("\n📋 Next steps:")
@@ -899,7 +936,16 @@ async def destroy_demo_files():
             print("Please ensure base_assets/auth directory exists")
             return False
         
-        # Step 9: Initialize database for base_assets
+        # Step 9: Remove blog directory (demo content)
+        print("📝 Removing blog directory...")
+        blog_dir = Path("blog")
+        if blog_dir.exists():
+            shutil.rmtree(blog_dir)
+            print("  ✅ Removed blog/")
+        else:
+            print("  ℹ️  blog/ directory not found")
+        
+        # Step 10: Initialize database for base_assets
         print("🗄️  Initializing database for base_assets...")
         try:
             await run_init()
@@ -1163,6 +1209,35 @@ def diff_demo_files():
         elif dependencies_src.exists() and not dependencies_backup.exists():
             differences['missing_backup'].append("dependencies/")
         
+        # Compare blog directory
+        print("📝 Comparing blog directory...")
+        blog_src = Path("blog")
+        blog_backup = demo_assets / "blog"
+        
+        if blog_src.exists() and blog_backup.exists():
+            # Compare all files recursively, excluding _site directory
+            for blog_file in blog_src.rglob("*"):
+                if blog_file.is_file() and "_site" not in blog_file.parts:
+                    relative_path = blog_file.relative_to(blog_src)
+                    backup_file = blog_backup / relative_path
+                    if not backup_file.exists():
+                        differences['added'].append(f"blog/{relative_path}")
+                    else:
+                        if not filecmp.cmp(blog_file, backup_file, shallow=False):
+                            differences['modified'].append(f"blog/{relative_path}")
+            
+            # Check for deleted files, excluding _site directory
+            for backup_file in blog_backup.rglob("*"):
+                if backup_file.is_file() and "_site" not in backup_file.parts:
+                    relative_path = backup_file.relative_to(blog_backup)
+                    src_file = blog_src / relative_path
+                    if not src_file.exists():
+                        differences['deleted'].append(f"blog/{relative_path}")
+        elif blog_src.exists() and not blog_backup.exists():
+            differences['missing_backup'].append("blog/")
+        elif not blog_src.exists() and blog_backup.exists():
+            differences['deleted'].append("blog/")
+        
         # Display results
         print("\n📋 Demo Files Comparison Results:")
         print("=" * 50)
@@ -1299,9 +1374,9 @@ DESCRIPTION:
     This tool helps manage the demo application state and data:
     
     DEMO FILE MANAGEMENT:
-    - save: Creates a backup of all demo-related files in demo_assets/
-    - restore: Restores the full demo application from backup
-    - destroy: Switches to minimal FastAPI application with authentication
+    - save: Creates a backup of all demo-related files in demo_assets/ (including blog/)
+    - restore: Restores the full demo application from backup (including blog/)
+    - destroy: Switches to minimal FastAPI application with authentication (removes blog/)
     - diff: Shows what files have changed since the last save
     - backups: Lists all available backups organized by operation type
     
@@ -1329,6 +1404,7 @@ DESCRIPTION:
     - Webinar management
     - Product management
     - Sample data and photos
+    - Blog directory (Jekyll-based blog content)
     
     DEFAULT CREDENTIALS:
     Superuser: admin@example.com / admin123

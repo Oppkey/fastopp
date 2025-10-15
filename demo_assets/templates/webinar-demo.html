@@ -168,18 +168,10 @@
                     // Set initial values immediately
                     this.attendeeCount = 5;
                     this.webinarCount = 5;
+                    this.databaseUnavailable = false;
                     
                     // Then try to load real data
                     this.loadAttendeeCounts();
-                    
-                    // Manually trigger HTMX request if needed
-                    setTimeout(() => {
-                        const container = document.getElementById('attendeesContainer');
-                        if (container && container.innerHTML.includes('Loading attendees')) {
-                            console.log('Manually triggering HTMX request');
-                            htmx.trigger(container, 'load');
-                        }
-                    }, 500);
                 },
                 loadAttendeeCounts() {
                     console.log('Loading attendee counts...');
@@ -200,15 +192,30 @@
                                 // Update counters with real data
                                 this.attendeeCount = attendeeCount;
                                 this.webinarCount = uniqueWebinars;
+                                
+                                // Trigger HTMX to load the attendees display
+                                setTimeout(() => {
+                                    this.triggerHtmxLoad();
+                                }, 100);
                             } else {
-                                // Show database unavailable message
+                                // Show database unavailable message and prevent HTMX
                                 this.showDatabaseUnavailableMessage();
+                                this.databaseUnavailable = true;
                             }
                         })
                         .catch(error => {
                             console.error('Error loading attendee data:', error);
                             this.showDatabaseUnavailableMessage();
+                            this.databaseUnavailable = true;
                         });
+                },
+                
+                triggerHtmxLoad() {
+                    const container = document.getElementById('attendeesContainer');
+                    if (container && container.innerHTML.includes('Loading attendees')) {
+                        console.log('Manually triggering HTMX request');
+                        htmx.trigger(container, 'load');
+                    }
                 },
                 
                 showDatabaseUnavailableMessage() {
@@ -241,11 +248,12 @@
 
         // HTMX is now handled by the server returning HTML directly
         
-        // Ensure HTMX loads attendees when the page is ready
+        // Ensure HTMX loads attendees when the page is ready (only if database is available)
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
+                // Check if database is unavailable by looking for the warning message
                 const container = document.getElementById('attendeesContainer');
-                if (container && container.innerHTML.includes('Loading attendees')) {
+                if (container && !container.innerHTML.includes('Database Unavailable') && container.innerHTML.includes('Loading attendees')) {
                     console.log('DOM ready - triggering HTMX request');
                     htmx.trigger(container, 'load');
                 }
