@@ -1,4 +1,153 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://oppkey.github.io/fastopp/feed.xml" rel="self" type="application/atom+xml" /><link href="https://oppkey.github.io/fastopp/" rel="alternate" type="text/html" /><updated>2025-10-15T15:32:17+00:00</updated><id>https://oppkey.github.io/fastopp/feed.xml</id><title type="html">FastOpp Blog</title><subtitle>Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</subtitle><author><name>Oppkey</name></author><entry><title type="html">File Upload Demo Now Runs on S3 in Addition to Local Files</title><link href="https://oppkey.github.io/fastopp/2025/10/08/modularize-storage-system/" rel="alternate" type="text/html" title="File Upload Demo Now Runs on S3 in Addition to Local Files" /><published>2025-10-08T00:00:00+00:00</published><updated>2025-10-08T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/08/modularize-storage-system</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/08/modularize-storage-system/"><![CDATA[<h2 id="-overview">🎯 Overview</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://oppkey.github.io/fastopp/feed.xml" rel="self" type="application/atom+xml" /><link href="https://oppkey.github.io/fastopp/" rel="alternate" type="text/html" /><updated>2025-10-15T15:34:32+00:00</updated><id>https://oppkey.github.io/fastopp/feed.xml</id><title type="html">FastOpp Blog</title><subtitle>Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</subtitle><author><name>Oppkey</name></author><entry><title type="html">Python Development with Asynchronous SQLite and PostgreSQL</title><link href="https://oppkey.github.io/fastopp/2025/10/14/sqlite-to-postgresql/" rel="alternate" type="text/html" title="Python Development with Asynchronous SQLite and PostgreSQL" /><published>2025-10-14T00:00:00+00:00</published><updated>2025-10-14T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/14/sqlite-to-postgresql</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/14/sqlite-to-postgresql/"><![CDATA[<p>After years of working from the comfort of Python and Django,
+I moved to the wild asynchronous world of FastAPI to improve
+latency in web-based AI applications. I started with FastAPI
+and built an open source stack called <a href="https://github.com/Oppkey/fastopp">FastOpp</a> which adds command line and web tools similar to Django.</p>
+
+<p>Initially, things with smoothly using SQLite and
+<a href="https://github.com/omnilib/aiosqlite">aiosqlite</a> to add
+AsyncIO to SQLite. I used <a href="https://www.sqlalchemy.org/">SQLAlchemy</a> as my Object Relational
+Mapper (ORM) and Alembic as the database migration tool. Everything
+seemed to work easily, so I added a Python script to make things
+similar to Django’s <code class="language-plaintext highlighter-rouge">migrate.py</code>.</p>
+
+<p>As things were going smoothly, I added <a href="https://docs.pydantic.dev/latest/">Pydantic</a> for data validation and
+connected Pydantic to the SQLAlchemy models with <a href="https://sqlmodel.tiangolo.com/">SQLModel</a>.
+Although I was pulling in open source packages that I wasn’t that familiar with, the packages
+were popular and I didn’t have problems during initial use.</p>
+
+<p>Django comes with an opinated stack of stable, time-tested tools, which I was
+started to miss. However, in order to give
+FastAPI a proper assessment, I continued forward by integrating
+<a href="https://github.com/aminalaee/sqladmin">SQLAdmin</a>
+for a pre-configured web admin panel for SQLAlchemy.</p>
+
+<p>I also implemented <a href="https://github.com/fastapi-users/fastapi-users">FastAPIUsers</a>.
+At this point, I started to miss Django even more as I needed to implement my own
+JWT authentication, using FastAPIUsers as the hash mechanism.
+The FastAPI project has a <a href="https://github.com/fastapi/full-stack-fastapi-template">full-stack-fastapi-template</a>
+that might have been a better starting point.</p>
+
+<p>I chose not to use it since my primary goal was focused on using Jinja2
+templates for a streaming application from an LLM. This would provide a more Django-like experience
+for FastAPI and provide the opportunity in the future to use the built-in API and auto-documentation
+of FastAPI instead of implementing something like Django REST framework.</p>
+
+<p>The obvious question is whether it’s better to just use Django from the beginning and
+not build a Django-like interface around FastAPI. The primary motivation occurred when I was using Django for asynchronous communication with LLM endpoints. Although Django works fine with
+asynchronous communication, because its default communication style is synchronous,
+it created a number of problems for me. For most average people like me, it’s going
+to be difficult to keep a method asynchronous and not have any
+synchronous calls in it to other libraries that might be synchronous or
+other synchronous communication channels like a database access.</p>
+
+<p>At this point, I had already committed to FastAPI and making things asynchronous.
+I thought I just needed to use an asynchronous driver with PostgresSQL
+and everything would work.</p>
+
+<p>I was wrong.</p>
+
+<h2 id="problems-moving-to-asynchronous-database-connections-psycopg2-psycopg3-or-asyncpg">Problems Moving to Asynchronous Database Connections psycopg2, psycopg3 or asyncpg</h2>
+
+<p>The default way to connect to Python for many people is psycopg2.
+This is a very proven way.  It is the default usage in most Django applications.
+Unfortunately, it is synchronous. The most common asynchronous PostgresSQL connector is asyncpg.
+Initially, I used psycopg2 and rewrote the database connection to be synchronous and 
+have everything around the connection be asynchronous. 
+As the latency with the LLM is much higher than the latency with the database,
+this seemed like a reasonable solution at the time.  I just had to await
+for the database to send me back the response and then I was free to deal
+with other asynchronous problems such as LLM query and Internet search
+status updates.</p>
+
+<p>This is great in theory and I’m sure that other more experienced Python
+developers can easily solve this problem and keep the synchronous and asynchronous
+code nicely separated with clean use of async and await.</p>
+
+<p>However, I ran into problems with organizing my code to be synchronous
+connections to the database within asynchronous methods that were talking
+to the LLM and storing the history in the database.</p>
+
+<p>As I was familiar with async/await from using Dart for many years,
+I was pretty surprised I was having these problems.  The problem
+I had might have been due to my lack of experience understanding
+which pre-made Python modules were sending back synchronous versus asynchronous responses.</p>
+
+<p>I think that other Python developers might be able to understand my pain.</p>
+
+<p>To keep to an asynchronous database connection for both SQLite and PostgresSQL,
+I moved to asyncpg.</p>
+
+<h2 id="ssl-security-not-needed-in-sqlite-but-needed-in-postgressql-production">SSL Security Not Needed in SQLite, But Needed in PostgresSQL Production</h2>
+
+<p>The asyncpg connector worked fine in development but not in production.</p>
+
+<p>Although establishing an SSL network connection seems obvious, I didn’t really appreciate this because
+I had been deploying to sites like Fly.io, Railway and DigitalOcean Droplets with SQLite.
+For small prototype applications, SQLite works surprisingly well with FastAPI.
+I was trying to deploy to the free version, hobby tier, of Leapcell to set up a
+tutorial for students who didn’t want to pay or didn’t want to put their
+credit card into a hosting service.</p>
+
+<p>There’s no way to write to the project file system on Leapcell.
+They do offer a free tier that is pretty generous for PostgresSQL.
+They require SSL communication between the PostgresSQL database and their engine,
+which they call the service.</p>
+
+<p>Unfortunately, the syntax is different for the SSL mode between psycopg2
+and asyncpg.  I couldn’t just add sslmode=require to the end of the connection URL.</p>
+
+<p>Leapcell did not have an example for asyncpg. Likely due to my limited skills, I wasn’t able to modify my application completely enough to put the SSL connections in all the required places.</p>
+
+<p>In order to just use the URL connection point with sslmode=require, I decided
+to use psycopg3.</p>
+
+<h2 id="prepared-statements-caused-application-to-crash-with-sqlalchemy">Prepared Statements Caused Application to Crash With SQLAlchemy</h2>
+
+<p>As I was trying to use an async ORM, I used SQLAlchemy. I
+didn’t have too much experience with it initially. I didn’t realize that
+even though I wasn’t making prepared statements in my Python application,
+the communication process between psycopg and PostgresSQL was storing
+prepared statements.</p>
+
+<p>Due to the way the connections were pooled on Leapcell, I had to disable the
+prepared statements.  It took me a while to isolate the problem and
+then implement the fix.</p>
+
+<p>The problem never occurred when using SQLite because SQLite runs prepared statements
+in the same process using the same memory space as the Python program.
+This is different from PostgreSQL where the network and session state can change.</p>
+
+<p>As I was worried about the performance impact, I did some research and it does appear that
+SQLAlchemy already does statement caching on the Python side.</p>
+
+<p>The real world impact of disabling the prepared statement in PostgreSQL
+appears to be negligible.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>Using SQLite in asynchronous mode has been quite easy.  Getting PostgresSQL to work has been more difficult.
+There were three areas that I had trouble with for PostgresSQL:</p>
+
+<ol>
+  <li>Asynchronous connection. How write asynchronous Python code effectively to await the return data.</li>
+  <li>Security. How to deal with both SQLite that doesn’t require a SSL and PostgresSQL in production that does require a SSL.</li>
+  <li>Prepared statements. I needed to learn to rely on the SQLAlchemy statement caching instead of the built-in prepared statements on the PostgresSQL server.</li>
+</ol>
+
+<p>I like FastAPI and there are many huge advantages to using it that I got in the first hour of use.
+I’m going to continue using it instead of Django.  However, I’m starting to really appreciate how much Django shielded me from much of the infrastructure setup for my applications.</p>
+
+<p>FastAPI is unopinionated in things like the database, the connectors, authentication and models,
+I find it difficult to gain expertise in any one area.  Thus, I am focusing on a smaller set of open source components that work with FastAPI so that I can gain a deeper understanding of how to use these components.</p>
+
+<p>I feel that many other Python developers are on a similar journey to experiment more with asynchronous Python web applications.  I would appreciate feedback and ideas on which open source components or techniques to use to build effective asynchronous AI applications.</p>
+
+<h2 id="resources">Resources</h2>
+
+<ul>
+  <li><a href="https://github.com/Oppkey/fastopp">FastOpp</a> - Open source stack I am building around FastAPI</li>
+  <li><a href="https://fastapi.tiangolo.com/">FastAPI</a> - A better Flask</li>
+</ul>]]></content><author><name>Craig Oda</name></author><summary type="html"><![CDATA[Solving SQL security, database connector, and prepared statement problems with Asynchronous PostgresSQL]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://oppkey.github.io/fastopp/assets/images/2025_10/time.jpg" /><media:content medium="image" url="https://oppkey.github.io/fastopp/assets/images/2025_10/time.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">File Upload Demo Now Runs on S3 in Addition to Local Files</title><link href="https://oppkey.github.io/fastopp/2025/10/09/modularize-storage-system/" rel="alternate" type="text/html" title="File Upload Demo Now Runs on S3 in Addition to Local Files" /><published>2025-10-09T00:00:00+00:00</published><updated>2025-10-09T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/09/modularize-storage-system</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/09/modularize-storage-system/"><![CDATA[<h2 id="-overview">🎯 Overview</h2>
 
 <p>FastOpp demo system moved to a modular storage system that abstracts file storage operations, supporting both local filesystem and S3-compatible object storage. The system is designed to work seamlessly in development (filesystem) and production (S3) environments, with automatic backend selection based on environment variables.</p>
 
@@ -361,114 +510,7 @@ I recently had the opportunity to try FastOpp’s AI Chat assistant and decided 
 
 <p>Final Thoughts:</p>
 
-<p>Overall, my experience with the AI Chat Assistant was very promising. It demonstrates a powerful and fast core capability while able to handle tasks with impressive detail. The occasional errors are expected of a prototype. Personally, they were no hindrance in assisting me with my daily activities. The foundation is clearly solid, and I’m excited to see how this LLM can help users accomplish more in a quick and cost-efficient manner.</p>]]></content><author><name>Ethan Luke Kim</name></author><summary type="html"><![CDATA[A quick guide and personal notes on testing the FastOpp framework, including the essential git commands for contributing.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://lh3.googleusercontent.com/gg-dl/AJfQ9KRhVzJiKWNAJOaSeVa5NZQ6zEz3NjCnj9UNhTUB-oPwUhod6Iq0-VN3qLoNyrm4ZRxxLM_ASBfqI4JriGx6L2wVRBhgIyyqL1RYpTdzpaOnseMICQcLI9PaCE5PZUV0n0voR41gzmiMLbtn-xeM1RCIhulEnhIPvkNF0bRhw8kulA1zjQ=s1024-rj" /><media:content medium="image" url="https://lh3.googleusercontent.com/gg-dl/AJfQ9KRhVzJiKWNAJOaSeVa5NZQ6zEz3NjCnj9UNhTUB-oPwUhod6Iq0-VN3qLoNyrm4ZRxxLM_ASBfqI4JriGx6L2wVRBhgIyyqL1RYpTdzpaOnseMICQcLI9PaCE5PZUV0n0voR41gzmiMLbtn-xeM1RCIhulEnhIPvkNF0bRhw8kulA1zjQ=s1024-rj" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Python Development with Asynchronous SQLite and PosgreSQL</title><link href="https://oppkey.github.io/fastopp/2025/10/08/sqlite-to-postgresql/" rel="alternate" type="text/html" title="Python Development with Asynchronous SQLite and PosgreSQL" /><published>2025-10-08T00:00:00+00:00</published><updated>2025-10-08T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/08/sqlite-to-postgresql</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/08/sqlite-to-postgresql/"><![CDATA[<p>After years of working with the comfort of Python and Django,
-I moved to the wild asynchronous world of FastAPI to improve
-latency in web-based AI applications. I started with FastAPI
-and built an open source stack called <a href="https://github.com/Oppkey/fastopp">FastOpp</a> which adds command line and web tools similar to Django.</p>
-
-<p>Initially, things with smoothly using SQLite and
-<a href="https://github.com/omnilib/aiosqlite">aiosqlite</a> to add
-AsyncIO to SQLite. I used <a href="https://www.sqlalchemy.org/">SQLAlchemy</a> as my Object Relational
-Mapper (ORM) and Alembic as the database migration tool. Everything
-seemed to work easily, so I added a Python script to make things
-similar to Django’s <code class="language-plaintext highlighter-rouge">migrate.py</code>.</p>
-
-<p>As things were going smoothly, I added <a href="https://docs.pydantic.dev/latest/">Pydantic</a> for data validation and
-connected Pydantic to the SQLAlchemy models with <a href="https://sqlmodel.tiangolo.com/">SQLModel</a>.
-Although I was pulling in open source packages that I wasn’t that familiar with, the packages
-were popular and I didn’t have problems during initial use.</p>
-
-<p>Django comes with an opinated stack of stable, time-tested tools, which I was
-started to miss. However, in order to give
-FastAPI a proper assessment, I continued forward by integrating
-<a href="https://github.com/aminalaee/sqladmin">SQLAdmin</a>
-for a pre-configured web admin panel for SQLAlchemy.</p>
-
-<p>I also implemented <a href="https://github.com/fastapi-users/fastapi-users">FastAPIUsers</a>.
-At this point, I started to miss Django even more as I needed to implement my own
-JWT authentication, using FastAPIUsers as the hash mechanism.
-The FastAPI project has a <a href="https://github.com/fastapi/full-stack-fastapi-template">full-stack-fastapi-template</a>
-that might have been a better starting point.</p>
-
-<p>I chose not to use it since my primary goal was focused on using Jinja2
-templates for a streaming application from an LLM. This would provide a more Django-like experience
-for FastAPI and provide the opportunity in the future to use the built-in API and auto-documentation
-of FastAPI instead of implementing something like Django REST framework.</p>
-
-<p>The obvious question is whether it’s better to just use Django from the beginning and
-not build a Django-like interface around FastAPI. The primary motivation occurred when I was using Django for asynchronous communication with LLM endpoints. Although Django works fine with
-asynchronous communication, because its default communication style is synchronous,
-it created a number of problems for me. For most average people like me, it’s going
-to be difficult to keep a method asynchronous and not have any
-synchronous calls in it to other libraries that might be synchronous or
-other synchronous communication channels like a database access.</p>
-
-<p>At this point, I had already committed to FastAPI and making things asynchronous.
-I thought I just needed to use an asynchronous driver with PostgresSQL
-and everything would work.</p>
-
-<p>I was wrong.</p>
-
-<h2 id="psycopg2-psycopg3-or-asyncpg">psycopg2, psycopg3 or asyncpg</h2>
-
-<p>The default way to connect to Python for many people is psycopg2.
-This is a very proven way.  It is the default usage in most Django applications.
-Unfortunately, it is synchronous. The most common asynchronous PostgresSQL connector is asyncpg.
-Initially, I used psycopg2 and rewrote the database connection to be synchronous.
-As the latency with the LLM is much higher than the latency with the database,
-this seemed like a reasonable solution at the time.</p>
-
-<p>However, I ran into problems with organizing my code to be synchronous
-connections to the database within asynchronous methods that were talking
-to the LLM and storing the history in the database.</p>
-
-<p>Next I moved to asyncpg.</p>
-
-<h2 id="ssl-security-not-needed-in-sqlite-but-needed-in-postgressql-production">SSL Security Not Needed in SQLite, But Needed in PostgresSQL Production</h2>
-
-<p>The asyncpg connector worked fine in development but not in production.</p>
-
-<p>Although this seems obvious, I didn’t really appreciate this because
-I had been deploying to sites like Fly.io, Railway and DigitalOcean Droplets with SQLite.
-For small prototype applications, SQLite works surprisingly well with FastAPI.
-I was trying to deploy to the free version, hobby tier, of Leapcell to set up a
-tutorial for students who didn’t want to pay or didn’t want to put their
-credit card into a hosting service.</p>
-
-<p>There’s no way to write to the project file system on Leapcell.
-They do offer a free tier that is pretty generous for PostgresSQL.
-They require SSL communication between the PostgresSQL database and their engine,
-which they call the service.</p>
-
-<p>Unfortunately, the syntax is different for the SSL mode between psycopg2
-and asyncpg.  I couldn’t just add sslmode=require to the end of the connection URL.</p>
-
-<p>Leapcell did not have an example for asyncpg. Likely due to my limited skills, I wasn’t able to modify my application completely enough to put the SSL connections in all the required places.</p>
-
-<p>In order to just use the URL connection point with sslmode=require, I decided
-to use psycopg3.</p>
-
-<h2 id="prepared-statements-caused-application-to-crash-with-sqlalchemy">Prepared Statements Caused Application to Crash With SQLAlchemy</h2>
-
-<p>As I was trying to use an async ORM, I used SQLAlchemy. I
-didn’t have too much experience with it initially. I didn’t realize that
-even though I wasn’t making prepared statements in my Python application,
-the communication process between psycopg and PostgresSQL was storing
-prepared statements.</p>
-
-<p>Due to the way the connections were pooled on Leapcell, I had to disable the
-prepared statements.  It took me a while to isolate the problem and
-then implement the fix.</p>
-
-<p>The problem never occurred when using SQLite because SQLite runs prepared statements
-in the same process using the same memory space as the Python program.
-This is different from PostgreSQL where the network and session state can change.</p>
-
-<p>As I was worried about the performance impact, I did some research and it does appear that
-SQLAlchemy already does statement caching on the Python side.</p>
-
-<p>The real world impact of disabling the prepared statement in PostgreSQL
-appears to be negligible.</p>]]></content><author><name>Craig Oda</name></author><summary type="html"><![CDATA[Solving security, database connector, and prepared statement problems with PostgreSQL]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://oppkey.github.io/fastopp/assets/images/2025_10/run.jpg" /><media:content medium="image" url="https://oppkey.github.io/fastopp/assets/images/2025_10/run.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Architectural Consistency When Working with a PostgreSQL Async Database</title><link href="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/" rel="alternate" type="text/html" title="Architectural Consistency When Working with a PostgreSQL Async Database" /><published>2025-10-07T00:00:00+00:00</published><updated>2025-10-07T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/07/postgresql-async</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/"><![CDATA[<h2 id="postgresql-failing-with-async-in-production-although-sqlite-works-on-my-mac">PostgreSQL Failing with Async in Production Although SQLite Works on my Mac</h2>
+<p>Overall, my experience with the AI Chat Assistant was very promising. It demonstrates a powerful and fast core capability while able to handle tasks with impressive detail. The occasional errors are expected of a prototype. Personally, they were no hindrance in assisting me with my daily activities. The foundation is clearly solid, and I’m excited to see how this LLM can help users accomplish more in a quick and cost-efficient manner.</p>]]></content><author><name>Ethan Luke Kim</name></author><summary type="html"><![CDATA[A quick guide and personal notes on testing the FastOpp framework, including the essential git commands for contributing.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://lh3.googleusercontent.com/gg-dl/AJfQ9KRhVzJiKWNAJOaSeVa5NZQ6zEz3NjCnj9UNhTUB-oPwUhod6Iq0-VN3qLoNyrm4ZRxxLM_ASBfqI4JriGx6L2wVRBhgIyyqL1RYpTdzpaOnseMICQcLI9PaCE5PZUV0n0voR41gzmiMLbtn-xeM1RCIhulEnhIPvkNF0bRhw8kulA1zjQ=s1024-rj" /><media:content medium="image" url="https://lh3.googleusercontent.com/gg-dl/AJfQ9KRhVzJiKWNAJOaSeVa5NZQ6zEz3NjCnj9UNhTUB-oPwUhod6Iq0-VN3qLoNyrm4ZRxxLM_ASBfqI4JriGx6L2wVRBhgIyyqL1RYpTdzpaOnseMICQcLI9PaCE5PZUV0n0voR41gzmiMLbtn-xeM1RCIhulEnhIPvkNF0bRhw8kulA1zjQ=s1024-rj" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Architectural Consistency When Working with a PostgreSQL Async Database</title><link href="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/" rel="alternate" type="text/html" title="Architectural Consistency When Working with a PostgreSQL Async Database" /><published>2025-10-07T00:00:00+00:00</published><updated>2025-10-07T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/07/postgresql-async</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/07/postgresql-async/"><![CDATA[<h2 id="postgresql-failing-with-async-in-production-although-sqlite-works-on-my-mac">PostgreSQL Failing with Async in Production Although SQLite Works on my Mac</h2>
 
 <p>Last week, I was working on our FastOpp project and ran into a classic developer problem: “It works on my machine, but not in production.” Specifically, our FastAPI application worked perfectly with SQLite during development, but when I tried to switch to PostgreSQL in production on Leapcell using the Leapcell PostgreSQL service,
 database access broke.</p>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Development with Asynchronous SQLite and PosgreSQL - FastOpp Blog</title>
+    <title>Python Development with Asynchronous SQLite and PostgreSQL - FastOpp Blog</title>
     <meta name="description" content="Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications">
     
     <!-- Favicon -->
@@ -31,24 +31,24 @@
     
     <!-- SEO -->
     <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Python Development with Asynchronous SQLite and PosgreSQL | FastOpp Blog</title>
+<title>Python Development with Asynchronous SQLite and PostgreSQL | FastOpp Blog</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="Python Development with Asynchronous SQLite and PosgreSQL" />
+<meta property="og:title" content="Python Development with Asynchronous SQLite and PostgreSQL" />
 <meta name="author" content="Craig Oda" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Solving security, database connector, and prepared statement problems with PostgreSQL" />
-<meta property="og:description" content="Solving security, database connector, and prepared statement problems with PostgreSQL" />
-<link rel="canonical" href="https://oppkey.github.io/fastopp/2025/10/08/sqlite-to-postgresql/" />
-<meta property="og:url" content="https://oppkey.github.io/fastopp/2025/10/08/sqlite-to-postgresql/" />
+<meta name="description" content="Solving SQL security, database connector, and prepared statement problems with Asynchronous PostgresSQL" />
+<meta property="og:description" content="Solving SQL security, database connector, and prepared statement problems with Asynchronous PostgresSQL" />
+<link rel="canonical" href="https://oppkey.github.io/fastopp/2025/10/14/sqlite-to-postgresql/" />
+<meta property="og:url" content="https://oppkey.github.io/fastopp/2025/10/14/sqlite-to-postgresql/" />
 <meta property="og:site_name" content="FastOpp Blog" />
-<meta property="og:image" content="https://oppkey.github.io/fastopp/assets/images/2025_10/run.jpg" />
+<meta property="og:image" content="https://oppkey.github.io/fastopp/assets/images/2025_10/time.jpg" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2025-10-08T00:00:00+00:00" />
+<meta property="article:published_time" content="2025-10-14T00:00:00+00:00" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:image" content="https://oppkey.github.io/fastopp/assets/images/2025_10/run.jpg" />
-<meta property="twitter:title" content="Python Development with Asynchronous SQLite and PosgreSQL" />
+<meta property="twitter:image" content="https://oppkey.github.io/fastopp/assets/images/2025_10/time.jpg" />
+<meta property="twitter:title" content="Python Development with Asynchronous SQLite and PostgreSQL" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Craig Oda"},"dateModified":"2025-10-08T00:00:00+00:00","datePublished":"2025-10-08T00:00:00+00:00","description":"Solving security, database connector, and prepared statement problems with PostgreSQL","headline":"Python Development with Asynchronous SQLite and PosgreSQL","image":"https://oppkey.github.io/fastopp/assets/images/2025_10/run.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://oppkey.github.io/fastopp/2025/10/08/sqlite-to-postgresql/"},"url":"https://oppkey.github.io/fastopp/2025/10/08/sqlite-to-postgresql/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Craig Oda"},"dateModified":"2025-10-14T00:00:00+00:00","datePublished":"2025-10-14T00:00:00+00:00","description":"Solving SQL security, database connector, and prepared statement problems with Asynchronous PostgresSQL","headline":"Python Development with Asynchronous SQLite and PostgreSQL","image":"https://oppkey.github.io/fastopp/assets/images/2025_10/time.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://oppkey.github.io/fastopp/2025/10/14/sqlite-to-postgresql/"},"url":"https://oppkey.github.io/fastopp/2025/10/14/sqlite-to-postgresql/"}</script>
 <!-- End Jekyll SEO tag -->
 
     
@@ -104,26 +104,26 @@
             <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <!-- Post Header -->
     <header class="mb-12">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">Python Development with Asynchronous SQLite and PosgreSQL</h1>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Python Development with Asynchronous SQLite and PostgreSQL</h1>
         
         <div class="flex items-center text-gray-600 mb-6">
-            <time datetime="2025-10-08T00:00:00+00:00" class="mr-4">
-                October 08, 2025
+            <time datetime="2025-10-14T00:00:00+00:00" class="mr-4">
+                October 14, 2025
             </time>
             <span class="mr-4">•</span>
             <span>By Craig Oda</span>
         </div>
         
         
-        <img src="/fastopp/assets/images/2025_10/run.jpg" 
-             alt="Python Development with Asynchronous SQLite and PosgreSQL" 
+        <img src="/fastopp/assets/images/2025_10/time.jpg" 
+             alt="Python Development with Asynchronous SQLite and PostgreSQL" 
              class="w-full h-64 object-cover rounded-lg shadow-lg">
         
     </header>
     
     <!-- Post Content -->
     <div class="prose prose-lg max-w-none">
-        <p>After years of working with the comfort of Python and Django,
+        <p>After years of working from the comfort of Python and Django,
 I moved to the wild asynchronous world of FastAPI to improve
 latency in web-based AI applications. I started with FastAPI
 and built an open source stack called <a href="https://github.com/Oppkey/fastopp">FastOpp</a> which adds command line and web tools similar to Django.</p>
@@ -171,26 +171,42 @@ and everything would work.</p>
 
 <p>I was wrong.</p>
 
-<h2 id="psycopg2-psycopg3-or-asyncpg">psycopg2, psycopg3 or asyncpg</h2>
+<h2 id="problems-moving-to-asynchronous-database-connections-psycopg2-psycopg3-or-asyncpg">Problems Moving to Asynchronous Database Connections psycopg2, psycopg3 or asyncpg</h2>
 
 <p>The default way to connect to Python for many people is psycopg2.
 This is a very proven way.  It is the default usage in most Django applications.
 Unfortunately, it is synchronous. The most common asynchronous PostgresSQL connector is asyncpg.
-Initially, I used psycopg2 and rewrote the database connection to be synchronous.
+Initially, I used psycopg2 and rewrote the database connection to be synchronous and 
+have everything around the connection be asynchronous. 
 As the latency with the LLM is much higher than the latency with the database,
-this seemed like a reasonable solution at the time.</p>
+this seemed like a reasonable solution at the time.  I just had to await
+for the database to send me back the response and then I was free to deal
+with other asynchronous problems such as LLM query and Internet search
+status updates.</p>
+
+<p>This is great in theory and I’m sure that other more experienced Python
+developers can easily solve this problem and keep the synchronous and asynchronous
+code nicely separated with clean use of async and await.</p>
 
 <p>However, I ran into problems with organizing my code to be synchronous
 connections to the database within asynchronous methods that were talking
 to the LLM and storing the history in the database.</p>
 
-<p>Next I moved to asyncpg.</p>
+<p>As I was familiar with async/await from using Dart for many years,
+I was pretty surprised I was having these problems.  The problem
+I had might have been due to my lack of experience understanding
+which pre-made Python modules were sending back synchronous versus asynchronous responses.</p>
+
+<p>I think that other Python developers might be able to understand my pain.</p>
+
+<p>To keep to an asynchronous database connection for both SQLite and PostgresSQL,
+I moved to asyncpg.</p>
 
 <h2 id="ssl-security-not-needed-in-sqlite-but-needed-in-postgressql-production">SSL Security Not Needed in SQLite, But Needed in PostgresSQL Production</h2>
 
 <p>The asyncpg connector worked fine in development but not in production.</p>
 
-<p>Although this seems obvious, I didn’t really appreciate this because
+<p>Although establishing an SSL network connection seems obvious, I didn’t really appreciate this because
 I had been deploying to sites like Fly.io, Railway and DigitalOcean Droplets with SQLite.
 For small prototype applications, SQLite works surprisingly well with FastAPI.
 I was trying to deploy to the free version, hobby tier, of Leapcell to set up a
@@ -232,6 +248,31 @@ SQLAlchemy already does statement caching on the Python side.</p>
 <p>The real world impact of disabling the prepared statement in PostgreSQL
 appears to be negligible.</p>
 
+<h2 id="summary">Summary</h2>
+
+<p>Using SQLite in asynchronous mode has been quite easy.  Getting PostgresSQL to work has been more difficult.
+There were three areas that I had trouble with for PostgresSQL:</p>
+
+<ol>
+  <li>Asynchronous connection. How write asynchronous Python code effectively to await the return data.</li>
+  <li>Security. How to deal with both SQLite that doesn’t require a SSL and PostgresSQL in production that does require a SSL.</li>
+  <li>Prepared statements. I needed to learn to rely on the SQLAlchemy statement caching instead of the built-in prepared statements on the PostgresSQL server.</li>
+</ol>
+
+<p>I like FastAPI and there are many huge advantages to using it that I got in the first hour of use.
+I’m going to continue using it instead of Django.  However, I’m starting to really appreciate how much Django shielded me from much of the infrastructure setup for my applications.</p>
+
+<p>FastAPI is unopinionated in things like the database, the connectors, authentication and models,
+I find it difficult to gain expertise in any one area.  Thus, I am focusing on a smaller set of open source components that work with FastAPI so that I can gain a deeper understanding of how to use these components.</p>
+
+<p>I feel that many other Python developers are on a similar journey to experiment more with asynchronous Python web applications.  I would appreciate feedback and ideas on which open source components or techniques to use to build effective asynchronous AI applications.</p>
+
+<h2 id="resources">Resources</h2>
+
+<ul>
+  <li><a href="https://github.com/Oppkey/fastopp">FastOpp</a> - Open source stack I am building around FastAPI</li>
+  <li><a href="https://fastapi.tiangolo.com/">FastAPI</a> - A better Flask</li>
+</ul>
 
     </div>
     
@@ -262,12 +303,12 @@ appears to be negligible.</p>
 <nav class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
     <div class="flex justify-between">
         
-        <a href="/fastopp/2025/10/08/testing-fastopp/" 
+        <a href="/fastopp/2025/10/09/modularize-storage-system/" 
            class="flex items-center text-ai-blue hover:text-blue-700 transition-colors">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
-            Previous: Our Process for Testing and Contributing to FastOpp
+            Previous: File Upload Demo Now Runs on S3 in Addition to Local Files
         </a>
         
         
