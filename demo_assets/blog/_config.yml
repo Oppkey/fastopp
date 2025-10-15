@@ -1,0 +1,108 @@
+# Site settings
+title: FastOpp Blog
+description: "Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications"
+author: Oppkey
+email: craig@oppkey.com
+url: "https://oppkey.github.io"
+baseurl: "/fastopp"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Sass settings
+sass:
+  sass_dir: assets
+  style: compressed
+  sourcemap: development
+  load_paths:
+    - _sass
+  quiet_deps: true
+  silence_deprecations:
+    - import
+    - global-builtin
+    - color-functions
+
+# Collections
+collections:
+  posts:
+    output: true
+    permalink: /:categories/:year/:month/:day/:title/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      author: "Oppkey"
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Exclude from processing
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  # FastOpp application files
+  - admin/
+  - alembic/
+  - auth/
+  - base_assets/
+  - demo_assets/
+  - demo_scripts/
+  - dependencies/
+  - docs/
+  - routes/
+  - scripts/
+  - services/
+  - static/
+  - templates/
+  - tests/
+  - alembic.ini
+  - db.py
+  - main.py
+  - models.py
+  - oppman.py
+  - oppdemo.py
+  - requirements.txt
+  - .python-version
+  - LICENSE
+
+# Include
+include:
+  - _pages
+
+# Social
+social:
+  name: FastOpp
+  links:
+    - https://github.com/Oppkey/FastOpp
+
+# Navigation
+navigation:
+  - title: Home
+    url: /
+  - title: About
+    url: /about/
+  - title: Posts
+    url: /posts/
+
+# Colors (matching FastOpp theme)
+colors:
+  primary: "#3B82F6"  # ai-blue
+  secondary: "#8B5CF6"  # ai-purple
+  accent: "#10B981"   # green
+  background: "#F9FAFB"  # gray-50
+  text: "#111827"     # gray-900
