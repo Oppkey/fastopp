@@ -160,6 +160,27 @@ Admin panel is restricted to logged-in users.
 
 ![AI Chat](docs/images/ai_chat.webp)
 
+### Emergency Access From Web Browser
+
+* create admin if you forgot password or have no shell or database access
+* ability to disable access with environment variable
+
+![emergency login](docs/images/readme/emergency_login.webp)
+
+### Admin Dashhboards to Change Password and Manage Database
+
+![oppman web admin](docs/images/readme/password_migration.webp)
+
+### Manage Reference Demos From WebUI
+
+Create fake data for testing
+
+* fake users
+* fake webinar registrants
+* fake products for sales and marketing tests
+
+![oppdemo dashboard](docs/images/readme/oppdemo.webp)
+
 ## Basic Design System and Reference Template
 
 FastOpp comes with an optional basic UI design system to accelerate AI application development.
