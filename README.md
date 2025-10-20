@@ -4,34 +4,47 @@
 
 ## Quick Install
 
-### with uv (recommended)
-
 If you don't have uv installed:
 
 `curl -LsSf https://astral.sh/uv/install.sh | less`
 
+The setup command `fastopp-startproject` uses
+uv. You must install uv even if you use pip.
+
+### with uv (recommended)
+
 ```bash
 mkdir my-project && cd my-project
-uv init
+uv init --python 3.12 # fastopp will not work with python 3.13 or 3.14
 uv add fastopp
 uv run fastopp-startproject
 uv run python oppman.py runserver
 ```
 
+If `uv run fastopp-startproject` fails, try
+
+```bash
+uv remove fastopp
+uv add fastopp --frozen
+```
+
 ### with pip
 
 ```bash
-# 1. Create project directory
-mkdir my-fastapi-project && cd my-fastapi-project
-# 2. Create virtual environment
+# Create project environment directory
+mkdir fastopp-env
+cd fastopp-env
+# Create virtual environment
 python -m venv venv
-# 3. Activate virtual environment
+# Activate virtual environment
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-# 4. Install fastopp
+# Create project directory
+mkdir my-fastapi-project && cd my-fastapi-project
+# Install fastopp
 pip install fastopp
-# 5. Start the project
+# Start the project
 fastopp-startproject
-# 6. Run the application
+# Run the application
 python oppman.py runserver
 ```
 
