@@ -444,6 +444,114 @@ Use 'uv run python oppdemo.py <command>' for demo data initialization and manage
     print(help_text)
 
 
+def startproject():
+    """Start a new FastOpp project with full structure from GitHub"""
+    import subprocess
+    import shutil
+    from pathlib import Path
+    
+    print("🚀 Starting new FastOpp project...")
+    
+    # Note: We allow git repositories since uv init creates them
+    # Our copy technique works by cloning to a temp directory first
+    
+    # Check if current directory has non-uv files (allow uv init files)
+    uv_files = {".venv", "pyproject.toml", "uv.lock", "main.py", ".python-version", "README.md", ".git", ".gitignore"}
+    existing_files = {item.name for item in Path(".").iterdir() if item.is_file() or item.is_dir()}
+    non_uv_files = existing_files - uv_files
+    
+    if non_uv_files:
+        print(f"❌ Current directory contains non-uv files: {', '.join(non_uv_files)}")
+        print("Please run this command in an empty directory or one with only uv files.")
+        return False
+    
+    try:
+        # Clone the repository to a temporary directory
+        print("📥 Cloning FastOpp repository...")
+        temp_dir = Path("fastopp-temp")
+        subprocess.run([
+            "git", "clone", 
+            "https://github.com/Oppkey/fastopp.git",
+            str(temp_dir)
+        ], check=True, capture_output=True, text=True)
+        
+        print("✅ Repository cloned successfully")
+        
+        # Move files from temp directory to current directory
+        print("📁 Moving files to current directory...")
+        for item in temp_dir.iterdir():
+            if item.name != ".git":  # Skip .git directory
+                dest = Path(".") / item.name
+                if dest.exists():
+                    if dest.is_dir():
+                        shutil.rmtree(dest)
+                    else:
+                        dest.unlink()
+                shutil.move(str(item), str(dest))
+        
+        # Remove temp directory
+        shutil.rmtree(temp_dir)
+        print("✅ Files moved successfully")
+        
+        # Remove .git directory to start fresh
+        if Path(".git").exists():
+            shutil.rmtree(".git")
+            print("✅ Removed .git directory for fresh start")
+        
+        # Create new git repository
+        subprocess.run(["git", "init"], check=True)
+        subprocess.run(["git", "add", "."], check=True)
+        subprocess.run(["git", "commit", "-m", "Initial commit from FastOpp template"], check=True)
+        print("✅ Initialized new git repository")
+        
+        # Install dependencies
+        print("📦 Installing dependencies...")
+        subprocess.run(["uv", "sync"], check=True)
+        print("✅ Dependencies installed")
+        
+        # Create .env file
+        env_content = """DATABASE_URL=sqlite+aiosqlite:///./test.db
+SECRET_KEY=your-secret-key-here
+ENVIRONMENT=development
+OPENROUTER_API_KEY=your-openrouter-api-key-here
+"""
+        with open(".env", "w") as f:
+            f.write(env_content)
+        print("✅ Created .env file")
+        
+        # Initialize database
+        print("🗄️ Initializing database...")
+        subprocess.run(["uv", "run", "python", "oppman.py", "migrate", "init"], check=True)
+        subprocess.run(["uv", "run", "python", "oppman.py", "migrate", "create", "Initial migration"], check=True)
+        subprocess.run(["uv", "run", "python", "oppman.py", "migrate", "upgrade"], check=True)
+        print("✅ Database initialized")
+        
+        # Initialize demo data
+        print("🎭 Setting up demo data...")
+        subprocess.run(["uv", "run", "python", "oppdemo.py", "init"], check=True)
+        print("✅ Demo data initialized")
+        
+        print("\n🎉 FastOpp project started successfully!")
+        print("\nNext steps:")
+        print("1. Edit .env file with your configuration")
+        print("2. Run: uv run python oppman.py runserver")
+        print("3. Visit: http://localhost:8000")
+        print("4. Admin panel: http://localhost:8000/admin/")
+        print("   - Email: admin@example.com")
+        print("   - Password: admin123")
+        
+        return True
+        
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Error: {e}")
+        print(f"Output: {e.stdout}")
+        print(f"Error: {e.stderr}")
+        return False
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        return False
+
+
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
@@ -451,9 +559,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  uv run python oppman.py db        # Initialize database only
-  uv run python oppman.py delete    # Delete database with backup
-  uv run python oppdemo.py init     # Full initialization with sample data
+  uv run python oppman.py startproject  # Start new FastOpp project from GitHub
+  uv run python oppman.py db            # Initialize database only
+  uv run python oppman.py delete        # Delete database with backup
+  uv run python oppdemo.py init         # Full initialization with sample data
         """
     )
     
@@ -464,7 +573,7 @@ Examples:
             # Core application management
             "runserver", "stopserver", "production", "delete", "backup", "migrate", "env", "secrets", "help", "demo",
             # Core database and user management
-            "init", "db", "superuser", "check_users", "test_auth", "change_password", "list_users", "emergency"
+            "startproject", "db", "superuser", "check_users", "test_auth", "change_password", "list_users", "emergency"
         ],
         help="Command to execute"
     )
@@ -572,6 +681,13 @@ Examples:
     # Handle emergency access command (non-async)
     if args.command == "emergency":
         run_emergency_access()
+        return
+    
+    if args.command == "startproject":
+        # Start new project
+        success = startproject()
+        if not success:
+            sys.exit(1)
         return
     
     if args.command in core_commands:

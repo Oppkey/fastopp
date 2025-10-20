@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fastopp"
-version = "0.2.3"
+version = "0.2.4"
 authors = [
     {name = "Oppkey"}
 ]
-description = "FastAPI starter package for students prototyping AI web applications."
+description = "FastAPI starter package for students prototyping AI web applications. Install for basic FastAPI app, clone repository for full features with management scripts and demos."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -54,6 +54,7 @@ test = [
 
 [project.scripts]
 fastopp = "fastopp:app"
+fastopp-startproject = "fastopp:startproject"
 
 [tool.hatch.build.targets.wheel]
 packages = ["fastopp"]
