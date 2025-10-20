@@ -20,7 +20,20 @@ uv run python oppman.py runserver
 
 ### with pip
 
-
+```bash
+# 1. Create project directory
+mkdir my-fastapi-project && cd my-fastapi-project
+# 2. Create virtual environment
+python -m venv venv
+# 3. Activate virtual environment
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+# 4. Install fastopp
+pip install fastopp
+# 5. Start the project
+fastopp-startproject
+# 6. Run the application
+python oppman.py runserver
+```
 
 ## What
 
