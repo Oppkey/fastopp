@@ -2,6 +2,26 @@
 
 ![FastOpp Logo](https://raw.githubusercontent.com/Oppkey/fastopp/refs/heads/main/docs/images/fastopp_logo.webp)
 
+## Quick Install
+
+### with uv (recommended)
+
+If you don't have uv installed:
+
+`curl -LsSf https://astral.sh/uv/install.sh | less`
+
+```bash
+mkdir my-project && cd my-project
+uv init
+uv add fastopp
+uv run fastopp-startproject
+uv run python oppman.py runserver
+```
+
+### with pip
+
+
+
 ## What
 
 FastAPI starter package for students prototyping AI web applications. Pre-built admin
