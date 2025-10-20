@@ -99,8 +99,9 @@ If you need to grant PyPI access to trusted contributors:
    export TWINE_PASSWORD=your-pypi-api-token
    ```
 
-2. **Build the package**:
+2. **Remove old build and build new package**:
    ```bash
+   rm -rf dist/*
    uv build
    ```
 
