@@ -1,6 +1,8 @@
 # Leapcell Deployment Guide
 
-This guide covers deploying FastOpp to Leapcell, a platform that provides free hosting with PostgreSQL and object storage.
+This guide covers deploying FastOpp to Leapcell, a platform that provides free hosting with PostgreSQL and object storage. As there is no write access to the Leapcell service
+root filesystem, you must use Leapcell Database (PostgreSQL) and the
+Leapcell Object Storage (S3) to store persistent data.
 
 ## Prerequisites
 
@@ -29,6 +31,7 @@ uv export --format requirements.txt --no-hashes > requirements.txt
 ```
 
 **When to run this command:**
+
 - After adding new packages with `uv add package_name`
 - Before deploying to Leapcell
 - When updating dependencies
@@ -44,13 +47,37 @@ Set the following in your Leapcell deployment configuration:
 - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 8080`
 - **Serving Port**: `8080`
 
-### 3. Deploy to Leapcell
+### 3. Leapcell Database and Environmental Settings
 
-Follow the standard Leapcell deployment process for your FastOpp application.
+### Database Settings
+
+1. In Leapcell, create a PostgreSQL database with the free plan.
+Note: the free tier allows one free Postgres instance. If you already created one and get a “Failed to create database” error, delete the existing free DB from Settings and retry.
+
+2. In the DB page, locate the SQLAlchemy connection string under Python and copy it. It will look like:
+
+`postgresql+psycopg2://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=require`
+
+3. Modify the driver to use psycopg (async-capable stack) instead of psycopg2:
+
+`postgresql+psycopg://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=require`
+
+#### Environmental Settings
+
+Get the database URL specific to your database on Leapcell.
+
+```text
+UPLOAD_DIR=/tmp/uploads
+DATABASE_URL=postgresql+psycopg://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=require
+SECRET_KEY=change_to_the_key_you_generated
+EMERGENCY_ACCESS_ENABLED=true
+```
 
 ### 4. Initial Admin Setup (No Shell Access)
 
-Since Leapcell doesn't provide shell access, use the emergency access system to create your admin account. The emergency access system provides a secure way to regain access to your admin functions using your `SECRET_KEY` environment variable.
+Since Leapcell doesn't provide shell access, you can use the emergency access system
+to create your admin account. The emergency access system provides a secure
+way to regain access to your admin functions using your `SECRET_KEY` environment variable.
 
 #### How Emergency Access Works
 
@@ -62,7 +89,8 @@ Since Leapcell doesn't provide shell access, use the emergency access system to 
 
 #### Step 1: Enable Emergency Access
 
-Set the environment variable in your Leapcell dashboard:
+Confirm that the environment variable in your Leapcell dashboard allows
+emergency access:
 
 ```env
 EMERGENCY_ACCESS_ENABLED=true
@@ -73,6 +101,8 @@ EMERGENCY_ACCESS_ENABLED=true
 1. Visit: `https://your-app.leapcell.com/oppman/emergency`
 2. Enter your **SECRET_KEY** (the same one you used in deployment)
 3. Click "Grant Emergency Access"
+
+![emergency access login](images/emergency_access.png)
 
 #### Step 3: Create Superuser
 
@@ -133,6 +163,24 @@ EMERGENCY_ACCESS_ENABLED=true
 2. Set `EMERGENCY_ACCESS_ENABLED=false`
 3. Restart application
 
+##  Enable Object Storage for Media
+
+FastOpp’s demo imports sample photos. Ephemeral /tmp storage is not reliable for user files. Configure S3-compatible storage on Leapcell:
+
+In Leapcell, create an Object Storage bucket.
+
+In the service environment variables, set:
+
+```text
+STORAGE_TYPE=s3
+S3_ACCESS_KEY=your_leapcell_access_key
+S3_SECRET_KEY=your_leapcell_secret_key
+S3_BUCKET=your_bucket_name
+S3_ENDPOINT_URL=https://objstorage.leapcell.io
+S3_CDN_URL=https://your-account.leapcellobj.com/your-bucket
+
+```
+
 ## Security Notes
 
 ### Emergency Access Security
@@ -168,6 +216,14 @@ EMERGENCY_ACCESS_ENABLED=true
 3. **Secure SECRET_KEY**: Keep your SECRET_KEY secure and private
 4. **Monitor usage**: Check logs for emergency access usage
 5. **Regular rotation**: Consider rotating your SECRET_KEY periodically
+
+## Troubleshooting
+
+- "Failed to create database" on free tier: You likely already used your one free DB. Delete the existing free DB in Settings and recreate.
+- Images don’t appear or disappear: You are writing to /tmp/uploads instead of S3. Configure the S3 variables and redeploy.
+- Login blocked: You have no superuser yet. Enable emergency access, create a superuser, then disable emergency access.
+- DB errors mentioning psycopg2: Update the SQLAlchemy URL to use psycopg.
+- Build fails on RUN: Use pip install -r requirements.txt as the build command in Leapcell’s UI.
 
 ## Environment Variables
 
