@@ -1,6 +1,6 @@
 # FastOpp - Easier AI Web Apps for Students
 
-![FastOpp Logo](docs/images/fastopp_logo.webp)
+![FastOpp Logo](https://raw.githubusercontent.com/Oppkey/fastopp/refs/heads/main/docs/images/fastopp_logo.webp)
 
 ## What
 
@@ -118,58 +118,58 @@ output of an LLM.
 
 ### Clickable Cards with Mouseover
 
-![home](docs/images/readme/home.webp)
+![home](https://raw.githubusercontent.com/Oppkey/fastopp/refs/heads/main/docs/images/readme/home.webp)
 
 ### Change Images Without Page Reload
 
-![interactive](docs/images/interactive.webp)
+![interactive](https://raw.githubusercontent.com/Oppkey/fastopp/refs/heads/main/docs/images/interactive.webp)
 
 ### Hero
 
-![hero](docs/images/readme/hero.webp)
+![hero](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/readme/hero.webp)
 
 ### Database Admin List
 
-![admin list](docs/images/admin.webp)
+![admin list](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/admin.webp)
 
 ### Database Entry Edit
 
-![edit](docs/images/edit.webp)
+![edit](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/edit.webp)
 
 ### User Management
 
-![user management](docs/images/user_management.webp)
+![user management](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/user_management.webp)
 
 ### User Authentication
 
 Admin panel is restricted to logged-in users.
 
-![authentication](docs/images/login.webp)
+![authentication](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/login.webp)
 
 ### Statistics Hero Card
 
-![webinar top](docs/images/webinar_top.webp)
+![webinar top](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/webinar_top.webp)
 
 ### People Hero Card
 
-![webinar people](docs/images/webinar_people.webp)
+![webinar people](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/webinar_people.webp)
 
 ### AI Chat with Cloud-Based LLM
 
-![AI Chat](docs/images/ai_chat_indents.webp)
+![AI Chat](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/ai_chat_indents.webp)
 
-![AI Chat](docs/images/ai_chat.webp)
+![AI Chat](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/ai_chat.webp)
 
 ### Emergency Access From Web Browser
 
 * create admin if you forgot password or have no shell or database access
 * ability to disable access with environment variable
 
-![emergency login](docs/images/readme/emergency_login.webp)
+![emergency login](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/readme/emergency_login.webp)
 
 ### Admin Dashhboards to Change Password and Manage Database
 
-![oppman web admin](docs/images/readme/password_migration.webp)
+![oppman web admin](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/readme/password_migration.webp)
 
 ### Manage Reference Demos From WebUI
 
@@ -179,7 +179,7 @@ Create fake data for testing
 * fake webinar registrants
 * fake products for sales and marketing tests
 
-![oppdemo dashboard](docs/images/readme/oppdemo.webp)
+![oppdemo dashboard](https://raw.githubusercontent.com/Oppkey/fastopp/main/docs/images/readme/oppdemo.webp)
 
 ## Basic Design System and Reference Template
 

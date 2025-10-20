@@ -1,7 +1,13 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "fastopp"
-version = "0.2.0"
-authors = ["Oppkey"]
+version = "0.2.3"
+authors = [
+    {name = "Oppkey"}
+]
 description = "FastAPI starter package for students prototyping AI web applications."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -26,6 +32,8 @@ dependencies = [
     "httpx>=0.28.1",
     "psycopg[binary]>=3.2.11",
     "boto3>=1.40.55",
+    "hatchling>=1.27.0",
+    "twine>=6.2.0",
 ]
 
 [dependency-groups]
@@ -43,3 +51,9 @@ test = [
     "httpx>=0.28.1",
     "pytest-xdist>=3.8.0",
 ]
+
+[project.scripts]
+fastopp = "fastopp:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["fastopp"]
