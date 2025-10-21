@@ -1,13 +1,15 @@
 """
-Authentication routes for base_assets
+Authentication routes
 """
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import select
-from db import AsyncSessionLocal
+from sqlalchemy.ext.asyncio import AsyncSession
 from models import User
-from base_assets.auth.core import create_user_token
+from dependencies.auth import create_user_token
+from dependencies.database import get_db_session
+from dependencies.config import get_settings, Settings
 from fastapi_users.password import PasswordHelper
 
 templates = Jinja2Templates(directory="templates")
@@ -17,7 +19,7 @@ router = APIRouter()
 
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    """Login page for accessing protected content"""
+    """Login page for webinar registrants access"""
     return templates.TemplateResponse("login.html", {
         "request": request,
         "title": "Login",
@@ -26,8 +28,12 @@ async def login_page(request: Request):
 
 
 @router.post("/login")
-async def login_form(request: Request):
-    """Handle login form submission"""
+async def login_form(
+    request: Request,
+    session: AsyncSession = Depends(get_db_session),
+    settings: Settings = Depends(get_settings)
+):
+    """Handle login form submission using dependency injection with graceful database failure handling"""
     form = await request.form()
     username = form.get("username")
     password = form.get("password")
@@ -40,7 +46,8 @@ async def login_form(request: Request):
             "error": "Please provide both email and password"
         })
     
-    async with AsyncSessionLocal() as session:
+    try:
+        # Use injected database session
         result = await session.execute(
             select(User).where(User.email == username)
         )
@@ -55,11 +62,18 @@ async def login_form(request: Request):
             })
 
         password_helper = PasswordHelper()
+        print(f"🔐 Password verification - Input password: {password}")
+        print(f"🔐 Stored hash: {user.hashed_password}")
+        print(f"🔐 User email: {user.email}")
+        
         is_valid = password_helper.verify_and_update(str(password), user.hashed_password)
+        print(f"🔐 Password verification result: {is_valid}")
         
         # verify_and_update returns (bool, str) - we need the first element
-        if hasattr(is_valid, '__getitem__'):
+        if isinstance(is_valid, tuple):
             is_valid = is_valid[0]
+        
+        print(f"🔐 Final verification result: {is_valid}")
         
         if not is_valid:
             return templates.TemplateResponse("login.html", {
@@ -85,11 +99,26 @@ async def login_form(request: Request):
                 "error": "Access denied. Staff or admin privileges required."
             })
 
-        # Create session token
-        token = create_user_token(user)
-        response = RedirectResponse(url="/protected", status_code=302)
+        # Create session token using dependency injection
+        token = create_user_token(user, settings)
+        
+        # Check if there's a redirect URL in the form or default to home
+        redirect_url = form.get("next", "/")
+        if not redirect_url.startswith("/"):
+            redirect_url = "/"
+        
+        response = RedirectResponse(url=redirect_url, status_code=302)
         response.set_cookie(key="access_token", value=token, httponly=True, max_age=1800)  # 30 minutes
         return response
+        
+    except Exception as e:
+        print(f"Database error during login: {e}")
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "title": "Login",
+            "current_page": "login",
+            "error": "Database is currently unavailable. Please check your database configuration and try again later."
+        })
 
 
 @router.get("/logout")
@@ -97,4 +126,4 @@ async def logout():
     """Logout and clear authentication cookie"""
     response = RedirectResponse(url="/", status_code=302)
     response.delete_cookie(key="access_token")
-    return response
+    return response 

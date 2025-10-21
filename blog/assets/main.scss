@@ -1,0 +1,104 @@
+---
+---
+
+// Import minima theme components
+@import "minima";
+
+// Define base colors first
+$grey-color: #828282 !default;
+$text-color: #111111 !default;
+
+// Override deprecated color functions with compatible equivalents
+$grey-color-light: lighten($grey-color, 40%) !default;
+$grey-color-dark: darken($grey-color, 25%) !default;
+
+// Custom FastOpp theme colors
+$brand-color: #3B82F6 !default; // ai-blue
+$brand-color-light: lighten($brand-color, 40%) !default;
+$brand-color-dark: darken($brand-color, 15%) !default;
+
+// Override minima variables with compatible color functions
+.site-header {
+  .site-title {
+    color: darken($brand-color, 15%);
+  }
+}
+
+.post-meta {
+  color: lighten($text-color, 18%);
+}
+
+.post-content {
+  blockquote {
+    background-color: lighten($grey-color-light, 6%);
+  }
+}
+
+// Custom FastOpp styling
+.site-header {
+  border-top: 3px solid $brand-color;
+}
+
+.site-title {
+  font-weight: 600;
+  color: $brand-color;
+}
+
+.site-nav {
+  .page-link {
+    color: $text-color;
+    
+    &:hover {
+      color: $brand-color;
+    }
+  }
+}
+
+.post-title {
+  color: $brand-color;
+  
+  a {
+    color: inherit;
+    
+    &:hover {
+      color: darken($brand-color, 15%);
+    }
+  }
+}
+
+.post-meta {
+  color: lighten($text-color, 18%);
+}
+
+.post-content {
+  h1, h2, h3, h4, h5, h6 {
+    color: $brand-color;
+  }
+  
+  a {
+    color: $brand-color;
+    
+    &:hover {
+      color: darken($brand-color, 15%);
+    }
+  }
+  
+  blockquote {
+    border-left: 4px solid $brand-color;
+    background-color: lighten($grey-color-light, 6%);
+  }
+  
+  code {
+    background-color: lighten($grey-color-light, 6%);
+    color: $brand-color;
+  }
+  
+  pre {
+    background-color: lighten($grey-color-light, 6%);
+    border: 1px solid darken($grey-color-light, 10%);
+  }
+}
+
+.footer-col-wrapper {
+  color: lighten($text-color, 18%);
+}

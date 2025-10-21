@@ -1,0 +1,44 @@
+{% if attendees and attendees|length > 0 %}
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for attendee in attendees %}
+    <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+        {% if attendee.photo_url %}
+        <img src="{{ attendee.photo_url }}" alt="{{ attendee.name }}" class="w-32 h-32 object-cover rounded-full border-4 border-white shadow-lg mx-auto mb-4">
+        {% else %}
+        <div class="w-32 h-32 bg-gradient-to-br from-ai-blue to-ai-purple rounded-full flex items-center justify-center text-white text-4xl font-bold mx-auto mb-4">
+            {{ attendee.name[0] }}
+        </div>
+        {% endif %}
+        
+        <div class="text-center">
+            <h4 class="text-xl font-bold text-gray-900 mb-2">{{ attendee.name }}</h4>
+            <p class="text-gray-600 mb-3">{{ attendee.company or 'Independent Professional' }}</p>
+            
+            <div class="flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                <span class="ml-2 text-sm font-medium text-gray-700">{{ attendee.webinar_title }}</span>
+            </div>
+            
+            {% if attendee.notes %}
+            <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                <p class="text-gray-700 italic">"{{ attendee.notes }}"</p>
+            </div>
+            {% endif %}
+            
+            <div class="flex justify-center space-x-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    {{ attendee.status }}
+                </span>
+                {% if attendee.group %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ attendee.group }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-gray-500 text-center py-8">No attendees found</p>
+{% endif %} 

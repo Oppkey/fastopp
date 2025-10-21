@@ -45,13 +45,26 @@ class AdminAuth(AuthenticationBackend):
             if hasattr(is_valid, '__getitem__'):
                 is_valid = is_valid[0]
             
+            if is_valid:
+                # Set session data for authentication
+                request.session["is_authenticated"] = True
+                request.session["user_id"] = str(user.id)
+                request.session["user_email"] = user.email
+                request.session["is_superuser"] = user.is_superuser
+                request.session["is_staff"] = user.is_staff
+                request.session["group"] = user.group
+                request.session["can_manage_webinars"] = user.is_superuser or user.group in ["marketing", "sales"]
+            
             return is_valid
 
     async def logout(self, request: Request) -> bool:
         """Handle admin logout"""
+        # Clear session data
+        request.session.clear()
         return True
 
     async def authenticate(self, request: Request) -> bool:
         """Check if user is authenticated"""
-        # This is a simple implementation - in production, use proper session management
-        return True
+        # Check if user has a valid session
+        session = request.session
+        return session.get("is_authenticated", False)

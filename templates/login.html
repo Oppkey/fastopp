@@ -3,8 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - FastOpp Base Assets</title>
+    <title>Login - FastOpp</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/favicon.ico') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.6"></script>
+    <!-- Custom CSS for dropdowns -->
+    <style>
+        .dropdown-menu { display: none; }
+        .dropdown-menu:not(.hidden) { display: block; }
+    </style>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -20,30 +28,24 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
     <div class="min-h-screen flex flex-col">
-        <!-- Header -->
-        <header class="bg-white shadow-sm border-b">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center py-6">
-                    <div class="flex items-center">
-                        <h1 class="text-2xl font-bold text-gray-900">FastOpp Base Assets</h1>
-                    </div>
-                    <nav class="flex space-x-8">
-                        <a href="/" class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                        <a href="/admin/" class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Admin</a>
-                    </nav>
-                </div>
-            </div>
-        </header>
+        {% include 'partials/header.html' %}
 
         <!-- Main Content -->
         <main class="flex-grow flex items-center justify-center">
             <div class="max-w-md w-full space-y-8">
                 <div>
                     <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Sign in to access Protected Content
+                        Sign in to your account
                     </h2>
                     <p class="mt-2 text-center text-sm text-gray-600">
                         Staff or admin access required
+                    </p>
+                    <p class="mt-1 text-center text-xs text-gray-500">
+                        {% if request.query_params.get('next') %}
+                            After login, you'll be redirected to: {{ request.query_params.get('next') }}
+                        {% else %}
+                            After login, you'll be redirected to the home page
+                        {% endif %}
                     </p>
                 </div>
                 
@@ -54,6 +56,7 @@
                 {% endif %}
                 
                 <form class="mt-8 space-y-6" method="POST" action="/login">
+                    <input type="hidden" name="next" value="{{ request.query_params.get('next', '/oppdemo/') }}">
                     <div class="rounded-md shadow-sm -space-y-px">
                         <div>
                             <label for="username" class="sr-only">Email address</label>
@@ -80,4 +83,4 @@
         </main>
     </div>
 </body>
-</html>
+</html> 

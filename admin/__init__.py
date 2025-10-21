@@ -1,1 +1,1 @@
-# Base admin module for minimal FastAPI application
+# Demo admin module for full FastAPI application with all features
