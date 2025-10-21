@@ -1,12 +1,19 @@
-# Pull Request: Environment Configuration Improvements
+# Pull Request: Environment Configuration & Unified Authentication System
 
 ## 🎯 **Summary**
 
-This PR enhances the application's configuration system by adding environment variable support for key settings, improving debug functionality, and updating documentation with better examples and guidance.
+This PR enhances the application's configuration system by adding environment variable support for key settings, improving debug functionality, and implementing a unified JWT-based authentication system that works seamlessly across SQLAdmin and application routes.
 
 ## 🚀 **Key Features Added**
 
-### **1. LLM Model Configuration**
+### **1. Unified Authentication System**
+- **JWT-Based Authentication**: Single authentication system for both SQLAdmin and application routes
+- **Seamless Integration**: Login to SQLAdmin automatically authenticates for protected application pages
+- **Cookie-Based Tokens**: Secure JWT tokens stored in HTTP cookies
+- **Role-Based Access**: Support for user, staff, and superuser roles
+- **Unified Logout**: Single logout clears authentication across all interfaces
+
+### **2. LLM Model Configuration**
 - **Environment Variable**: `OPENROUTER_LLM_MODEL` 
 - **Default**: `meta-llama/llama-3.3-70b-instruct:free`
 - **Usage**: Set in `.env` file to switch between different AI models
@@ -17,25 +24,39 @@ This PR enhances the application's configuration system by adding environment va
   OPENROUTER_LLM_MODEL=google/gemini-pro:free
   ```
 
-### **2. Conditional Debug System**
+### **3. Conditional Debug System**
 - **Environment Variable**: `DEBUG` (default: `true`)
 - **Smart Debug Output**: Debug print statements now respect the DEBUG setting
 - **Performance**: No debug overhead when `DEBUG=false`
 - **Services Updated**: Chat service and S3 storage now use conditional debug statements
 
-### **3. Host and Port Configuration**
+### **4. Host and Port Configuration**
 - **Environment Variables**: `HOST` and `PORT`
 - **Defaults**: `HOST=0.0.0.0`, `PORT=8000`
 - **Deployment Ready**: Works with cloud platforms (Heroku, Railway, Fly.io, etc.)
 - **Files Updated**: `oppman.py`, `base_assets/main.py`, `scripts/production_start.py`
 
-### **4. Enhanced Database Documentation**
+### **5. Enhanced Database Documentation**
 - **SQLite Examples**: Added clear examples for SQLite configuration
 - **Filename Customization**: Documentation on changing database filenames
 - **Removed Untested**: Removed MySQL driver examples (not tested)
 - **Better Guidance**: Clearer instructions for different database setups
 
 ## 📁 **Files Modified**
+
+### **Authentication System**
+- `services/auth/__init__.py` - Unified authentication exports
+- `services/auth/core.py` - JWT authentication core functions
+- `services/auth/admin.py` - SQLAdmin authentication backend
+- `services/auth/dependencies.py` - FastAPI dependency injection
+- `base_assets/routes/oppman.py` - Updated to use unified auth
+- `base_assets/routes/auth.py` - Updated to use unified auth
+- `admin/setup.py` - Updated to use unified auth backend
+
+### **Templates & UI**
+- `templates/index.html` - Updated home page with Oppman Panel and emergency access
+- `templates/oppman.html` - Added logout button and fixed template errors
+- `docs/AUTHENTICATION.md` - Comprehensive authentication documentation
 
 ### **Configuration Files**
 - `dependencies/config.py` - Added HOST, PORT, debug settings
@@ -51,6 +72,28 @@ This PR enhances the application's configuration system by adding environment va
 - `scripts/production_start.py` - Updated to use HOST/PORT environment variables
 
 ## 🔧 **Technical Details**
+
+### **Unified Authentication System**
+```python
+# JWT Token Creation
+def create_user_token(user: User) -> str:
+    token_data = {
+        "sub": str(user.id),
+        "email": user.email,
+        "is_staff": user.is_staff,
+        "is_superuser": user.is_superuser,
+        "exp": datetime.utcnow() + timedelta(minutes=expire_minutes)
+    }
+    return jwt.encode(token_data, secret_key, algorithm="HS256")
+
+# SQLAdmin Integration
+class AdminAuth:
+    async def login(self, request: Request, form_data: OAuth2PasswordRequestForm):
+        # ... authentication logic ...
+        token = create_user_token(user)
+        response.set_cookie(key="access_token", value=token, httponly=True)
+        return response
+```
 
 ### **Environment Variable Support**
 ```python
@@ -81,22 +124,45 @@ LLM_MODEL = os.getenv("OPENROUTER_LLM_MODEL", "meta-llama/llama-3.3-70b-instruct
 
 ## 🎯 **Benefits**
 
+### **For Authentication**
+- **Single Sign-On**: Login once to SQLAdmin, access all protected routes
+- **Unified Experience**: Seamless navigation between admin panel and application
+- **Secure Tokens**: JWT-based authentication with proper expiration
+- **Role-Based Access**: Granular permissions for different user types
+- **Easy Logout**: Single logout clears authentication across all interfaces
+
 ### **For Developers**
 - **Easy Model Switching**: Change AI models via environment variable
 - **Debug Control**: Turn debug output on/off as needed
 - **Port Flexibility**: Avoid port conflicts in development
+- **Simplified Auth**: Single authentication system instead of multiple implementations
 
 ### **For Production**
 - **Cloud Platform Ready**: Works with Heroku, Railway, Fly.io, etc.
 - **Performance**: No debug overhead in production
 - **Security**: Can bind to specific hosts for security
+- **Unified Security**: Consistent authentication across all application components
 
 ### **For Documentation**
 - **Clear Examples**: Better SQLite configuration examples
 - **Database Flexibility**: Easy database filename changes
 - **Removed Confusion**: Removed untested MySQL examples
+- **Auth Documentation**: Comprehensive authentication system documentation
 
 ## 🧪 **Testing**
+
+### **Authentication Testing**
+```bash
+# Test unified authentication
+curl -c cookies.txt -b cookies.txt http://localhost:8000/login
+# Login via form, then test protected routes
+curl -b cookies.txt http://localhost:8000/oppman/
+curl -b cookies.txt http://localhost:8000/admin/
+
+# Test logout
+curl -b cookies.txt http://localhost:8000/logout
+curl -b cookies.txt http://localhost:8000/oppman/  # Should redirect to login
+```
 
 ### **Environment Variable Testing**
 ```bash
@@ -138,6 +204,9 @@ HOST=127.0.0.1 uv run python main.py
 - ✅ **Default values maintain current behavior**
 - ✅ **No breaking changes to APIs**
 - ✅ **Base assets remain simple (no dependency injection)**
+- ✅ **Authentication system is backward compatible**
+- ✅ **Existing login/logout flows preserved**
+- ✅ **SQLAdmin integration seamless**
 
 ## 🎉 **Ready for Production**
 

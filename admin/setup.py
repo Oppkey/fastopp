@@ -6,7 +6,7 @@ from sqladmin import Admin
 from fastapi import FastAPI
 from dependencies.database import create_database_engine
 from dependencies.config import get_settings
-from auth.admin import AdminAuth
+from services.auth import AdminAuth
 from .views import UserAdmin, ProductAdmin, WebinarRegistrantsAdmin, AuditLogAdmin
 
 

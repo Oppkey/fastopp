@@ -11,15 +11,6 @@ from pathlib import Path
 # Add the current directory to Python path so we can import our modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Try to import from dependencies (demo mode), fall back to direct import (minimal mode)
-try:
-    from dependencies.config import get_settings
-    USE_DEPENDENCY_INJECTION = True
-except ImportError:
-    # Fallback for minimal mode - direct environment variable access
-    USE_DEPENDENCY_INJECTION = False
-
-
 def generate_emergency_token(secret_key: str) -> str:
     """Generate emergency access token from SECRET_KEY"""
     return hashlib.sha256(f"emergency_access_{secret_key}".encode()).hexdigest()
@@ -31,13 +22,10 @@ def main():
     print("=" * 50)
     
     try:
-        # Get settings based on mode
-        if USE_DEPENDENCY_INJECTION:
-            settings = get_settings()
-            secret_key = settings.secret_key
-        else:
-            # Minimal mode - direct environment variable access
-            secret_key = os.getenv("SECRET_KEY", "dev_secret_key_change_in_production")
+        # Use environment variables directly
+        from dotenv import load_dotenv
+        load_dotenv()
+        secret_key = os.getenv("SECRET_KEY", "dev_secret_key_change_in_production")
         
         if not secret_key or secret_key == "dev_secret_key_change_in_production":
             print("⚠️  WARNING: Using default SECRET_KEY!")
