@@ -8,7 +8,7 @@ version = "0.2.6"
 authors = [
     {name = "Oppkey"}
 ]
-description = "FastAPI starter package for students prototyping AI web applications. Install for basic FastAPI app, clone repository for full features with management scripts and demos."
+description = "FastAPI opinionated stack inspired by Django for students prototyping AI web applications. Authentication, database, admin panel, HTML templates, and more."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
