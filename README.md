@@ -19,6 +19,7 @@ uv init --python 3.12 # fastopp will not work with python 3.13 or 3.14
 uv add fastopp
 uv run fastopp-startproject
 uv run python oppman.py runserver
+cp example.env .env # open in editor and add your own credentials
 ```
 
 If `uv run fastopp-startproject` fails, try
@@ -46,6 +47,8 @@ pip install fastopp
 fastopp-startproject
 # Run the application
 python oppman.py runserver
+# configure for your specific environment
+cp example.env .env # open in editor and add your own credentials
 ```
 
 ## What
