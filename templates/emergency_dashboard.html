@@ -35,8 +35,7 @@
             <div>
                 <h3 class="font-bold">Emergency Access Active</h3>
                 <div class="text-xs">
-                    You are currently using emergency access. The database will be automatically initialized if needed. 
-                    Please reset your admin password and disable this access when done.
+                    You are currently using emergency access. Please reset your admin password and disable this access when done.
                 </div>
             </div>
         </div>
@@ -186,41 +185,6 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-
-        <!-- Database Management Section -->
-        <div class="card bg-base-100 shadow-xl mb-6">
-            <div class="card-body">
-                <h2 class="card-title text-lg mb-4 text-error">🗄️ Database Management</h2>
-                <p class="text-sm text-base-content/70 mb-4">
-                    Use this to clear prepared statements and reset the database. This will drop all tables and clear all data.
-                </p>
-                
-                <div class="alert alert-warning mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                    </svg>
-                    <div>
-                        <h3 class="font-bold">Warning: This will delete ALL data!</h3>
-                        <div class="text-xs">
-                            This action will drop all tables and clear all data. You will need to create a superuser after this.
-                        </div>
-                    </div>
-                </div>
-                
-                <button 
-                    hx-post="/oppman/emergency/drop-tables" 
-                    hx-target="#drop-tables-result"
-                    hx-indicator="#drop-tables-loading"
-                    hx-confirm="Are you sure you want to drop all tables? This will delete ALL data!"
-                    class="btn btn-error"
-                >
-                    <span id="drop-tables-loading" class="loading loading-spinner loading-sm htmx-indicator"></span>
-                    Drop All Tables
-                </button>
-                
-                <div id="drop-tables-result" class="mt-4"></div>
             </div>
         </div>
 

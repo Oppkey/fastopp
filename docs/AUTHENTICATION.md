@@ -1,59 +1,65 @@
 # Authentication System
 
-This FastAPI application includes a comprehensive authentication system with both web-based and API authentication. We use a **hybrid approach** that combines:
+This FastAPI application includes a **unified authentication system** that provides seamless integration between SQLAdmin and application authentication. The system uses a **single JWT-based approach** that works across all components:
 
-- **[FastAPI Users](https://github.com/fastapi-users/fastapi-users)** for password hashing and user management
-- **Custom JWT authentication** for API access
-- **Custom session-based authentication** for the admin panel
-- **Advanced group-based permission system** for granular access control
+- **Unified JWT Authentication** - Single token system for all authentication
+- **SQLAdmin Integration** - Login to admin panel automatically authenticates the entire application
+- **Cookie-based Sessions** - Secure httpOnly cookies with JWT tokens
+- **Group-based Permissions** - Advanced permission system with role-based access control
+- **Seamless User Experience** - Login once, access everything
 
 ## Architecture Overview
 
-The authentication system has been reorganized to follow a cleaner Model-View-Services architecture. All authentication-related functionality is now consolidated in the `auth/` module.
+The authentication system uses a **unified services architecture** with a single authentication service that handles both SQLAdmin and application authentication.
 
 ### Structure
 
 ```
-auth/
-├── __init__.py      # Module exports and public API
-├── core.py          # Core JWT authentication logic
-├── users.py         # FastAPI Users integration
-└── admin.py         # SQLAdmin authentication
+services/auth/
+├── __init__.py          # Unified auth exports
+├── core.py              # JWT token creation/verification
+├── admin.py             # SQLAdmin authentication backend
+└── dependencies.py     # FastAPI dependencies (for demo mode)
 ```
 
 ## Components
 
-### `auth/core.py`
-Contains the core JWT-based authentication logic:
+### `services/auth/core.py`
+Contains the unified JWT-based authentication logic:
 
-- `create_access_token()` - Create JWT tokens
-- `verify_token()` - Verify JWT tokens
-- `get_current_user()` - Get authenticated user from Bearer token
-- `get_current_superuser()` - Get authenticated superuser
-- `get_current_staff_or_admin()` - Get authenticated staff/admin user
-- `create_user_token()` - Create user-specific tokens
-- `get_current_user_from_cookies()` - Get user from cookies
+- `create_user_token()` - Create JWT tokens with user permissions
+- `verify_token()` - Verify JWT tokens with secret key
+- `get_current_user_from_cookies()` - Get authenticated user from cookies
 - `get_current_staff_or_admin_from_cookies()` - Get staff/admin from cookies
+- `get_current_superuser_from_cookies()` - Get superuser from cookies
+- `get_secret_key()` - Get secret key from environment
+- `get_token_expire_minutes()` - Get token expiration time
 
-### `auth/users.py`
-Handles FastAPI Users integration:
-
-- `UserManager` - User management class
-- `get_user_db()` - Database dependency
-- `get_user_manager()` - User manager dependency
-- `jwt_strategy` - JWT authentication strategy
-- `auth_backend` - Authentication backend
-- `fastapi_users` - FastAPI Users instance
-
-### `auth/admin.py`
-Manages SQLAdmin authentication:
+### `services/auth/admin.py`
+Manages SQLAdmin authentication with unified JWT integration:
 
 - `AdminAuth` - SQLAdmin authentication backend
-- Login/logout/authentication methods for admin panel
+- **Unified Login** - Creates JWT token on SQLAdmin login
+- **Cookie Integration** - Sets application cookie for seamless access
+- **Permission Verification** - Validates user permissions for admin access
 
-## Admin Panel Authentication
+### `services/auth/dependencies.py`
+Provides FastAPI dependency injection support:
 
-The admin panel uses session-based authentication similar to Django's admin interface. **Authentication verifies users against the database** instead of using hardcoded credentials.
+- `get_current_user()` - FastAPI dependency for user authentication
+- `get_current_staff_or_admin()` - FastAPI dependency for staff/admin
+- `get_current_superuser()` - FastAPI dependency for superuser
+
+## Unified Authentication Experience
+
+The system provides a **seamless authentication experience** where logging into SQLAdmin automatically authenticates you for the entire application.
+
+### How It Works
+
+1. **Login to SQLAdmin** at `/admin/`
+2. **JWT token created** with your user permissions
+3. **Cookie set** for application authentication
+4. **Access protected pages** like `/oppman/`, `/protected/` without additional login
 
 ### Access Admin Panel
 
@@ -63,6 +69,7 @@ The admin panel uses session-based authentication similar to Django's admin inte
    - Marketing: `marketing@example.com` / `test123`
    - Sales: `sales@example.com` / `test123`
    - Support: `staff@example.com` / `test123`
+3. **Automatic Application Access** - You're now logged into the entire system!
 
 ### Advanced Permission System
 
@@ -104,32 +111,37 @@ The system implements a **group-based permission system** with multiple permissi
 - ✅ **User management interface**
 - ✅ **Audit trail (superuser only)**
 
-## API Authentication
+## JWT Token System
 
-The application provides JWT-based authentication for API access.
+The application uses **unified JWT tokens** that work across all authentication scenarios.
 
-### Get Authentication Token
+### Token Features
 
-```bash
-curl -X POST http://localhost:8000/login \
-  -u "admin@example.com:admin123" \
-  -H "Content-Type: application/json"
+- **Cryptographic Security** - Signed with secret key
+- **Automatic Expiration** - Configurable token lifetime
+- **Rich Payload** - Contains user permissions and metadata
+- **Cookie Integration** - Stored in secure httpOnly cookies
+- **Cross-Component** - Works for SQLAdmin and application routes
+
+### Token Configuration
+
+Set these environment variables in your `.env` file:
+
+```env
+SECRET_KEY=your-secret-key-here
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
 
-**Response**:
+### Token Payload
 
 ```json
 {
-  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-  "token_type": "bearer"
+  "sub": "user-uuid",
+  "email": "user@example.com",
+  "is_staff": true,
+  "is_superuser": false,
+  "exp": 1234567890
 }
-```
-
-### Use Authentication Token
-
-```bash
-curl -X GET http://localhost:8000/admin/ \
-  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
 ```
 
 ## Usage
@@ -137,24 +149,29 @@ curl -X GET http://localhost:8000/admin/ \
 ### Importing Authentication Components
 
 ```python
-# Core authentication
-from auth.core import get_current_user, create_user_token
+# Unified authentication system
+from services.auth import (
+    create_user_token,
+    get_current_user_from_cookies,
+    get_current_staff_or_admin_from_cookies,
+    get_current_superuser_from_cookies,
+    AdminAuth
+)
 
-# FastAPI Users
-from auth.users import fastapi_users, auth_backend
-
-# Admin authentication
-from auth.admin import AdminAuth
-
-# Or import everything
-from auth import *
+# For FastAPI dependency injection (demo mode)
+from services.auth.dependencies import (
+    get_current_user,
+    get_current_staff_or_admin,
+    get_current_superuser
+)
 ```
 
 ### Route Protection
 
+#### Base Assets Mode (Direct Function Calls)
+
 ```python
-from fastapi import Depends
-from auth.core import get_current_staff_or_admin_from_cookies
+from services.auth import get_current_staff_or_admin_from_cookies
 
 @router.get("/protected")
 async def protected_route(request: Request):
@@ -162,23 +179,40 @@ async def protected_route(request: Request):
     return {"message": f"Hello {user.email}"}
 ```
 
-## Migration from Old Structure
+#### Demo Mode (Dependency Injection)
 
-The following files were moved from the root directory:
+```python
+from fastapi import Depends
+from services.auth.dependencies import get_current_staff_or_admin
 
-- `users.py` → `auth/users.py`
-- `auth.py` → `auth/core.py`
-- `admin_auth.py` → `auth/admin.py`
+@router.get("/protected")
+async def protected_route(current_user: User = Depends(get_current_staff_or_admin)):
+    return {"message": f"Hello {current_user.email}"}
+```
 
-All imports have been updated to use the new structure.
+## Migration to Unified System
+
+The authentication system has been completely restructured to provide a unified experience:
+
+### Old Structure (Multiple Systems)
+- `auth/` - Separate auth system
+- `base_assets/auth/` - Base assets auth system  
+- `demo_assets/auth/` - Demo assets auth system
+- `demo_assets/dependencies/auth.py` - Dependency injection auth
+
+### New Structure (Unified System)
+- `services/auth/` - Single unified authentication service
+- **SQLAdmin Integration** - Automatic JWT token creation on admin login
+- **Seamless Experience** - Login once, access everything
 
 ## Benefits
 
-1. **Cleaner Root Directory**: Authentication files no longer clutter the root
-2. **Better Organization**: Related functionality is grouped together
-3. **Easier Maintenance**: Clear separation of concerns
-4. **Better Imports**: Explicit imports from specific modules
-5. **Follows MVS Pattern**: Aligns with Model-View-Services architecture
+1. **Unified Authentication**: Single login works across all components
+2. **Eliminated Duplication**: No more multiple auth systems to maintain
+3. **Better Security**: Consistent JWT tokens across all authentication
+4. **Seamless UX**: Login to SQLAdmin automatically authenticates entire app
+5. **Easier Maintenance**: Single authentication service to maintain
+6. **Flexible Integration**: Works with both direct calls and dependency injection
 
 ## Test Data
 
@@ -213,63 +247,69 @@ The application comes with pre-loaded test data for authentication testing:
 
 ## Testing
 
-To test the authentication module:
+To test the unified authentication system:
 
 ```bash
-uv run python -c "from auth import *; print('Auth module works')"
+uv run python -c "from services.auth import *; print('Unified auth system works')"
 ```
 
 ### Test Authentication Flow
 
-1. **Login to Admin Panel**: Visit `/admin/` and login with test credentials
-2. **Test Permissions**: Try accessing different sections based on user role
-3. **Test API Auth**: Use JWT tokens for API requests
-4. **Test Session Auth**: Verify session persistence across requests
+1. **Login to SQLAdmin**: Visit `/admin/` and login with test credentials
+2. **Verify Unified Access**: Visit `/oppman/` or `/protected/` - no additional login needed!
+3. **Test Permissions**: Try accessing different sections based on user role
+4. **Test JWT Tokens**: Verify JWT tokens work across all components
+5. **Test Cookie Integration**: Verify httpOnly cookies are set correctly
 
 ## Security Features
 
-### Password Security
+### Unified Security
 
-- **FastAPI Users PasswordHelper**: Secure password hashing
-- **JWT Tokens**: Stateless authentication for APIs
-- **Session Management**: Secure session handling for admin panel
+- **JWT Tokens**: Cryptographically signed tokens with secret key
+- **HttpOnly Cookies**: Secure cookie storage prevents XSS attacks
+- **Automatic Expiration**: Configurable token lifetime
 - **Permission Validation**: Server-side permission checks
+- **Cross-Component Security**: Same security model across all components
 
 ### Best Practices
 
-- Use strong, unique passwords for production
-- Rotate JWT secrets regularly
+- Use strong, unique SECRET_KEY for production
+- Set appropriate ACCESS_TOKEN_EXPIRE_MINUTES
+- Use HTTPS in production (secure cookie flag)
 - Implement rate limiting for login attempts
 - Log authentication events for audit purposes
-- Use HTTPS in production
+- Regular security updates and token rotation
 
 ## Implementation Details
 
-### FastAPI Users Integration
+### Unified JWT Authentication
 
-The application uses FastAPI Users for:
+The system uses a single JWT-based approach for:
 
-- Password hashing and verification
-- User model management
-- Registration and login endpoints
+- **SQLAdmin Authentication**: Creates JWT token on admin login
+- **Application Authentication**: Uses same JWT token for all routes
+- **Cookie Integration**: Stores JWT in secure httpOnly cookies
+- **Permission System**: JWT payload contains user permissions
+- **Cross-Component**: Works seamlessly across all components
 
-### Custom JWT Authentication
+### SQLAdmin Integration
 
-JWT tokens are used for:
+The SQLAdmin authentication backend:
 
-- API access authentication
-- Stateless authentication for external clients
-- Token-based session management
+- **Validates credentials** against database
+- **Creates JWT token** with user permissions
+- **Sets application cookie** for seamless access
+- **Verifies permissions** for admin panel access
+- **Handles logout** by clearing JWT token
 
-### Session-Based Admin Authentication
+### Cookie-Based Sessions
 
-The admin panel uses:
+The system uses secure cookies for:
 
-- Database-backed session storage
-- Secure cookie-based sessions
-- User permission verification against database records
-- Group-based permission checking
-- Model-specific access control
+- **HttpOnly storage** - Prevents XSS attacks
+- **Automatic expiration** - Configurable token lifetime
+- **Cross-route access** - Same token works everywhere
+- **Permission persistence** - User permissions in JWT payload
 
 ### Permission System
 

@@ -1,6 +1,6 @@
 """
-Authentication core functions for base_assets
-JWT-based authentication without dependency injection
+Unified Authentication Core
+JWT-based authentication system for both SQLAdmin and application routes
 """
 import uuid
 import os
@@ -42,7 +42,17 @@ def create_user_token(user: User) -> str:
     return jwt.encode(token_data, secret_key, algorithm="HS256")
 
 
-async def get_current_user_from_cookies(request: Request):
+def verify_token(token: str) -> Optional[dict]:
+    """Verify JWT token and return payload"""
+    secret_key = get_secret_key()
+    try:
+        payload = jwt.decode(token, secret_key, algorithms=["HS256"])
+        return payload
+    except jwt.PyJWTError:
+        return None
+
+
+async def get_current_user_from_cookies(request: Request) -> User:
     """Get current authenticated user from cookies using JWT"""
     token = request.cookies.get("access_token")
     if not token:
@@ -53,10 +63,8 @@ async def get_current_user_from_cookies(request: Request):
         )
     
     # Verify JWT token
-    secret_key = get_secret_key()
-    try:
-        payload = jwt.decode(token, secret_key, algorithms=["HS256"])
-    except jwt.PyJWTError:
+    payload = verify_token(token)
+    if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
@@ -103,7 +111,7 @@ async def get_current_user_from_cookies(request: Request):
         return user
 
 
-async def get_current_staff_or_admin_from_cookies(request: Request):
+async def get_current_staff_or_admin_from_cookies(request: Request) -> User:
     """Get current authenticated user with staff or admin privileges"""
     user = await get_current_user_from_cookies(request)
     
@@ -111,6 +119,19 @@ async def get_current_staff_or_admin_from_cookies(request: Request):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Staff or admin privileges required",
+        )
+    
+    return user
+
+
+async def get_current_superuser_from_cookies(request: Request) -> User:
+    """Get current authenticated user with superuser privileges"""
+    user = await get_current_user_from_cookies(request)
+    
+    if not user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Superuser privileges required",
         )
     
     return user

@@ -18,8 +18,9 @@ import hmac
 import os
 from datetime import datetime
 
-from dependencies.auth import get_current_superuser
-from dependencies.config import get_settings, Settings
+# Simple authentication for base assets mode
+from fastapi import HTTPException, status
+from fastapi_users.password import PasswordHelper
 from models import User
 from db import AsyncSessionLocal
 from sqlalchemy import text
@@ -27,6 +28,22 @@ from sqlmodel import SQLModel
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
+
+
+async def get_current_superuser(request: Request):
+    """Superuser authentication using unified auth system"""
+    from services.auth import get_current_superuser_from_cookies
+    return await get_current_superuser_from_cookies(request)
+
+
+def get_settings():
+    """Simple settings for base assets mode"""
+    class SimpleSettings:
+        def __init__(self):
+            self.secret_key = os.getenv("SECRET_KEY", "dev_secret_key_change_in_production")
+            self.emergency_access_enabled = os.getenv("EMERGENCY_ACCESS_ENABLED", "false").lower() in ("true", "1", "yes")
+    
+    return SimpleSettings()
 
 
 def verify_emergency_secret_key(provided_key: str, expected_key: str) -> bool:
@@ -39,12 +56,8 @@ def verify_emergency_secret_key(provided_key: str, expected_key: str) -> bool:
 
 def is_emergency_access_enabled() -> bool:
     """Check if emergency access is enabled via settings"""
-    try:
-        settings = get_settings()
-        return settings.emergency_access_enabled
-    except Exception:
-        # Fallback to environment variable if settings fail
-        return os.getenv("EMERGENCY_ACCESS_ENABLED", "false").lower() in ("true", "1", "yes")
+    settings = get_settings()
+    return settings.emergency_access_enabled
 
 
 async def ensure_database_initialized() -> bool:
@@ -286,13 +299,13 @@ async def emergency_access_page(request: Request):
 @router.post("/emergency/verify")
 async def verify_emergency_access(
     request: Request,
-    token: str = Form(...),
-    settings: Settings = Depends(get_settings)
+    token: str = Form(...)
 ):
     """Verify emergency access token and grant temporary access"""
     if not is_emergency_access_enabled():
         raise HTTPException(status_code=404, detail="Emergency access is disabled")
     
+    settings = get_settings()
     if not verify_emergency_secret_key(token, settings.secret_key):
         return JSONResponse({
             "success": False,
@@ -338,8 +351,7 @@ async def emergency_dashboard(request: Request):
 async def emergency_reset_password(
     request: Request,
     email: str = Form(...),
-    new_password: str = Form(...),
-    settings: Settings = Depends(get_settings)
+    new_password: str = Form(...)
 ):
     """Reset user password via emergency access"""
     if not is_emergency_access_enabled():
@@ -378,8 +390,7 @@ async def emergency_reset_password(
 async def emergency_create_superuser(
     request: Request,
     email: str = Form(...),
-    password: str = Form(...),
-    settings: Settings = Depends(get_settings)
+    password: str = Form(...)
 ):
     """Create superuser via emergency access"""
     if not is_emergency_access_enabled():
