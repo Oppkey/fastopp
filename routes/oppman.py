@@ -18,7 +18,7 @@ import hmac
 import os
 from datetime import datetime
 
-from dependencies.auth import get_current_superuser
+from services.auth import get_current_superuser
 from dependencies.config import get_settings, Settings
 from models import User
 from db import AsyncSessionLocal

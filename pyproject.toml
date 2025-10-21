@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fastopp"
-version = "0.2.6"
+version = "0.3.0"
 authors = [
     {name = "Oppkey"}
 ]
@@ -55,6 +55,8 @@ test = [
 [project.scripts]
 fastopp = "fastopp:app"
 fastopp-startproject = "fastopp:startproject"
+
+[project.optional-dependencies]
 
 [tool.hatch.build.targets.wheel]
 packages = ["fastopp"]

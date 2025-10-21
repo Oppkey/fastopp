@@ -1,8 +1,9 @@
 """
 Authentication core functions for base_assets
-Simple version without dependency injection
+JWT-based authentication without dependency injection
 """
 import uuid
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import HTTPException, Request, status
@@ -10,16 +11,39 @@ from fastapi_users.password import PasswordHelper
 from sqlmodel import select
 from db import AsyncSessionLocal
 from models import User
+import jwt
+
+
+def get_secret_key() -> str:
+    """Get secret key from environment"""
+    return os.getenv("SECRET_KEY", "dev_secret_key_change_in_production")
+
+
+def get_token_expire_minutes() -> int:
+    """Get token expiration time from environment"""
+    return int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 
 def create_user_token(user: User) -> str:
     """Create a JWT token for the user"""
-    # Simple token creation - in production, use proper JWT
-    return f"token_{user.id}_{user.email}"
+    secret_key = get_secret_key()
+    expire_minutes = get_token_expire_minutes()
+    
+    # Create JWT payload
+    token_data = {
+        "sub": str(user.id),
+        "email": user.email,
+        "is_staff": user.is_staff,
+        "is_superuser": user.is_superuser,
+        "exp": datetime.utcnow() + timedelta(minutes=expire_minutes)
+    }
+    
+    # Create JWT token
+    return jwt.encode(token_data, secret_key, algorithm="HS256")
 
 
 async def get_current_user_from_cookies(request: Request):
-    """Get current authenticated user from cookies"""
+    """Get current authenticated user from cookies using JWT"""
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(
@@ -28,25 +52,29 @@ async def get_current_user_from_cookies(request: Request):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Simple token validation - in production, use proper JWT
-    if not token.startswith("token_"):
+    # Verify JWT token
+    secret_key = get_secret_key()
+    try:
+        payload = jwt.decode(token, secret_key, algorithms=["HS256"])
+    except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Extract user ID from token (simple approach)
+    # Extract user ID from JWT payload
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
     try:
-        parts = token.split("_")
-        if len(parts) < 3:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token format",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        user_uuid = uuid.UUID(parts[1])
-    except (ValueError, IndexError):
+        user_uuid = uuid.UUID(user_id)
+    except ValueError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token format",

@@ -1,68 +1,138 @@
 # Authentication System
 
-This FastAPI application includes a comprehensive authentication system with both web-based and API authentication. We use a **hybrid approach** that combines:
+This FastAPI application includes a **unified authentication system** that provides seamless integration between SQLAdmin and application authentication. The system uses a **single JWT-based approach** that works across all components:
 
-- **[FastAPI Users](https://github.com/fastapi-users/fastapi-users)** for password hashing and user management
-- **Custom JWT authentication** for API access
-- **Custom session-based authentication** for the admin panel
-- **Advanced group-based permission system** for granular access control
+- **Unified JWT Authentication** - Single token system for all authentication
+- **SQLAdmin Integration** - Login to admin panel automatically authenticates the entire application
+- **Cookie-based Sessions** - Secure httpOnly cookies with JWT tokens
+- **Group-based Permissions** - Advanced permission system with role-based access control
+- **Seamless User Experience** - Login once, access everything
+
+## JWT vs Cookie-based Authentication
+
+### **Understanding the Difference**
+
+**JWT (JSON Web Token)** is a **token format** - a way to encode data (like user info) into a secure, signed string:
+```javascript
+// JWT token example
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+```
+
+**Cookie-based Authentication with JWT** is a **storage mechanism** - using HTTP cookies to store the JWT token:
+```javascript
+// Cookie storage
+document.cookie = "access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict"
+```
+
+### **Our System Uses Both Approaches**
+
+#### **Cookie-based JWT (Web Applications)**
+```python
+# Server sets JWT in cookie
+response.set_cookie(key="access_token", value=jwt_token, httponly=True)
+# Browser automatically sends: Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+- ✅ **Automatic**: Browser handles sending cookies
+- ✅ **Secure**: HttpOnly cookies prevent XSS attacks
+- ✅ **Simple**: No JavaScript needed to manage tokens
+- ❌ **Limited**: Only works in browsers, not mobile apps
+
+#### **Header-based JWT (Mobile/API)**
+```python
+# Client sends JWT in Authorization header
+headers = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
+```
+- ✅ **Universal**: Works everywhere (mobile, web, API clients)
+- ✅ **Flexible**: Client controls when/how to send tokens
+- ✅ **Stateless**: No server-side session storage needed
+- ❌ **Manual**: Client must manage token storage/sending
+
+### **Key Point: Same JWT Token, Different Storage**
+
+The JWT token itself is identical - we just change **where we store it** and **how we send it** based on the client type:
+
+- **Web clients** → Cookie-based JWT (automatic, secure)
+- **Mobile clients** → Header-based JWT (flexible, universal)
+- **Same JWT token** → Works for both storage methods!
 
 ## Architecture Overview
 
-The authentication system has been reorganized to follow a cleaner Model-View-Services architecture. All authentication-related functionality is now consolidated in the `auth/` module.
+The authentication system uses a **unified services architecture** with a single authentication service that handles both SQLAdmin and application authentication.
 
 ### Structure
 
-```
-auth/
-├── __init__.py      # Module exports and public API
-├── core.py          # Core JWT authentication logic
-├── users.py         # FastAPI Users integration
-└── admin.py         # SQLAdmin authentication
+```text
+services/auth/
+├── __init__.py          # Unified auth exports
+├── core.py              # JWT token creation/verification
+├── admin.py             # SQLAdmin authentication backend
+└── dependencies.py     # FastAPI dependencies (for demo mode)
 ```
 
 ## Components
 
-### `auth/core.py`
-Contains the core JWT-based authentication logic:
+### `services/auth/core.py`
+Contains the unified JWT-based authentication logic:
 
-- `create_access_token()` - Create JWT tokens
-- `verify_token()` - Verify JWT tokens
-- `get_current_user()` - Get authenticated user from Bearer token
-- `get_current_superuser()` - Get authenticated superuser
-- `get_current_staff_or_admin()` - Get authenticated staff/admin user
-- `create_user_token()` - Create user-specific tokens
-- `get_current_user_from_cookies()` - Get user from cookies
+- `create_user_token()` - Create JWT tokens with user permissions
+- `verify_token()` - Verify JWT tokens with secret key
+- `get_current_user_from_cookies()` - Get authenticated user from cookies
 - `get_current_staff_or_admin_from_cookies()` - Get staff/admin from cookies
+- `get_current_superuser_from_cookies()` - Get superuser from cookies
+- `get_secret_key()` - Get secret key from environment
+- `get_token_expire_minutes()` - Get token expiration time
 
-### `auth/users.py`
-Handles FastAPI Users integration:
-
-- `UserManager` - User management class
-- `get_user_db()` - Database dependency
-- `get_user_manager()` - User manager dependency
-- `jwt_strategy` - JWT authentication strategy
-- `auth_backend` - Authentication backend
-- `fastapi_users` - FastAPI Users instance
-
-### `auth/admin.py`
-Manages SQLAdmin authentication:
+### `services/auth/admin.py`
+Manages SQLAdmin authentication with unified JWT integration:
 
 - `AdminAuth` - SQLAdmin authentication backend
-- Login/logout/authentication methods for admin panel
+- **Unified Login** - Creates JWT token on SQLAdmin login
+- **Cookie Integration** - Sets application cookie for seamless access
+- **Permission Verification** - Validates user permissions for admin access
 
-## Admin Panel Authentication
+### `services/auth/dependencies.py`
+Provides FastAPI dependency injection support:
 
-The admin panel uses session-based authentication similar to Django's admin interface. **Authentication verifies users against the database** instead of using hardcoded credentials.
+- `get_current_user()` - FastAPI dependency for user authentication
+- `get_current_staff_or_admin()` - FastAPI dependency for staff/admin
+- `get_current_superuser()` - FastAPI dependency for superuser
 
-### Access Admin Panel
+## Unified Authentication Experience
 
-1. **Visit**: http://localhost:8000/admin/
+The system provides a **seamless authentication experience** where logging in through any method automatically authenticates you for the entire application.
+
+### How It Works
+
+1. **Login via form** at `/login` OR **Login to SQLAdmin** at `/admin/`
+2. **JWT token created** with your user permissions
+3. **Both cookie and session set** for unified authentication
+4. **Access protected pages** like `/oppman/`, `/admin/` without additional login
+5. **Unified logout** clears authentication across all interfaces
+
+### Access Methods
+
+#### **Method 1: Login Form (Recommended)**
+1. **Visit**: http://localhost:8000/login
 2. **Login with any staff or superuser account**:
    - Superuser: `admin@example.com` / `admin123`
    - Marketing: `marketing@example.com` / `test123`
    - Sales: `sales@example.com` / `test123`
    - Support: `staff@example.com` / `test123`
+3. **Automatic Access** - You're now logged into both SQLAdmin and application routes!
+
+#### **Method 2: Direct SQLAdmin Access**
+1. **Visit**: http://localhost:8000/admin/
+2. **Login with same credentials** as above
+3. **Automatic Application Access** - You're now logged into the entire system!
+
+### Unified Logout
+
+The system provides **unified logout** that works across all interfaces:
+
+- **SQLAdmin Logout**: Custom logout button in top-right corner (replaces non-working default)
+- **Application Logout**: Logout button in `/oppman/` interface
+- **Direct Logout**: Visit `/logout` to log out of everything
+- **Complete Logout**: Clears both session tokens and cookies
 
 ### Advanced Permission System
 
@@ -104,32 +174,37 @@ The system implements a **group-based permission system** with multiple permissi
 - ✅ **User management interface**
 - ✅ **Audit trail (superuser only)**
 
-## API Authentication
+## JWT Token System
 
-The application provides JWT-based authentication for API access.
+The application uses **unified JWT tokens** that work across all authentication scenarios.
 
-### Get Authentication Token
+### Token Features
 
-```bash
-curl -X POST http://localhost:8000/login \
-  -u "admin@example.com:admin123" \
-  -H "Content-Type: application/json"
+- **Cryptographic Security** - Signed with secret key
+- **Automatic Expiration** - Configurable token lifetime
+- **Rich Payload** - Contains user permissions and metadata
+- **Cookie Integration** - Stored in secure httpOnly cookies
+- **Cross-Component** - Works for SQLAdmin and application routes
+
+### Token Configuration
+
+Set these environment variables in your `.env` file:
+
+```env
+SECRET_KEY=your-secret-key-here
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
 
-**Response**:
+### Token Payload
 
 ```json
 {
-  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-  "token_type": "bearer"
+  "sub": "user-uuid",
+  "email": "user@example.com",
+  "is_staff": true,
+  "is_superuser": false,
+  "exp": 1234567890
 }
-```
-
-### Use Authentication Token
-
-```bash
-curl -X GET http://localhost:8000/admin/ \
-  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
 ```
 
 ## Usage
@@ -137,24 +212,32 @@ curl -X GET http://localhost:8000/admin/ \
 ### Importing Authentication Components
 
 ```python
-# Core authentication
-from auth.core import get_current_user, create_user_token
+# Unified authentication system
+from services.auth import (
+    create_user_token,
+    get_current_user_from_cookies,
+    get_current_staff_or_admin_from_cookies,
+    get_current_superuser_from_cookies,
+    get_current_user_from_authorization_header,
+    get_current_staff_or_admin_from_authorization_header,
+    get_current_superuser_from_authorization_header,
+    AdminAuth
+)
 
-# FastAPI Users
-from auth.users import fastapi_users, auth_backend
-
-# Admin authentication
-from auth.admin import AdminAuth
-
-# Or import everything
-from auth import *
+# For FastAPI dependency injection (demo mode)
+from services.auth.dependencies import (
+    get_current_user,
+    get_current_staff_or_admin,
+    get_current_superuser
+)
 ```
 
 ### Route Protection
 
+#### Base Assets Mode (Direct Function Calls)
+
 ```python
-from fastapi import Depends
-from auth.core import get_current_staff_or_admin_from_cookies
+from services.auth import get_current_staff_or_admin_from_cookies
 
 @router.get("/protected")
 async def protected_route(request: Request):
@@ -162,23 +245,351 @@ async def protected_route(request: Request):
     return {"message": f"Hello {user.email}"}
 ```
 
-## Migration from Old Structure
+#### Demo Mode (Dependency Injection)
 
-The following files were moved from the root directory:
+```python
+from fastapi import Depends
+from services.auth.dependencies import get_current_staff_or_admin
 
-- `users.py` → `auth/users.py`
-- `auth.py` → `auth/core.py`
-- `admin_auth.py` → `auth/admin.py`
+@router.get("/protected")
+async def protected_route(current_user: User = Depends(get_current_staff_or_admin)):
+    return {"message": f"Hello {current_user.email}"}
+```
 
-All imports have been updated to use the new structure.
+### API Authentication for Mobile Apps
+
+The system supports **JWT Authorization header authentication** for mobile applications like Flutter, React Native, or any API client.
+
+#### **API Authentication Methods**
+
+```python
+# For API routes that need JWT header authentication
+from services.auth import get_current_user_from_authorization_header
+
+@router.get("/api/protected")
+async def api_protected_route(request: Request):
+    user = await get_current_user_from_authorization_header(request)
+    return {"message": f"Hello {user.email}", "user_id": str(user.id)}
+```
+
+#### **Mobile App Integration Examples**
+
+##### **Flutter Mobile & Web**
+```dart
+// Flutter HTTP client with JWT authentication (works for mobile and web)
+class ApiService {
+  static const String baseUrl = 'http://localhost:8000';
+  String? _token;
+
+  // Login and get JWT token
+  Future<bool> login(String email, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'password': password}),
+    );
+    
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      _token = data['access_token'];
+      
+      // Store token securely
+      // Mobile: Use flutter_secure_storage
+      // Web: Use shared_preferences or localStorage
+      await _storeToken(_token!);
+      return true;
+    }
+    return false;
+  }
+
+  // Make authenticated API calls
+  Future<Map<String, dynamic>> getProtectedData() async {
+    final token = await _getStoredToken();
+    if (token == null) throw Exception('Not authenticated');
+    
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/protected'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+    
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception('Failed to load data');
+  }
+
+  // Secure token storage (platform-specific)
+  Future<void> _storeToken(String token) async {
+    // Mobile: Use flutter_secure_storage
+    // Web: Use shared_preferences
+    // Implementation depends on your storage preference
+  }
+
+  Future<String?> _getStoredToken() async {
+    // Retrieve token from secure storage
+    // Implementation depends on your storage preference
+    return _token;
+  }
+}
+```
+
+##### **React Web Application**
+```javascript
+// React API service with JWT authentication
+class ApiService {
+  constructor() {
+    this.baseUrl = 'http://localhost:8000';
+    this.token = localStorage.getItem('access_token');
+  }
+
+  // Login and get JWT token
+  async login(email, password) {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        this.token = data.access_token;
+        localStorage.setItem('access_token', this.token);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    }
+  }
+
+  // Make authenticated API calls
+  async getProtectedData() {
+    if (!this.token) {
+      throw new Error('Not authenticated');
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/protected`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        return await response.json();
+      }
+      throw new Error('Failed to load data');
+    } catch (error) {
+      console.error('API call error:', error);
+      throw error;
+    }
+  }
+
+  // Logout (remove token)
+  logout() {
+    this.token = null;
+    localStorage.removeItem('access_token');
+  }
+}
+
+// React component usage
+function App() {
+  const [apiService] = useState(new ApiService());
+  const [user, setUser] = useState(null);
+
+  const handleLogin = async (email, password) => {
+    const success = await apiService.login(email, password);
+    if (success) {
+      // Get user info
+      const userData = await apiService.getProtectedData();
+      setUser(userData);
+    }
+  };
+
+  return (
+    <div>
+      {user ? (
+        <div>Welcome, {user.email}!</div>
+      ) : (
+        <LoginForm onLogin={handleLogin} />
+      )}
+    </div>
+  );
+}
+```
+
+##### **React Native**
+```javascript
+// React Native with AsyncStorage for token persistence
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+class ApiService {
+  constructor() {
+    this.baseUrl = 'http://localhost:8000';
+    this.token = null;
+  }
+
+  async login(email, password) {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        this.token = data.access_token;
+        await AsyncStorage.setItem('access_token', this.token);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    }
+  }
+
+  async getProtectedData() {
+    if (!this.token) {
+      this.token = await AsyncStorage.getItem('access_token');
+    }
+    
+    if (!this.token) {
+      throw new Error('Not authenticated');
+    }
+
+    const response = await fetch(`${this.baseUrl}/api/protected`, {
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      return await response.json();
+    }
+    throw new Error('Failed to load data');
+  }
+}
+```
+
+#### **API Endpoints for Mobile Apps**
+
+You'll need to create API endpoints that return JWT tokens:
+
+```python
+# API authentication endpoints
+@router.post("/api/auth/login")
+async def api_login(email: str, password: str):
+    # Validate credentials
+    user = await authenticate_user(email, password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Create JWT token
+    token = create_user_token(user)
+    
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "expires_in": get_token_expire_minutes() * 60,
+        "user": {
+            "id": str(user.id),
+            "email": user.email,
+            "is_staff": user.is_staff,
+            "is_superuser": user.is_superuser
+        }
+    }
+
+@router.post("/api/auth/logout")
+async def api_logout():
+    # For JWT tokens, logout is handled client-side
+    # (just remove the token from storage)
+    return {"message": "Logged out successfully"}
+
+@router.get("/api/auth/me")
+async def get_current_user_info(request: Request):
+    user = await get_current_user_from_authorization_header(request)
+    return {
+        "id": str(user.id),
+        "email": user.email,
+        "is_staff": user.is_staff,
+        "is_superuser": user.is_superuser
+    }
+```
+
+#### **Hybrid Authentication Routes**
+
+For routes that support both web (cookies) and API (headers) authentication:
+
+```python
+from services.auth import get_current_user_from_cookies, get_current_user_from_authorization_header
+
+async def get_current_user_hybrid(request: Request) -> User:
+    """Get current user from either cookies or Authorization header"""
+    try:
+        # Try Authorization header first (for API clients)
+        return await get_current_user_from_authorization_header(request)
+    except HTTPException:
+        # Fall back to cookies (for web clients)
+        return await get_current_user_from_cookies(request)
+
+@router.get("/api/hybrid-protected")
+async def hybrid_protected_route(request: Request):
+    user = await get_current_user_hybrid(request)
+    return {"message": f"Hello {user.email}"}
+```
+
+## Migration to Unified System
+
+The authentication system has been completely restructured to provide a unified experience:
+
+### Old Structure (Multiple Systems)
+- `auth/` - Separate auth system
+- `base_assets/auth/` - Base assets auth system  
+- `demo_assets/auth/` - Demo assets auth system
+- `demo_assets/dependencies/auth.py` - Dependency injection auth
+
+### New Structure (Unified System)
+- `services/auth/` - Single unified authentication service
+- **SQLAdmin Integration** - Automatic JWT token creation on admin login
+- **Seamless Experience** - Login once, access everything
 
 ## Benefits
 
-1. **Cleaner Root Directory**: Authentication files no longer clutter the root
-2. **Better Organization**: Related functionality is grouped together
-3. **Easier Maintenance**: Clear separation of concerns
-4. **Better Imports**: Explicit imports from specific modules
-5. **Follows MVS Pattern**: Aligns with Model-View-Services architecture
+### **For Web Applications**
+1. **Unified Authentication**: Single login works across all components
+2. **Eliminated Duplication**: No more multiple auth systems to maintain
+3. **Better Security**: Consistent JWT tokens across all authentication
+4. **Seamless UX**: Login to SQLAdmin automatically authenticates entire app
+5. **Easier Maintenance**: Single authentication service to maintain
+6. **Flexible Integration**: Works with both direct calls and dependency injection
+
+### **For Mobile & Web Applications**
+1. **JWT Token Support**: Standard Authorization header authentication
+2. **Stateless Authentication**: No server-side session storage required
+3. **Cross-Platform**: Works with Flutter (mobile & web), React (web), React Native (mobile), iOS, Android
+4. **Secure Storage**: Tokens stored securely (keychain on mobile, localStorage on web)
+5. **Automatic Expiration**: Built-in token expiration for security
+6. **Hybrid Support**: Same endpoints work for web, mobile, and API clients
+7. **Universal HTTP**: Standard HTTP client libraries work across all platforms
+
+### **For API Development**
+1. **RESTful Authentication**: Standard Bearer token authentication
+2. **Multiple Client Support**: Web, mobile, and API clients use same system
+3. **Flexible Endpoints**: Choose between cookie-based or header-based auth
+4. **Easy Integration**: Simple HTTP client implementation
+5. **Token Refresh**: Built-in token expiration and refresh patterns
+6. **Role-Based Access**: Same permission system across all client types
 
 ## Test Data
 
@@ -213,63 +624,105 @@ The application comes with pre-loaded test data for authentication testing:
 
 ## Testing
 
-To test the authentication module:
+To test the unified authentication system:
 
 ```bash
-uv run python -c "from auth import *; print('Auth module works')"
+uv run python -c "from services.auth import *; print('Unified auth system works')"
 ```
 
 ### Test Authentication Flow
 
-1. **Login to Admin Panel**: Visit `/admin/` and login with test credentials
-2. **Test Permissions**: Try accessing different sections based on user role
-3. **Test API Auth**: Use JWT tokens for API requests
-4. **Test Session Auth**: Verify session persistence across requests
+#### **Web Authentication Testing**
+1. **Login via Form**: Visit `/login` and login with test credentials
+2. **Verify Unified Access**: Visit `/oppman/` and `/admin/` - no additional login needed!
+3. **Test SQLAdmin Logout**: Use the red logout button in top-right corner of SQLAdmin
+4. **Test Application Logout**: Use the logout button in `/oppman/` interface
+5. **Test Direct Logout**: Visit `/logout` to test direct logout
+6. **Test Permissions**: Try accessing different sections based on user role
+7. **Test JWT Tokens**: Verify JWT tokens work across all components
+8. **Test Cookie Integration**: Verify httpOnly cookies are set correctly
+
+#### **API Authentication Testing**
+```bash
+# Test API login (you'll need to create these endpoints)
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@example.com", "password": "admin123"}'
+
+# Test API authentication with JWT token
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://localhost:8000/api/protected
+
+# Test hybrid authentication (supports both cookies and headers)
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://localhost:8000/api/hybrid-protected
+```
+
+#### **Mobile App Testing (Flutter)**
+```dart
+// Test login
+final apiService = ApiService();
+bool loggedIn = await apiService.login('admin@example.com', 'admin123');
+print('Login successful: $loggedIn');
+
+// Test authenticated API call
+try {
+  final data = await apiService.getProtectedData();
+  print('Protected data: $data');
+} catch (e) {
+  print('Error: $e');
+}
+```
 
 ## Security Features
 
-### Password Security
+### Unified Security
 
-- **FastAPI Users PasswordHelper**: Secure password hashing
-- **JWT Tokens**: Stateless authentication for APIs
-- **Session Management**: Secure session handling for admin panel
+- **JWT Tokens**: Cryptographically signed tokens with secret key
+- **HttpOnly Cookies**: Secure cookie storage prevents XSS attacks
+- **Automatic Expiration**: Configurable token lifetime
 - **Permission Validation**: Server-side permission checks
+- **Cross-Component Security**: Same security model across all components
 
 ### Best Practices
 
-- Use strong, unique passwords for production
-- Rotate JWT secrets regularly
+- Use strong, unique SECRET_KEY for production
+- Set appropriate ACCESS_TOKEN_EXPIRE_MINUTES
+- Use HTTPS in production (secure cookie flag)
 - Implement rate limiting for login attempts
 - Log authentication events for audit purposes
-- Use HTTPS in production
+- Regular security updates and token rotation
 
 ## Implementation Details
 
-### FastAPI Users Integration
+### Unified JWT Authentication
 
-The application uses FastAPI Users for:
+The system uses a single JWT-based approach for:
 
-- Password hashing and verification
-- User model management
-- Registration and login endpoints
+- **SQLAdmin Authentication**: Creates JWT token on admin login
+- **Application Authentication**: Uses same JWT token for all routes
+- **Cookie Integration**: Stores JWT in secure httpOnly cookies
+- **Permission System**: JWT payload contains user permissions
+- **Cross-Component**: Works seamlessly across all components
 
-### Custom JWT Authentication
+### SQLAdmin Integration
 
-JWT tokens are used for:
+The SQLAdmin authentication backend:
 
-- API access authentication
-- Stateless authentication for external clients
-- Token-based session management
+- **Validates credentials** against database
+- **Creates JWT token** with user permissions
+- **Sets application cookie** for seamless access
+- **Verifies permissions** for admin panel access
+- **Handles logout** by clearing JWT token
 
-### Session-Based Admin Authentication
+### Cookie-Based Sessions
 
-The admin panel uses:
+The system uses secure cookies for:
 
-- Database-backed session storage
-- Secure cookie-based sessions
-- User permission verification against database records
-- Group-based permission checking
-- Model-specific access control
+- **HttpOnly storage** - Prevents XSS attacks
+- **Automatic expiration** - Configurable token lifetime
+- **Cross-route access** - Same token works everywhere
+- **Permission persistence** - User permissions in JWT payload
 
 ### Permission System
 

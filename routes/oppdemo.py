@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import select
 
-from dependencies.auth import get_current_superuser
+from services.auth import get_current_superuser
 from dependencies.config import get_settings, Settings
 from models import User
 from db import AsyncSessionLocal

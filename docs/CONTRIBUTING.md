@@ -138,6 +138,7 @@ TWINE_USERNAME=__token__ TWINE_PASSWORD=your-token uv run twine upload dist/*
 1. **Create TestPyPI account** at https://test.pypi.org/
 2. **Get TestPyPI token** from your TestPyPI account
 3. **Upload to TestPyPI first**:
+
    ```bash
    TWINE_USERNAME=__token__ TWINE_PASSWORD=your-testpypi-token uv run twine upload --repository-url https://test.pypi.org/legacy/ dist/*
    ```
@@ -158,9 +159,9 @@ uv build
 TWINE_USERNAME=__token__ 
 TWINE_PASSWORD=your-token 
 uv run twine upload dist/*
-```
 
 # 4. Verify the upload
+
 # Visit: https://pypi.org/project/fastopp/
 ```
 
@@ -233,10 +234,15 @@ uv run pytest tests/test_specific.py
 3. **Merge approved changes**
 4. **Update version** in `pyproject.toml`
 5. **Build and publish** to PyPI:
+
    ```bash
    uv build
    TWINE_USERNAME=__token__ TWINE_PASSWORD=your-token uv run twine upload dist/*
    ```
+
+#### Monitor PyPI
+
+<https://pypistats.org/packages/fastopp>
 
 ### Pull Request Guidelines
 

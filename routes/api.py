@@ -4,7 +4,7 @@ API routes for data endpoints
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from models import User
-from dependencies.auth import get_current_staff_or_admin
+from services.auth import get_current_staff_or_admin
 from dependencies.services import get_product_service
 
 router = APIRouter()

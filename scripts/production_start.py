@@ -3,6 +3,7 @@
 Simple Production Startup Script
 Runs FastAPI with Gunicorn without Nginx
 """
+import os
 import subprocess
 import sys
 
@@ -38,10 +39,13 @@ def check_database_url():
 
 def start_production_server():
     """Start the production server"""
+    host = os.getenv("HOST", "0.0.0.0")
+    port = os.getenv("PORT", "8000")
+    
     print("🚀 Starting FastAPI production server...")
-    print("📡 Server will be available at: http://localhost:8000")
-    print("🔧 Admin panel: http://localhost:8000/admin/")
-    print("📚 API docs: http://localhost:8000/docs")
+    print(f"📡 Server will be available at: http://{host}:{port}")
+    print(f"🔧 Admin panel: http://{host}:{port}/admin/")
+    print(f"📚 API docs: http://{host}:{port}/docs")
     print("⏹️  Press Ctrl+C to stop the server")
     print()
     
@@ -51,7 +55,7 @@ def start_production_server():
         "main:app",
         "-w", "4",  # 4 workers
         "-k", "uvicorn.workers.UvicornWorker",
-        "--bind", "0.0.0.0:8000",
+        "--bind", f"{host}:{port}",
         "--timeout", "120",
         "--keep-alive", "5",
         "--max-requests", "1000",
