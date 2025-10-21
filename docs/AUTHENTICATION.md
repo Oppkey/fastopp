@@ -8,13 +8,60 @@ This FastAPI application includes a **unified authentication system** that provi
 - **Group-based Permissions** - Advanced permission system with role-based access control
 - **Seamless User Experience** - Login once, access everything
 
+## JWT vs Cookie-based Authentication
+
+### **Understanding the Difference**
+
+**JWT (JSON Web Token)** is a **token format** - a way to encode data (like user info) into a secure, signed string:
+```javascript
+// JWT token example
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+```
+
+**Cookie-based Authentication with JWT** is a **storage mechanism** - using HTTP cookies to store the JWT token:
+```javascript
+// Cookie storage
+document.cookie = "access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict"
+```
+
+### **Our System Uses Both Approaches**
+
+#### **Cookie-based JWT (Web Applications)**
+```python
+# Server sets JWT in cookie
+response.set_cookie(key="access_token", value=jwt_token, httponly=True)
+# Browser automatically sends: Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+- ✅ **Automatic**: Browser handles sending cookies
+- ✅ **Secure**: HttpOnly cookies prevent XSS attacks
+- ✅ **Simple**: No JavaScript needed to manage tokens
+- ❌ **Limited**: Only works in browsers, not mobile apps
+
+#### **Header-based JWT (Mobile/API)**
+```python
+# Client sends JWT in Authorization header
+headers = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
+```
+- ✅ **Universal**: Works everywhere (mobile, web, API clients)
+- ✅ **Flexible**: Client controls when/how to send tokens
+- ✅ **Stateless**: No server-side session storage needed
+- ❌ **Manual**: Client must manage token storage/sending
+
+### **Key Point: Same JWT Token, Different Storage**
+
+The JWT token itself is identical - we just change **where we store it** and **how we send it** based on the client type:
+
+- **Web clients** → Cookie-based JWT (automatic, secure)
+- **Mobile clients** → Header-based JWT (flexible, universal)
+- **Same JWT token** → Works for both storage methods!
+
 ## Architecture Overview
 
 The authentication system uses a **unified services architecture** with a single authentication service that handles both SQLAdmin and application authentication.
 
 ### Structure
 
-```
+```text
 services/auth/
 ├── __init__.py          # Unified auth exports
 ├── core.py              # JWT token creation/verification
