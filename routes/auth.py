@@ -115,9 +115,29 @@ async def login_form(
         # Also set session token for SQLAdmin
         request.session["token"] = token
         
+        # Set session variables that SQLAdmin views check for
+        request.session["is_authenticated"] = True
+        request.session["is_superuser"] = user.is_superuser
+        request.session["is_staff"] = user.is_staff
+        request.session["user_id"] = str(user.id)
+        request.session["user_email"] = user.email
+        request.session["group"] = user.group
+        
+        # Set additional permissions based on user group
+        if user.group == "marketing":
+            request.session["can_manage_webinars"] = True
+        elif user.group == "sales":
+            request.session["can_manage_webinars"] = True
+        elif user.is_superuser:
+            request.session["can_manage_webinars"] = True
+        else:
+            request.session["can_manage_webinars"] = False
+        
         print(f"🔐 Login form - JWT token created: {token[:20]}...")
         print(f"🔐 Login form - Cookie set: access_token={token[:20]}...")
         print(f"🔐 Login form - Session token set: {token[:20]}...")
+        print(f"🔐 Login form - Session variables set: is_superuser={user.is_superuser}, "
+              f"is_staff={user.is_staff}, group={user.group}")
         
         return response
         
@@ -134,12 +154,19 @@ async def login_form(
 @router.get("/logout")
 async def logout(request: Request):
     """Logout and clear authentication cookie and session"""
-    # Clear the session token (for SQLAdmin)
+    # Clear all session variables
     request.session.pop("token", None)
+    request.session.pop("is_authenticated", None)
+    request.session.pop("is_superuser", None)
+    request.session.pop("is_staff", None)
+    request.session.pop("user_id", None)
+    request.session.pop("user_email", None)
+    request.session.pop("group", None)
+    request.session.pop("can_manage_webinars", None)
     
     # Clear the access_token cookie (for application routes)
     response = RedirectResponse(url="/", status_code=302)
     response.delete_cookie(key="access_token")
     
-    print("🔓 Logout endpoint - cleared both session and cookie tokens")
-    return response 
+    print("🔓 Logout endpoint - cleared all session variables and cookie tokens")
+    return response
