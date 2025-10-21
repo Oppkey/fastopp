@@ -52,24 +52,40 @@ Provides FastAPI dependency injection support:
 
 ## Unified Authentication Experience
 
-The system provides a **seamless authentication experience** where logging into SQLAdmin automatically authenticates you for the entire application.
+The system provides a **seamless authentication experience** where logging in through any method automatically authenticates you for the entire application.
 
 ### How It Works
 
-1. **Login to SQLAdmin** at `/admin/`
+1. **Login via form** at `/login` OR **Login to SQLAdmin** at `/admin/`
 2. **JWT token created** with your user permissions
-3. **Cookie set** for application authentication
-4. **Access protected pages** like `/oppman/`, `/protected/` without additional login
+3. **Both cookie and session set** for unified authentication
+4. **Access protected pages** like `/oppman/`, `/admin/` without additional login
+5. **Unified logout** clears authentication across all interfaces
 
-### Access Admin Panel
+### Access Methods
 
-1. **Visit**: http://localhost:8000/admin/
+#### **Method 1: Login Form (Recommended)**
+1. **Visit**: http://localhost:8000/login
 2. **Login with any staff or superuser account**:
    - Superuser: `admin@example.com` / `admin123`
    - Marketing: `marketing@example.com` / `test123`
    - Sales: `sales@example.com` / `test123`
    - Support: `staff@example.com` / `test123`
+3. **Automatic Access** - You're now logged into both SQLAdmin and application routes!
+
+#### **Method 2: Direct SQLAdmin Access**
+1. **Visit**: http://localhost:8000/admin/
+2. **Login with same credentials** as above
 3. **Automatic Application Access** - You're now logged into the entire system!
+
+### Unified Logout
+
+The system provides **unified logout** that works across all interfaces:
+
+- **SQLAdmin Logout**: Custom logout button in top-right corner (replaces non-working default)
+- **Application Logout**: Logout button in `/oppman/` interface
+- **Direct Logout**: Visit `/logout` to log out of everything
+- **Complete Logout**: Clears both session tokens and cookies
 
 ### Advanced Permission System
 
@@ -155,6 +171,9 @@ from services.auth import (
     get_current_user_from_cookies,
     get_current_staff_or_admin_from_cookies,
     get_current_superuser_from_cookies,
+    get_current_user_from_authorization_header,
+    get_current_staff_or_admin_from_authorization_header,
+    get_current_superuser_from_authorization_header,
     AdminAuth
 )
 
@@ -190,6 +209,299 @@ async def protected_route(current_user: User = Depends(get_current_staff_or_admi
     return {"message": f"Hello {current_user.email}"}
 ```
 
+### API Authentication for Mobile Apps
+
+The system supports **JWT Authorization header authentication** for mobile applications like Flutter, React Native, or any API client.
+
+#### **API Authentication Methods**
+
+```python
+# For API routes that need JWT header authentication
+from services.auth import get_current_user_from_authorization_header
+
+@router.get("/api/protected")
+async def api_protected_route(request: Request):
+    user = await get_current_user_from_authorization_header(request)
+    return {"message": f"Hello {user.email}", "user_id": str(user.id)}
+```
+
+#### **Mobile App Integration Examples**
+
+##### **Flutter Mobile & Web**
+```dart
+// Flutter HTTP client with JWT authentication (works for mobile and web)
+class ApiService {
+  static const String baseUrl = 'http://localhost:8000';
+  String? _token;
+
+  // Login and get JWT token
+  Future<bool> login(String email, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'password': password}),
+    );
+    
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      _token = data['access_token'];
+      
+      // Store token securely
+      // Mobile: Use flutter_secure_storage
+      // Web: Use shared_preferences or localStorage
+      await _storeToken(_token!);
+      return true;
+    }
+    return false;
+  }
+
+  // Make authenticated API calls
+  Future<Map<String, dynamic>> getProtectedData() async {
+    final token = await _getStoredToken();
+    if (token == null) throw Exception('Not authenticated');
+    
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/protected'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+    
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception('Failed to load data');
+  }
+
+  // Secure token storage (platform-specific)
+  Future<void> _storeToken(String token) async {
+    // Mobile: Use flutter_secure_storage
+    // Web: Use shared_preferences
+    // Implementation depends on your storage preference
+  }
+
+  Future<String?> _getStoredToken() async {
+    // Retrieve token from secure storage
+    // Implementation depends on your storage preference
+    return _token;
+  }
+}
+```
+
+##### **React Web Application**
+```javascript
+// React API service with JWT authentication
+class ApiService {
+  constructor() {
+    this.baseUrl = 'http://localhost:8000';
+    this.token = localStorage.getItem('access_token');
+  }
+
+  // Login and get JWT token
+  async login(email, password) {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        this.token = data.access_token;
+        localStorage.setItem('access_token', this.token);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    }
+  }
+
+  // Make authenticated API calls
+  async getProtectedData() {
+    if (!this.token) {
+      throw new Error('Not authenticated');
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/protected`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        return await response.json();
+      }
+      throw new Error('Failed to load data');
+    } catch (error) {
+      console.error('API call error:', error);
+      throw error;
+    }
+  }
+
+  // Logout (remove token)
+  logout() {
+    this.token = null;
+    localStorage.removeItem('access_token');
+  }
+}
+
+// React component usage
+function App() {
+  const [apiService] = useState(new ApiService());
+  const [user, setUser] = useState(null);
+
+  const handleLogin = async (email, password) => {
+    const success = await apiService.login(email, password);
+    if (success) {
+      // Get user info
+      const userData = await apiService.getProtectedData();
+      setUser(userData);
+    }
+  };
+
+  return (
+    <div>
+      {user ? (
+        <div>Welcome, {user.email}!</div>
+      ) : (
+        <LoginForm onLogin={handleLogin} />
+      )}
+    </div>
+  );
+}
+```
+
+##### **React Native**
+```javascript
+// React Native with AsyncStorage for token persistence
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+class ApiService {
+  constructor() {
+    this.baseUrl = 'http://localhost:8000';
+    this.token = null;
+  }
+
+  async login(email, password) {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        this.token = data.access_token;
+        await AsyncStorage.setItem('access_token', this.token);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    }
+  }
+
+  async getProtectedData() {
+    if (!this.token) {
+      this.token = await AsyncStorage.getItem('access_token');
+    }
+    
+    if (!this.token) {
+      throw new Error('Not authenticated');
+    }
+
+    const response = await fetch(`${this.baseUrl}/api/protected`, {
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      return await response.json();
+    }
+    throw new Error('Failed to load data');
+  }
+}
+```
+
+#### **API Endpoints for Mobile Apps**
+
+You'll need to create API endpoints that return JWT tokens:
+
+```python
+# API authentication endpoints
+@router.post("/api/auth/login")
+async def api_login(email: str, password: str):
+    # Validate credentials
+    user = await authenticate_user(email, password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Create JWT token
+    token = create_user_token(user)
+    
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "expires_in": get_token_expire_minutes() * 60,
+        "user": {
+            "id": str(user.id),
+            "email": user.email,
+            "is_staff": user.is_staff,
+            "is_superuser": user.is_superuser
+        }
+    }
+
+@router.post("/api/auth/logout")
+async def api_logout():
+    # For JWT tokens, logout is handled client-side
+    # (just remove the token from storage)
+    return {"message": "Logged out successfully"}
+
+@router.get("/api/auth/me")
+async def get_current_user_info(request: Request):
+    user = await get_current_user_from_authorization_header(request)
+    return {
+        "id": str(user.id),
+        "email": user.email,
+        "is_staff": user.is_staff,
+        "is_superuser": user.is_superuser
+    }
+```
+
+#### **Hybrid Authentication Routes**
+
+For routes that support both web (cookies) and API (headers) authentication:
+
+```python
+from services.auth import get_current_user_from_cookies, get_current_user_from_authorization_header
+
+async def get_current_user_hybrid(request: Request) -> User:
+    """Get current user from either cookies or Authorization header"""
+    try:
+        # Try Authorization header first (for API clients)
+        return await get_current_user_from_authorization_header(request)
+    except HTTPException:
+        # Fall back to cookies (for web clients)
+        return await get_current_user_from_cookies(request)
+
+@router.get("/api/hybrid-protected")
+async def hybrid_protected_route(request: Request):
+    user = await get_current_user_hybrid(request)
+    return {"message": f"Hello {user.email}"}
+```
+
 ## Migration to Unified System
 
 The authentication system has been completely restructured to provide a unified experience:
@@ -207,12 +519,30 @@ The authentication system has been completely restructured to provide a unified 
 
 ## Benefits
 
+### **For Web Applications**
 1. **Unified Authentication**: Single login works across all components
 2. **Eliminated Duplication**: No more multiple auth systems to maintain
 3. **Better Security**: Consistent JWT tokens across all authentication
 4. **Seamless UX**: Login to SQLAdmin automatically authenticates entire app
 5. **Easier Maintenance**: Single authentication service to maintain
 6. **Flexible Integration**: Works with both direct calls and dependency injection
+
+### **For Mobile & Web Applications**
+1. **JWT Token Support**: Standard Authorization header authentication
+2. **Stateless Authentication**: No server-side session storage required
+3. **Cross-Platform**: Works with Flutter (mobile & web), React (web), React Native (mobile), iOS, Android
+4. **Secure Storage**: Tokens stored securely (keychain on mobile, localStorage on web)
+5. **Automatic Expiration**: Built-in token expiration for security
+6. **Hybrid Support**: Same endpoints work for web, mobile, and API clients
+7. **Universal HTTP**: Standard HTTP client libraries work across all platforms
+
+### **For API Development**
+1. **RESTful Authentication**: Standard Bearer token authentication
+2. **Multiple Client Support**: Web, mobile, and API clients use same system
+3. **Flexible Endpoints**: Choose between cookie-based or header-based auth
+4. **Easy Integration**: Simple HTTP client implementation
+5. **Token Refresh**: Built-in token expiration and refresh patterns
+6. **Role-Based Access**: Same permission system across all client types
 
 ## Test Data
 
@@ -255,11 +585,47 @@ uv run python -c "from services.auth import *; print('Unified auth system works'
 
 ### Test Authentication Flow
 
-1. **Login to SQLAdmin**: Visit `/admin/` and login with test credentials
-2. **Verify Unified Access**: Visit `/oppman/` or `/protected/` - no additional login needed!
-3. **Test Permissions**: Try accessing different sections based on user role
-4. **Test JWT Tokens**: Verify JWT tokens work across all components
-5. **Test Cookie Integration**: Verify httpOnly cookies are set correctly
+#### **Web Authentication Testing**
+1. **Login via Form**: Visit `/login` and login with test credentials
+2. **Verify Unified Access**: Visit `/oppman/` and `/admin/` - no additional login needed!
+3. **Test SQLAdmin Logout**: Use the red logout button in top-right corner of SQLAdmin
+4. **Test Application Logout**: Use the logout button in `/oppman/` interface
+5. **Test Direct Logout**: Visit `/logout` to test direct logout
+6. **Test Permissions**: Try accessing different sections based on user role
+7. **Test JWT Tokens**: Verify JWT tokens work across all components
+8. **Test Cookie Integration**: Verify httpOnly cookies are set correctly
+
+#### **API Authentication Testing**
+```bash
+# Test API login (you'll need to create these endpoints)
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@example.com", "password": "admin123"}'
+
+# Test API authentication with JWT token
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://localhost:8000/api/protected
+
+# Test hybrid authentication (supports both cookies and headers)
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://localhost:8000/api/hybrid-protected
+```
+
+#### **Mobile App Testing (Flutter)**
+```dart
+// Test login
+final apiService = ApiService();
+bool loggedIn = await apiService.login('admin@example.com', 'admin123');
+print('Login successful: $loggedIn');
+
+// Test authenticated API call
+try {
+  final data = await apiService.getProtectedData();
+  print('Protected data: $data');
+} catch (e) {
+  print('Error: $e');
+}
+```
 
 ## Security Features
 
