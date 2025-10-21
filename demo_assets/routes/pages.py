@@ -15,7 +15,7 @@ router = APIRouter()
 @router.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     """Home page"""
-    return templates.TemplateResponse("index.html", {"request": request, "title": "FastOpp - Easier AI Web Apps"})
+    return templates.TemplateResponse("index.html", {"request": request, "title": "Delightful Demo Dashboard"})
 
 
 @router.get("/design-demo", response_class=HTMLResponse)
