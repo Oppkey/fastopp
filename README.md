@@ -279,6 +279,7 @@ Create a `.env` file in your project root:
 * `SECRET_KEY`: Secret key for JWT tokens and session management
 * `ENVIRONMENT`: Set to "development" for development mode
 * `OPENROUTER_API_KEY`: API key for OpenRouter (required for AI demo features)
+* `OPENROUTER_LLM_MODEL`: LLM model to use (default: meta-llama/llama-3.3-70b-instruct:free)
 
 **Optional Environment Variables:**
 
@@ -307,6 +308,7 @@ DATABASE_URL=sqlite+aiosqlite:///./test.db
 SECRET_KEY=$(uv run python oppman.py secrets | grep SECRET_KEY | cut -d'=' -f2)
 ENVIRONMENT=development
 OPENROUTER_API_KEY=your_openrouter_api_key_here
+OPENROUTER_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free
 EOF
 ```
 
@@ -330,6 +332,7 @@ DATABASE_URL=sqlite+aiosqlite:///./test.db
 SECRET_KEY=your_generated_secret_key_here
 ENVIRONMENT=development
 OPENROUTER_API_KEY=your_openrouter_api_key_here
+OPENROUTER_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free
 ```
 
 **⚠️ Security Important:**
