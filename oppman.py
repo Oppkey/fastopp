@@ -27,6 +27,7 @@ try:
     from scripts.test_auth import test_auth
     from scripts.change_password import list_users, change_password_interactive
     from scripts.emergency_access import main as emergency_access_main
+    from dependencies.config import get_settings
 except ImportError as e:
     print(f"❌ Import error: {e}")
     print("Make sure all script files are in the scripts/ directory")
@@ -219,17 +220,19 @@ def run_emergency_access():
 
 def run_server():
     """Start the development server with uvicorn"""
+    settings = get_settings()
     print("🚀 Starting development server...")
-    print("📡 Server will be available at: http://localhost:8000")
-    print("🔧 Admin panel: http://localhost:8000/admin/")
-    print("📚 API docs: http://localhost:8000/docs")
+    print(f"📡 Server will be available at: http://{settings.host}:{settings.port}")
+    print(f"🔧 Admin panel: http://{settings.host}:{settings.port}/admin/")
+    print(f"📚 API docs: http://{settings.host}:{settings.port}/docs")
     print("⏹️  Press Ctrl+C to stop the server")
     print()
     
     try:
         # Start uvicorn with reload
         subprocess.run([
-            "uv", "run", "python", "-m", "uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"
+            "uv", "run", "python", "-m", "uvicorn", "main:app", "--reload", 
+            "--host", settings.host, "--port", str(settings.port)
         ], check=True)
     except subprocess.CalledProcessError as e:
         print(f"❌ Failed to start server: {e}")
@@ -265,10 +268,11 @@ def stop_server():
 
 def run_production_server():
     """Start the production server with Gunicorn"""
+    settings = get_settings()
     print("🚀 Starting FastAPI production server...")
-    print("📡 Server will be available at: http://localhost:8000")
-    print("🔧 Admin panel: http://localhost:8000/admin/")
-    print("📚 API docs: http://localhost:8000/docs")
+    print(f"📡 Server will be available at: http://{settings.host}:{settings.port}")
+    print(f"🔧 Admin panel: http://{settings.host}:{settings.port}/admin/")
+    print(f"📚 API docs: http://{settings.host}:{settings.port}/docs")
     print("⏹️  Press Ctrl+C to stop the server")
     print()
     
@@ -279,7 +283,7 @@ def run_production_server():
             "main:app",
             "-w", "4",  # 4 workers
             "-k", "uvicorn.workers.UvicornWorker",
-            "--bind", "0.0.0.0:8000",
+            "--bind", f"{settings.host}:{settings.port}",
             "--timeout", "120",
             "--keep-alive", "5",
             "--max-requests", "1000",

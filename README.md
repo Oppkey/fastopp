@@ -782,3 +782,7 @@ uv run python oppdemo.py diff
 * cheap
 * easy
 * opinionated
+
+---
+
+![PyPI - Downloads](https://img.shields.io/pypi/dm/fastopp)

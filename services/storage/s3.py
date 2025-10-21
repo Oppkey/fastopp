@@ -5,6 +5,7 @@ S3-compatible object storage implementation.
 import os
 from typing import Optional, List
 from urllib.parse import quote
+from dependencies.config import get_settings
 
 try:
     import boto3
@@ -105,17 +106,22 @@ class S3Storage(StorageInterface):
     def file_exists(self, path: str) -> bool:
         """Check if a file exists in S3."""
         try:
-            print(f"DEBUG: Checking if file exists: {path} in bucket: {self.bucket}")
+            settings = get_settings()
+            if settings.debug:
+                print(f"DEBUG: Checking if file exists: {path} in bucket: {self.bucket}")
             
             # Try head_object first (preferred method)
             try:
                 response = self.client.head_object(Bucket=self.bucket, Key=path)
-                print(f"DEBUG: File exists (head_object): {path}")
+                if settings.debug:
+                    print(f"DEBUG: File exists (head_object): {path}")
                 return True
             except ClientError as e:
-                print(f"DEBUG: ClientError for {path} (head_object): {e}")
+                if settings.debug:
+                    print(f"DEBUG: ClientError for {path} (head_object): {e}")
                 if e.response["Error"]["Code"] == "404":
-                    print(f"DEBUG: File not found (404), trying list_files fallback for {path}")
+                    if settings.debug:
+                        print(f"DEBUG: File not found (404), trying list_files fallback for {path}")
                     
                     # Fallback: Use list_files to check existence
                     # This is less efficient but more reliable
@@ -126,34 +132,41 @@ class S3Storage(StorageInterface):
                         else:
                             prefix = ""
                         
-                        print(f"DEBUG: Using list_files fallback with prefix: '{prefix}'")
+                        if settings.debug:
+                            print(f"DEBUG: Using list_files fallback with prefix: '{prefix}'")
                         files = self.list_files(prefix)
                         
                         # Check if the full path exists in the list of keys
                         if path in files:
-                            print(f"DEBUG: Found {path} via list_files (full key match)")
+                            if settings.debug:
+                                print(f"DEBUG: Found {path} via list_files (full key match)")
                             return True
                         
                         # If not found by full key, check if the filename exists in the list of filenames
                         filename = os.path.basename(path)
                         files_in_dir_filenames = [os.path.basename(key) for key in files]
                         if filename in files_in_dir_filenames:
-                            print(f"DEBUG: Found {filename} via list_files (filename match)")
+                            if settings.debug:
+                                print(f"DEBUG: Found {filename} via list_files (filename match)")
                             return True
                         
-                        print(f"DEBUG: {path} not found via list_files")
+                        if settings.debug:
+                            print(f"DEBUG: {path} not found via list_files")
                         return False
                         
                     except Exception as list_error:
-                        print(f"DEBUG: List files also failed: {list_error}")
+                        if settings.debug:
+                            print(f"DEBUG: List files also failed: {list_error}")
                         return False
                 else:
                     # For other errors, don't fall back
-                    print(f"DEBUG: Other S3 error: {e}")
+                    if settings.debug:
+                        print(f"DEBUG: Other S3 error: {e}")
                     raise RuntimeError(f"Failed to check file existence in S3: {e}")
                 
         except Exception as e:
-            print(f"DEBUG: Unexpected error checking {path}: {e}")
+            if settings.debug:
+                print(f"DEBUG: Unexpected error checking {path}: {e}")
             return False
     
     def delete_file(self, path: str) -> bool:
@@ -169,7 +182,9 @@ class S3Storage(StorageInterface):
     def list_files(self, prefix: str = "") -> List[str]:
         """List files in S3 with optional prefix filter."""
         try:
-            print(f"DEBUG: Listing files with prefix: '{prefix}' in bucket: {self.bucket}")
+            settings = get_settings()
+            if settings.debug:
+                print(f"DEBUG: Listing files with prefix: '{prefix}' in bucket: {self.bucket}")
             response = self.client.list_objects_v2(
                 Bucket=self.bucket,
                 Prefix=prefix
@@ -178,13 +193,16 @@ class S3Storage(StorageInterface):
             files = []
             for obj in response.get("Contents", []):
                 files.append(obj["Key"])
-                print(f"DEBUG: Found file: {obj['Key']}")
+                if settings.debug:
+                    print(f"DEBUG: Found file: {obj['Key']}")
             
-            print(f"DEBUG: Total files found: {len(files)}")
+            if settings.debug:
+                print(f"DEBUG: Total files found: {len(files)}")
             return files
             
         except ClientError as e:
-            print(f"DEBUG: Error listing files: {e}")
+            if settings.debug:
+                print(f"DEBUG: Error listing files: {e}")
             raise RuntimeError(f"Failed to list files in S3: {e}")
     
     def get_file_url(self, path: str) -> str:
