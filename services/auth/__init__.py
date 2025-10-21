@@ -4,6 +4,9 @@ Provides JWT-based authentication for both SQLAdmin and application routes
 """
 from .core import (
     create_user_token,
+    get_current_user_from_authorization_header,
+    get_current_staff_or_admin_from_authorization_header,
+    get_current_superuser_from_authorization_header,
     get_current_user_from_cookies,
     get_current_staff_or_admin_from_cookies,
     get_current_superuser_from_cookies,
@@ -20,6 +23,9 @@ from .dependencies import (
 
 __all__ = [
     "create_user_token",
+    "get_current_user_from_authorization_header",
+    "get_current_staff_or_admin_from_authorization_header", 
+    "get_current_superuser_from_authorization_header",
     "get_current_user_from_cookies", 
     "get_current_staff_or_admin_from_cookies",
     "get_current_superuser_from_cookies",
