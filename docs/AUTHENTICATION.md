@@ -805,6 +805,146 @@ After setting up authentication:
 3. **Customize UI**: Adapt admin interface for your needs
 4. **Add Audit Logging**: Track user actions and changes
 
+## Template Context System
+
+The application includes a **flexible template context system** that automatically provides authentication state to all templates. This ensures consistent authentication UI across the application.
+
+### Overview
+
+The template context system (`services/template_context.py`) provides:
+
+- **Automatic authentication state** - Templates always have access to user authentication status
+- **Flexible configuration** - Works with different authentication systems
+- **Backward compatibility** - Existing code continues to work unchanged
+- **Future-proof design** - Easy to adapt to new authentication methods
+
+### Basic Usage
+
+The system automatically provides authentication context to templates:
+
+```python
+# In your route
+from services.template_context import get_template_context
+
+@router.get("/", response_class=HTMLResponse)
+async def home_page(request: Request):
+    # Get authentication context
+    auth_context = get_template_context(request)
+    
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "title": "Home Page",
+        **auth_context  # Merges authentication state
+    })
+```
+
+### Template Variables
+
+The context system provides these variables to all templates:
+
+```html
+<!-- Authentication status -->
+{% if is_authenticated %}
+    <p>Welcome back!</p>
+    <a href="/logout">Logout</a>
+{% else %}
+    <a href="/login">Login</a>
+{% endif %}
+
+<!-- User information -->
+{% if user_email %}
+    <p>Logged in as: {{ user_email }}</p>
+{% endif %}
+
+<!-- Permission checks -->
+{% if is_superuser %}
+    <a href="/admin">Admin Panel</a>
+{% endif %}
+
+{% if is_staff %}
+    <a href="/management">Management</a>
+{% endif %}
+```
+
+### Available Context Variables
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `is_authenticated` | boolean | Whether user is logged in |
+| `has_access_token` | boolean | Whether access token cookie exists |
+| `has_session_token` | boolean | Whether session token exists |
+| `current_user` | User object | Current user object (if available) |
+| `is_superuser` | boolean | Whether user has superuser privileges |
+| `is_staff` | boolean | Whether user has staff privileges |
+| `user_email` | string | User's email address |
+| `user_group` | string | User's group/role |
+
+### Advanced Configuration
+
+For different authentication systems, you can create custom context providers:
+
+```python
+from services.template_context import create_template_context_provider
+
+# Custom provider for different auth system
+auth_provider = create_template_context_provider(
+    auth_cookie_name="jwt_token",           # Different cookie name
+    session_token_key="auth_session",       # Different session key
+    user_attributes={                       # Custom user attributes
+        "is_admin": "admin",
+        "user_name": "username",
+        "user_role": "role"
+    }
+)
+
+# Use in your route
+auth_context = auth_provider.get_template_context(request)
+```
+
+### Integration with Header Template
+
+The header template (`templates/partials/header.html`) uses the context system:
+
+```html
+<!-- Management dropdown - only shows when authenticated -->
+{% if is_authenticated %}
+<div class="relative group">
+    <button onclick="toggleDropdown('management')">
+        Management
+    </button>
+    <div id="management-dropdown" class="dropdown-menu">
+        <a href="/admin/">Admin Panel</a>
+        <a href="/oppman/">Oppman</a>
+        <a href="/oppdemo/">Oppdemo</a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Login/Logout button -->
+{% if is_authenticated %}
+    <a href="/logout" class="text-red-600">Logout</a>
+{% else %}
+    <a href="/login" class="text-blue-600">Login</a>
+{% endif %}
+```
+
+### Benefits
+
+1. **Consistent UI** - All templates have access to authentication state
+2. **No manual context passing** - Authentication state is automatically available
+3. **Flexible** - Works with different authentication systems
+4. **Maintainable** - Centralized authentication context logic
+5. **Reusable** - Can be used across multiple applications
+
+### Troubleshooting
+
+If authentication state isn't showing correctly:
+
+1. **Check cookie names** - Ensure the auth system uses the expected cookie names
+2. **Verify session data** - Check that session variables are being set correctly
+3. **Test context provider** - Use the custom provider for different auth systems
+4. **Check template logic** - Ensure templates are using the correct context variables
+
 For more information, see:
 - [POSTGRESQL_SETUP.md](POSTGRESQL_SETUP.md) - PostgreSQL setup and database configuration
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture overview

@@ -827,21 +827,55 @@ async def destroy_demo_files():
         shutil.copy2(base_models, current_models)
         print("  ✅ Copied base_assets/models.py to models.py")
         
-        # Step 2: Remove services directory (including storage system)
-        print("🔧 Removing services directory...")
+        # Step 2: Remove services directory (but preserve services/auth for base_assets)
+        print("🔧 Removing services directory (preserving auth system)...")
         services_dir = Path("services")
         if services_dir.exists():
+            # Backup services/auth before removing services
+            auth_backup = Path("services_auth_backup")
+            auth_src = services_dir / "auth"
+            if auth_src.exists():
+                if auth_backup.exists():
+                    shutil.rmtree(auth_backup)
+                shutil.copytree(auth_src, auth_backup)
+                print("  ✅ Backed up services/auth to services_auth_backup/")
+            
+            # Remove services directory
             shutil.rmtree(services_dir)
-            print("  ✅ Removed services/ (including storage system)")
+            print("  ✅ Removed services/ (preserving auth system)")
+            
+            # Restore services/auth for base_assets to use
+            if auth_backup.exists():
+                services_dir.mkdir()
+                shutil.copytree(auth_backup, services_dir / "auth")
+                shutil.rmtree(auth_backup)
+                print("  ✅ Restored services/auth for base_assets")
         else:
             print("  ℹ️  services/ directory not found")
         
-        # Step 2.5: Remove dependencies directory (dependency injection system)
-        print("🔗 Removing dependencies directory...")
+        # Step 2.5: Remove dependencies directory (but preserve auth system)
+        print("🔗 Removing dependencies directory (preserving auth system)...")
         dependencies_dir = Path("dependencies")
         if dependencies_dir.exists():
+            # Backup dependencies/auth.py before removing dependencies
+            auth_backup = Path("dependencies_auth_backup")
+            auth_src = dependencies_dir / "auth.py"
+            if auth_src.exists():
+                if auth_backup.exists():
+                    auth_backup.unlink()
+                shutil.copy2(auth_src, auth_backup)
+                print("  ✅ Backed up dependencies/auth.py to dependencies_auth_backup")
+            
+            # Remove dependencies directory
             shutil.rmtree(dependencies_dir)
-            print("  ✅ Removed dependencies/")
+            print("  ✅ Removed dependencies/ (preserving auth system)")
+            
+            # Restore dependencies/auth.py for base_assets to use
+            if auth_backup.exists():
+                dependencies_dir.mkdir()
+                shutil.copy2(auth_backup, dependencies_dir / "auth.py")
+                auth_backup.unlink()
+                print("  ✅ Restored dependencies/auth.py for base_assets")
         else:
             print("  ℹ️  dependencies/ directory not found")
         
