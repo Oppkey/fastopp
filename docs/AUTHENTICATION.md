@@ -555,8 +555,8 @@ The authentication system has been completely restructured to provide a unified 
 
 ### Old Structure (Multiple Systems)
 - `auth/` - Separate auth system
-- `base_assets/auth/` - Base assets auth system  
-- `demo_assets/auth/` - Demo assets auth system
+- `base_assets/` - Base assets (now uses shared `services/auth/`)  
+- `demo_assets/` - Demo assets (now uses shared `services/auth/`)
 - `demo_assets/dependencies/auth.py` - Dependency injection auth
 
 ### New Structure (Unified System)

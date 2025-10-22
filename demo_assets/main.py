@@ -43,7 +43,7 @@ settings = get_settings()
 
 # Initialize storage system (handles directory creation gracefully)
 try:
-    from services.storage import get_storage
+    from core.services.storage import get_storage
     storage = get_storage()
     # Ensure required directories exist
     storage.ensure_directories("photos", "sample_photos")
@@ -107,7 +107,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # No manual mounting required - SQLAdmin does this internally
 
 # Configure templates with authentication context processor
-from services.template_context import get_template_context
+from core.services.template_context import get_template_context
 
 templates = Jinja2Templates(
     directory="templates",

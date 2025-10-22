@@ -9,7 +9,7 @@ import uuid
 from pathlib import Path
 from datetime import datetime, timezone
 from db import AsyncSessionLocal
-from services.storage import get_storage
+from core.services.storage import get_storage
 
 
 async def add_sample_registrants():

@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import select
 
-from services.auth import get_current_superuser
+from core.services.auth import get_current_superuser
 from dependencies.config import get_settings, Settings
 from models import User
 from db import AsyncSessionLocal
@@ -277,7 +277,7 @@ async def oppdemo_debug_storage(
     """Debug storage system"""
     try:
         import os
-        from services.storage import get_storage
+        from core.services.storage import get_storage
         
         debug_info = {
             "environment": {

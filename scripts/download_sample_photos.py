@@ -39,7 +39,7 @@ SAMPLE_PHOTOS = [
 
 def download_sample_photos():
     """Download sample photos for the demo"""
-    from services.storage import get_storage
+    from core.services.storage import get_storage
     
     # Use modular storage system
     storage = get_storage()

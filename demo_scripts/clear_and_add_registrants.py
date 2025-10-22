@@ -10,7 +10,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 from db import AsyncSessionLocal
 from sqlmodel import delete
-from services.storage import get_storage
+from core.services.storage import get_storage
 
 
 async def clear_and_add_registrants():

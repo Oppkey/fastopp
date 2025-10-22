@@ -92,7 +92,7 @@ def restore_demo_files():
             shutil.copy2(route_file, dest_file)
             print(f"  ✅ Restored {route_file.name}")
     
-    # Restore services
+    # Restore services (application-specific services only, core services remain in core/)
     print("🔧 Restoring services...")
     services_src = demo_assets / "services"
     services_dest = project_root / "services"

@@ -52,7 +52,7 @@ def ensure_backup_dir():
 
 def ensure_upload_dirs():
     """Ensure static upload directories exist regardless of current working directory."""
-    from services.storage import get_storage
+    from core.services.storage import get_storage
     
     # Use modular storage system
     storage = get_storage()
@@ -317,17 +317,13 @@ def save_demo_files():
                 print(f"  ✅ routes/{src.name}")
                 files_copied += 1
         
-        # Backup services (excluding auth/ and template_context.py)
+        # Backup services
         print("🔧 Backing up services...")
         services_src = Path("services")
         services_dst = demo_assets / "services"
         
         if services_src.exists():
             for service_file in services_src.glob("*.py"):
-                # Skip template_context.py since it stays in place
-                if service_file.name == "template_context.py":
-                    continue
-                    
                 dst = services_dst / service_file.name
                 shutil.copy2(service_file, dst)
                 print(f"  ✅ services/{service_file.name}")
@@ -418,18 +414,8 @@ def save_demo_files():
         else:
             print("  ℹ️  dependencies/ directory not found (skipping dependencies backup)")
         
-        # Backup auth directory (authentication system)
-        print("🔐 Backing up auth directory...")
-        auth_src = Path("auth")
-        if auth_src.exists():
-            auth_dst = demo_assets / "auth"
-            if auth_dst.exists():
-                shutil.rmtree(auth_dst)
-            shutil.copytree(auth_src, auth_dst)
-            print("  ✅ auth/")
-            files_copied += 1
-        else:
-            print("  ℹ️  auth/ directory not found (skipping auth backup)")
+        # Note: auth directory no longer needed (using services/auth)
+        print("🔐 Auth directory backup skipped (using unified services/auth)")
         
         # Backup blog directory (demo content)
         print("📝 Backing up blog directory...")
@@ -732,19 +718,8 @@ def restore_demo_files():
         else:
             print("  ℹ️  demo_assets/dependencies not found (skipping dependencies restoration)")
         
-        # Restore auth directory (authentication system)
-        print("🔐 Restoring auth directory...")
-        auth_src = demo_assets / "auth"
-        auth_dest = Path("auth")
-        
-        if auth_src.exists():
-            if auth_dest.exists():
-                shutil.rmtree(auth_dest)
-            shutil.copytree(auth_src, auth_dest)
-            print("  ✅ Restored auth/")
-            files_restored += 1
-        else:
-            print("  ℹ️  demo_assets/auth not found (skipping auth restoration)")
+        # Note: auth directory no longer needed (using services/auth)
+        print("🔐 Auth directory restore skipped (using unified services/auth)")
         
         # Restore blog directory (demo content)
         print("📝 Restoring blog directory...")
@@ -828,7 +803,7 @@ async def destroy_demo_files():
         print("  ✅ Copied base_assets/models.py to models.py")
         
         # Step 2: Services directory is preserved (no copying needed)
-        print("🔧 Services directory preserved (template_context.py and auth/ remain untouched)...")
+        print("🔧 Services directory preserved (core services remain in core/ directory)...")
         services_dir = Path("services")
         
         if not services_dir.exists():
@@ -937,22 +912,15 @@ async def destroy_demo_files():
             print("Please ensure base_assets/admin directory exists")
             return False
         
-        # Step 8: Copy auth directory from base_assets
-        print("🔐 Copying auth directory from base_assets...")
+        # Step 8: Auth directory no longer needed (using core services)
+        print("🔐 Auth directory setup skipped (using core/services/auth)")
         auth_dir = Path("auth")
-        base_auth = Path("base_assets/auth")
         
         if auth_dir.exists():
             shutil.rmtree(auth_dir)
-            print("  ✅ Removed existing auth/")
-        
-        if base_auth.exists():
-            shutil.copytree(base_auth, auth_dir)
-            print("  ✅ Copied base_assets/auth to auth/")
+            print("  ✅ Removed existing auth/ (using core services)")
         else:
-            print("  ❌ Error: base_assets/auth not found!")
-            print("Please ensure base_assets/auth directory exists")
-            return False
+            print("  ℹ️  No local auth/ directory found (using core services)")
         
         # Step 9: Remove blog directory (demo content)
         print("📝 Removing blog directory...")
@@ -1142,17 +1110,13 @@ def diff_demo_files():
                 if not src_file.exists():
                     differences['deleted'].append(f"routes/{backup_file.name}")
         
-        # Compare services (excluding auth/ and template_context.py)
+        # Compare services
         print("🔧 Comparing services...")
         services_src = Path("services")
         services_backup = demo_assets / "services"
         
         if services_src.exists() and services_backup.exists():
             for service_file in services_src.glob("*.py"):
-                # Skip template_context.py since it's not saved/restored
-                if service_file.name == "template_context.py":
-                    continue
-                    
                 backup_file = services_backup / service_file.name
                 if not backup_file.exists():
                     differences['added'].append(f"services/{service_file.name}")

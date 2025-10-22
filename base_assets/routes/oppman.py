@@ -32,7 +32,7 @@ templates = Jinja2Templates(directory="templates")
 
 async def get_current_superuser(request: Request):
     """Superuser authentication using unified auth system"""
-    from services.auth import get_current_superuser_from_cookies
+    from core.services.auth import get_current_superuser_from_cookies
     return await get_current_superuser_from_cookies(request)
 
 
