@@ -52,7 +52,7 @@ def ensure_backup_dir():
 
 def ensure_upload_dirs():
     """Ensure static upload directories exist regardless of current working directory."""
-    from services.storage import get_storage
+    from core.services.storage import get_storage
     
     # Use modular storage system
     storage = get_storage()

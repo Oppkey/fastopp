@@ -43,7 +43,7 @@ settings = get_settings()
 
 # Initialize storage system (handles directory creation gracefully)
 try:
-    from services.storage import get_storage
+    from core.services.storage import get_storage
     storage = get_storage()
     # Ensure required directories exist
     storage.ensure_directories("photos", "sample_photos")

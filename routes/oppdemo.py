@@ -277,7 +277,7 @@ async def oppdemo_debug_storage(
     """Debug storage system"""
     try:
         import os
-        from services.storage import get_storage
+        from core.services.storage import get_storage
         
         debug_info = {
             "environment": {

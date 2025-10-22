@@ -9,7 +9,7 @@ from sqlmodel import select
 from sqlalchemy.exc import OperationalError, DatabaseError
 from db import AsyncSessionLocal
 from models import WebinarRegistrants
-from services.storage import get_storage
+from core.services.storage import get_storage
 from dependencies.database_health import get_fallback_registrants, get_fallback_attendees
 
 
