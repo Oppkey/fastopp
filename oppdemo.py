@@ -322,7 +322,8 @@ def save_demo_files():
         service_files = [
             "services/chat_service.py",
             "services/product_service.py",
-            "services/webinar_service.py"
+            "services/webinar_service.py",
+            "services/template_context.py"
         ]
         
         for service_file in service_files:
@@ -827,31 +828,22 @@ async def destroy_demo_files():
         shutil.copy2(base_models, current_models)
         print("  ✅ Copied base_assets/models.py to models.py")
         
-        # Step 2: Remove services directory (but preserve services/auth for base_assets)
-        print("🔧 Removing services directory (preserving auth system)...")
+        # Step 2: Replace services directory with base_assets services
+        print("🔧 Replacing services directory with base_assets services...")
         services_dir = Path("services")
+        base_services = Path("base_assets/services")
+        
         if services_dir.exists():
-            # Backup services/auth before removing services
-            auth_backup = Path("services_auth_backup")
-            auth_src = services_dir / "auth"
-            if auth_src.exists():
-                if auth_backup.exists():
-                    shutil.rmtree(auth_backup)
-                shutil.copytree(auth_src, auth_backup)
-                print("  ✅ Backed up services/auth to services_auth_backup/")
-            
-            # Remove services directory
             shutil.rmtree(services_dir)
-            print("  ✅ Removed services/ (preserving auth system)")
-            
-            # Restore services/auth for base_assets to use
-            if auth_backup.exists():
-                services_dir.mkdir()
-                shutil.copytree(auth_backup, services_dir / "auth")
-                shutil.rmtree(auth_backup)
-                print("  ✅ Restored services/auth for base_assets")
+            print("  ✅ Removed existing services/")
+        
+        if base_services.exists():
+            shutil.copytree(base_services, services_dir)
+            print("  ✅ Copied base_assets/services to services/")
         else:
-            print("  ℹ️  services/ directory not found")
+            print("  ❌ Error: base_assets/services not found!")
+            print("Please ensure base_assets/services directory exists")
+            return False
         
         # Step 2.5: Remove dependencies directory (but preserve auth system)
         print("🔗 Removing dependencies directory (preserving auth system)...")
