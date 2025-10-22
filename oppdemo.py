@@ -317,21 +317,20 @@ def save_demo_files():
                 print(f"  ✅ routes/{src.name}")
                 files_copied += 1
         
-        # Backup services
+        # Backup services (excluding auth/ and template_context.py)
         print("🔧 Backing up services...")
-        service_files = [
-            "services/chat_service.py",
-            "services/product_service.py",
-            "services/webinar_service.py",
-            "services/template_context.py"
-        ]
+        services_src = Path("services")
+        services_dst = demo_assets / "services"
         
-        for service_file in service_files:
-            src = Path(service_file)
-            if src.exists():
-                dst = demo_assets / service_file
-                shutil.copy2(src, dst)
-                print(f"  ✅ {service_file}")
+        if services_src.exists():
+            for service_file in services_src.glob("*.py"):
+                # Skip template_context.py since it stays in place
+                if service_file.name == "template_context.py":
+                    continue
+                    
+                dst = services_dst / service_file.name
+                shutil.copy2(service_file, dst)
+                print(f"  ✅ services/{service_file.name}")
                 files_copied += 1
         
         # Backup storage system
@@ -828,22 +827,15 @@ async def destroy_demo_files():
         shutil.copy2(base_models, current_models)
         print("  ✅ Copied base_assets/models.py to models.py")
         
-        # Step 2: Replace services directory with base_assets services
-        print("🔧 Replacing services directory with base_assets services...")
+        # Step 2: Services directory is preserved (no copying needed)
+        print("🔧 Services directory preserved (template_context.py and auth/ remain untouched)...")
         services_dir = Path("services")
-        base_services = Path("base_assets/services")
         
-        if services_dir.exists():
-            shutil.rmtree(services_dir)
-            print("  ✅ Removed existing services/")
-        
-        if base_services.exists():
-            shutil.copytree(base_services, services_dir)
-            print("  ✅ Copied base_assets/services to services/")
+        if not services_dir.exists():
+            services_dir.mkdir()
+            print("  ✅ Created services/ directory")
         else:
-            print("  ❌ Error: base_assets/services not found!")
-            print("Please ensure base_assets/services directory exists")
-            return False
+            print("  ✅ Services directory already exists (preserved)")
         
         # Step 2.5: Remove dependencies directory (but preserve auth system)
         print("🔗 Removing dependencies directory (preserving auth system)...")
@@ -1150,13 +1142,17 @@ def diff_demo_files():
                 if not src_file.exists():
                     differences['deleted'].append(f"routes/{backup_file.name}")
         
-        # Compare services
+        # Compare services (excluding auth/ and template_context.py)
         print("🔧 Comparing services...")
         services_src = Path("services")
         services_backup = demo_assets / "services"
         
         if services_src.exists() and services_backup.exists():
             for service_file in services_src.glob("*.py"):
+                # Skip template_context.py since it's not saved/restored
+                if service_file.name == "template_context.py":
+                    continue
+                    
                 backup_file = services_backup / service_file.name
                 if not backup_file.exists():
                     differences['added'].append(f"services/{service_file.name}")
