@@ -346,7 +346,7 @@ COMMANDS:
     env         Check environment configuration
     secrets     Generate SECRET_KEY for .env file
     demo        Demo commands have been moved to oppdemo.py
-    clean       Move files not needed for new projects to backup
+    clean       Run destroy then move remaining files to backup
     help        Show this help message
     
 
@@ -376,7 +376,7 @@ EXAMPLES:
     # Environment management
     uv run python oppman.py env            # Check environment configuration
     uv run python oppman.py secrets        # Generate SECRET_KEY for .env file
-    uv run python oppman.py clean          # Move files not needed for new projects to backup
+    uv run python oppman.py clean          # Run destroy then move remaining files to backup
     
     # Demo file management (use oppdemo.py)
     uv run python oppdemo.py save          # Save demo files
@@ -460,12 +460,13 @@ Use 'uv run python oppdemo.py <command>' for demo data initialization and manage
 
 
 def clean_project():
-    """Clean project by moving files not needed for a new project to backup location"""
+    """Clean project by first running oppdemo.py destroy, then moving remaining files to backup"""
     import shutil
+    import subprocess
     from pathlib import Path
     from datetime import datetime
     
-    # Files and directories to move to backup
+    # Files and directories to move to backup (after destroy)
     files_to_clean = [
         "demo_assets",
         "base_assets", 
@@ -478,35 +479,34 @@ def clean_project():
         "fastopp"
     ]
     
+    # Show initial confirmation prompt
+    print("🧹 FastOpp Project Cleanup")
+    print("=" * 50)
+    print("This will perform a two-step cleanup process:")
+    print()
+    print("1️⃣  First: Run 'oppdemo.py destroy' to switch to minimal app")
+    print("2️⃣  Then: Move remaining files to backup location")
+    print()
+    print("Files that will be moved to backup after destroy:")
+    print()
+    
     # Check which files/directories exist
     existing_items = []
     for item in files_to_clean:
         path = Path(item)
         if path.exists():
             existing_items.append(item)
+            if path.is_dir():
+                print(f"  📁 {item}/ (directory)")
+            else:
+                print(f"  📄 {item} (file)")
     
     if not existing_items:
         print("ℹ️  No files to clean - all specified files/directories are already missing")
         return True
     
-    # Create backup directory with timestamp
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_dir = Path("backups") / "clean" / timestamp
-    backup_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Show confirmation prompt
-    print("🧹 FastOpp Project Cleanup")
-    print("=" * 50)
-    print("This will move the following files/directories to backup:")
     print()
-    for item in existing_items:
-        path = Path(item)
-        if path.is_dir():
-            print(f"  📁 {item}/ (directory)")
-        else:
-            print(f"  📄 {item} (file)")
-    print()
-    print(f"📦 Backup location: {backup_dir}")
+    print("⚠️  WARNING: This will switch to minimal app mode and move files to backup!")
     print("💡 Files will be preserved in the backup directory")
     print()
     
@@ -521,12 +521,52 @@ def clean_project():
         else:
             print("Please enter 'yes' or 'no'")
     
-    # Move files and directories to backup
+    # Step 1: Run oppdemo.py destroy
+    print("\n1️⃣  Running 'oppdemo.py destroy' to switch to minimal app...")
+    try:
+        result = subprocess.run([
+            "uv", "run", "python", "oppdemo.py", "destroy"
+        ], check=True, capture_output=True, text=True)
+        print("✅ oppdemo.py destroy completed successfully")
+        if result.stdout:
+            print("📋 Destroy output:")
+            print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Failed to run oppdemo.py destroy: {e}")
+        if e.stdout:
+            print(f"Output: {e.stdout}")
+        if e.stderr:
+            print(f"Error: {e.stderr}")
+        return False
+    except Exception as e:
+        print(f"❌ Unexpected error running oppdemo.py destroy: {e}")
+        return False
+    
+    # Step 2: Create backup directory and move remaining files
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_dir = Path("backups") / "clean" / timestamp
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    
+    print(f"\n2️⃣  Moving remaining files to backup: {backup_dir}")
+    
+    # Re-check which files still exist after destroy
+    remaining_items = []
+    for item in files_to_clean:
+        path = Path(item)
+        if path.exists():
+            remaining_items.append(item)
+    
+    if not remaining_items:
+        print("ℹ️  No remaining files to move after destroy")
+        print("\n🎉 Project cleanup completed successfully!")
+        print("Your project is now ready to be used as a base for new applications.")
+        return True
+    
+    # Move remaining files and directories to backup
     moved_count = 0
     failed_count = 0
     
-    print(f"\n📦 Moving files to backup: {backup_dir}")
-    for item in existing_items:
+    for item in remaining_items:
         source_path = Path(item)
         backup_path = backup_dir / item
         
