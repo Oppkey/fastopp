@@ -912,22 +912,15 @@ async def destroy_demo_files():
             print("Please ensure base_assets/admin directory exists")
             return False
         
-        # Step 8: Copy auth directory from services
-        print("🔐 Copying auth directory from services...")
+        # Step 8: Auth directory no longer needed (using core services)
+        print("🔐 Auth directory setup skipped (using core/services/auth)")
         auth_dir = Path("auth")
-        services_auth = Path("services/auth")
         
         if auth_dir.exists():
             shutil.rmtree(auth_dir)
-            print("  ✅ Removed existing auth/")
-        
-        if services_auth.exists():
-            shutil.copytree(services_auth, auth_dir)
-            print("  ✅ Copied services/auth to auth/")
+            print("  ✅ Removed existing auth/ (using core services)")
         else:
-            print("  ❌ Error: services/auth not found!")
-            print("Please ensure services/auth directory exists")
-            return False
+            print("  ℹ️  No local auth/ directory found (using core services)")
         
         # Step 9: Remove blog directory (demo content)
         print("📝 Removing blog directory...")
