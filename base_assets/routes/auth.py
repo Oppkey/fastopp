@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from sqlmodel import select
 from db import AsyncSessionLocal
 from models import User
-from services.auth import create_user_token
+from core.services.auth import create_user_token
 from fastapi_users.password import PasswordHelper
 
 templates = Jinja2Templates(directory="templates")

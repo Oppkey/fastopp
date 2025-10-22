@@ -5,7 +5,7 @@ import os
 from sqladmin import Admin
 from fastapi import FastAPI
 from db import async_engine
-from services.auth import AdminAuth
+from core.services.auth import AdminAuth
 from .views import UserAdmin
 
 

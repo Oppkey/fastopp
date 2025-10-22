@@ -53,7 +53,7 @@ done
 echo "🛣️  Restoring routes..."
 cp demo_assets/routes/*.py routes/ 2>/dev/null || true
 
-# Restore services
+# Restore services (application-specific services only, core services remain in core/)
 echo "🔧 Restoring services..."
 cp demo_assets/services/*.py services/ 2>/dev/null || true
 

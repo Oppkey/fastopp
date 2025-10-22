@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import User
-from services.auth import create_user_token
+from core.services.auth import create_user_token
 from dependencies.database import get_db_session
 from dependencies.config import get_settings, Settings
 from fastapi_users.password import PasswordHelper

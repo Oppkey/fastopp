@@ -4,9 +4,9 @@ Page routes for base_assets
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from services.auth import get_current_staff_or_admin_from_cookies
+from core.services.auth import get_current_staff_or_admin_from_cookies
 from models import User
-from services.template_context import get_template_context
+from core.services.template_context import get_template_context
 
 templates = Jinja2Templates(directory="templates")
 
