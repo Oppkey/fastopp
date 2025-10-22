@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">{{ title }}</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Authentication State</h2>
+            
+            <div class="space-y-2">
+                <p><strong>Is Authenticated:</strong> {{ is_authenticated }}</p>
+                <p><strong>Has Access Token:</strong> {{ has_access_token }}</p>
+                <p><strong>Has Session Token:</strong> {{ has_session_token }}</p>
+                <p><strong>Is Superuser:</strong> {{ is_superuser }}</p>
+                <p><strong>Is Staff:</strong> {{ is_staff }}</p>
+                <p><strong>User Email:</strong> {{ user_email or 'None' }}</p>
+                <p><strong>User Group:</strong> {{ user_group or 'None' }}</p>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="text-lg font-semibold mb-2">Cookies:</h3>
+                <pre class="bg-gray-100 p-2 rounded text-sm">{{ request.cookies }}</pre>
+            </div>
+            
+            <div class="mt-4">
+                <h3 class="text-lg font-semibold mb-2">Session:</h3>
+                <pre class="bg-gray-100 p-2 rounded text-sm">{{ request.session }}</pre>
+            </div>
+        </div>
+        
+        <div class="mt-6">
+            <a href="/" class="text-blue-600 hover:text-blue-800">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

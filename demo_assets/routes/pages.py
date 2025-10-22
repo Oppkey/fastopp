@@ -4,8 +4,9 @@ Page routes for rendering HTML templates
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from dependencies.auth import get_current_staff_or_admin
+from services.auth import get_current_staff_or_admin, get_current_user_from_cookies
 from models import User
+from services.template_context import get_template_context
 
 templates = Jinja2Templates(directory="templates")
 
@@ -15,13 +16,32 @@ router = APIRouter()
 @router.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     """Home page"""
-    return templates.TemplateResponse("index.html", {"request": request, "title": "Delightful Demo Dashboard"})
+    # Get authentication context
+    auth_context = get_template_context(request)
+    
+    return templates.TemplateResponse("index.html", {
+        "request": request, 
+        "title": "Delightful Demo Dashboard",
+        **auth_context
+    })
 
 
 @router.get("/design-demo", response_class=HTMLResponse)
 async def design_demo(request: Request):
     """Design demo page"""
     return templates.TemplateResponse("design-demo.html", {"request": request, "title": "FastOpp Design Demo"})
+
+
+@router.get("/auth-test", response_class=HTMLResponse)
+async def auth_test(request: Request):
+    """Test authentication state"""
+    auth_context = get_template_context(request)
+    
+    return templates.TemplateResponse("auth-test.html", {
+        "request": request,
+        "title": "Authentication Test",
+        **auth_context
+    })
 
 
 @router.get("/database-demo", response_class=HTMLResponse)

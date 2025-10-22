@@ -106,7 +106,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # SQLAdmin automatically handles static file serving at /admin/statics/
 # No manual mounting required - SQLAdmin does this internally
 
-templates = Jinja2Templates(directory="templates")
+# Configure templates with authentication context processor
+from services.template_context import get_template_context
+
+templates = Jinja2Templates(
+    directory="templates",
+    context_processors=[get_template_context]
+)
 security = HTTPBasic()
 
 
