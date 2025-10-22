@@ -19,7 +19,9 @@ uv init --python 3.12 # fastopp will not work with python 3.13 or 3.14
 uv add fastopp
 uv run fastopp-startproject
 uv run python oppman.py runserver
-cp example.env .env # open in editor and add your own credentials
+# open web browser to http://localhost:8000
+cp example.env .env # open in editor and set OPENROUTER_API_KEY 
+# can be used locally with only that one change
 ```
 
 If `uv run fastopp-startproject` fails, try
