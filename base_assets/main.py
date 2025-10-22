@@ -16,10 +16,10 @@ from dotenv import load_dotenv
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from admin.setup import setup_admin
-from base_assets.routes.auth import router as auth_router
-from base_assets.routes.pages import router as pages_router
+from routes.auth import router as auth_router
+from routes.pages import router as pages_router
 try:
-    from base_assets.routes.oppman import router as oppman_router
+    from routes.oppman import router as oppman_router
 except Exception:
     oppman_router = None  # Optional during partial restores
 
