@@ -4,7 +4,7 @@ Page routes for base_assets
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from base_assets.auth.core import get_current_staff_or_admin_from_cookies
+from services.auth import get_current_staff_or_admin_from_cookies
 from models import User
 from services.template_context import get_template_context
 
@@ -18,9 +18,9 @@ async def read_root(request: Request):
     """Home page with links to protected content"""
     # Get authentication context
     auth_context = get_template_context(request)
-    
+
     return templates.TemplateResponse("index.html", {
-        "request": request, 
+        "request": request,
         "title": "Welcome to FastOpp Base Assets",
         **auth_context
     })
@@ -30,7 +30,7 @@ async def read_root(request: Request):
 async def protected_page(request: Request, current_user: User = Depends(get_current_staff_or_admin_from_cookies)):
     """Protected page that requires authentication"""
     return templates.TemplateResponse("protected.html", {
-        "request": request, 
+        "request": request,
         "title": "Protected Content",
         "current_page": "protected",
         "user": current_user

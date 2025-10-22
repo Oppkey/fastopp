@@ -418,18 +418,8 @@ def save_demo_files():
         else:
             print("  ℹ️  dependencies/ directory not found (skipping dependencies backup)")
         
-        # Backup auth directory (authentication system)
-        print("🔐 Backing up auth directory...")
-        auth_src = Path("auth")
-        if auth_src.exists():
-            auth_dst = demo_assets / "auth"
-            if auth_dst.exists():
-                shutil.rmtree(auth_dst)
-            shutil.copytree(auth_src, auth_dst)
-            print("  ✅ auth/")
-            files_copied += 1
-        else:
-            print("  ℹ️  auth/ directory not found (skipping auth backup)")
+        # Note: auth directory no longer needed (using services/auth)
+        print("🔐 Auth directory backup skipped (using unified services/auth)")
         
         # Backup blog directory (demo content)
         print("📝 Backing up blog directory...")
@@ -732,19 +722,8 @@ def restore_demo_files():
         else:
             print("  ℹ️  demo_assets/dependencies not found (skipping dependencies restoration)")
         
-        # Restore auth directory (authentication system)
-        print("🔐 Restoring auth directory...")
-        auth_src = demo_assets / "auth"
-        auth_dest = Path("auth")
-        
-        if auth_src.exists():
-            if auth_dest.exists():
-                shutil.rmtree(auth_dest)
-            shutil.copytree(auth_src, auth_dest)
-            print("  ✅ Restored auth/")
-            files_restored += 1
-        else:
-            print("  ℹ️  demo_assets/auth not found (skipping auth restoration)")
+        # Note: auth directory no longer needed (using services/auth)
+        print("🔐 Auth directory restore skipped (using unified services/auth)")
         
         # Restore blog directory (demo content)
         print("📝 Restoring blog directory...")
@@ -937,21 +916,21 @@ async def destroy_demo_files():
             print("Please ensure base_assets/admin directory exists")
             return False
         
-        # Step 8: Copy auth directory from base_assets
-        print("🔐 Copying auth directory from base_assets...")
+        # Step 8: Copy auth directory from services
+        print("🔐 Copying auth directory from services...")
         auth_dir = Path("auth")
-        base_auth = Path("base_assets/auth")
+        services_auth = Path("services/auth")
         
         if auth_dir.exists():
             shutil.rmtree(auth_dir)
             print("  ✅ Removed existing auth/")
         
-        if base_auth.exists():
-            shutil.copytree(base_auth, auth_dir)
-            print("  ✅ Copied base_assets/auth to auth/")
+        if services_auth.exists():
+            shutil.copytree(services_auth, auth_dir)
+            print("  ✅ Copied services/auth to auth/")
         else:
-            print("  ❌ Error: base_assets/auth not found!")
-            print("Please ensure base_assets/auth directory exists")
+            print("  ❌ Error: services/auth not found!")
+            print("Please ensure services/auth directory exists")
             return False
         
         # Step 9: Remove blog directory (demo content)
