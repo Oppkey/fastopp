@@ -71,7 +71,7 @@ Thank you for your interest in contributing to FastOpp! This guide will help you
 
 #### Publishing For Maintainers (Project Owners)
 
-1. **PyPI Account**: Create an account at https://pypi.org/account/register/
+1. **PyPI Account**: Create an account at <https://pypi.org/account/register/>
 2. **API Token**: Generate an API token from your PyPI account settings
 3. **Environment Variables**: Set up your credentials
 
@@ -87,7 +87,7 @@ Thank you for your interest in contributing to FastOpp! This guide will help you
 
 If you need to grant PyPI access to trusted contributors:
 
-1. **Go to PyPI project settings**: https://pypi.org/manage/project/fastopp/collaboration/
+1. **Go to PyPI project settings**: <https://pypi.org/manage/project/fastopp/collaboration/>
 2. **Add collaborators** with appropriate permissions:
    - **Owner**: Full access (can add/remove other collaborators)
    - **Maintainer**: Can upload new releases
@@ -147,14 +147,18 @@ TWINE_USERNAME=__token__ TWINE_PASSWORD=your-token uv run twine upload dist/*
 
 #### Test on TestPyPI (Optional)
 
-1. **Create TestPyPI account** at https://test.pypi.org/
+1. **Create TestPyPI account** at <https://test.pypi.org/>
 2. **Get TestPyPI token** from your TestPyPI account
 3. **Upload to TestPyPI first**:
 
    ```bash
-   TWINE_USERNAME=__token__ TWINE_PASSWORD=your-testpypi-token uv run twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+   TWINE_USERNAME=__token__ 
+   TWINE_PASSWORD=your-testpypi-token 
+   uv run twine upload --repository-url https://test.pypi.org/legacy/ dist/*
    ```
+
 4. **Test installation from TestPyPI**:
+
    ```bash
    uv add --index-url https://test.pypi.org/simple/ fastopp
    ```
@@ -167,7 +171,6 @@ TWINE_USERNAME=__token__ TWINE_PASSWORD=your-token uv run twine upload dist/*
 uv build
 
 # 3. Upload to PyPI
-```text
 TWINE_USERNAME=__token__ 
 TWINE_PASSWORD=your-token 
 uv run twine upload dist/*
@@ -182,6 +185,7 @@ uv run twine upload dist/*
 ### Semantic Versioning
 
 Follow semantic versioning (SemVer):
+
 - **MAJOR** (1.0.0): Breaking changes
 - **MINOR** (0.1.0): New features, backward compatible
 - **PATCH** (0.0.1): Bug fixes, backward compatible
@@ -189,14 +193,18 @@ Follow semantic versioning (SemVer):
 ### Updating Version
 
 1. **Edit `pyproject.toml`**:
+
    ```toml
    version = "0.2.2"  # Update version number
    ```
 
 2. **Rebuild and publish**:
+
    ```bash
    uv build
-   TWINE_USERNAME=__token__ TWINE_PASSWORD=your-token uv run twine upload dist/*
+   TWINE_USERNAME=__token__
+   TWINE_PASSWORD=your-token
+   uv run twine upload dist/*
    ```
 
 ## Code Quality
@@ -249,7 +257,9 @@ uv run pytest tests/test_specific.py
 
    ```bash
    uv build
-   TWINE_USERNAME=__token__ TWINE_PASSWORD=your-token uv run twine upload dist/*
+   TWINE_USERNAME=__token__
+   TWINE_PASSWORD=your-token
+   uv run twine upload dist/*
    ```
 
 #### Monitor PyPI
@@ -308,7 +318,7 @@ uv run pytest tests/test_specific.py
 
 #### Granting PyPI Access
 
-1. **Go to PyPI project settings**: https://pypi.org/manage/project/fastopp/collaboration/
+1. **Go to PyPI project settings**: <https://pypi.org/manage/project/fastopp/collaboration/>
 2. **Add team members** with appropriate roles:
    - **Owner**: Full project control
    - **Maintainer**: Can upload releases
@@ -317,14 +327,16 @@ uv run pytest tests/test_specific.py
    - Never share in public channels
    - Consider using organization accounts for teams
 
-#### Best Practices
+### Best Practices
+
+#### Security & Access Management
 
 - **Limit access** to trusted maintainers only
 - **Use separate tokens** for different environments
 - **Monitor upload activity** regularly
 - **Revoke access** when team members leave
 
-### Best Practices
+#### Publishing Guidelines
 
 - **Review changes** before publishing
 - **Test thoroughly** in development
@@ -346,6 +358,7 @@ Before publishing a new version:
 ## Contact
 
 For questions about contributing:
+
 - **GitHub Issues**: Report bugs and request features
 - **GitHub Discussions**: Ask questions and discuss ideas
 - **Email**: Contact the maintainers directly
