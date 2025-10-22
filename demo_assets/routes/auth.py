@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import User
-from dependencies.auth import create_user_token
+from services.auth import create_user_token
 from dependencies.database import get_db_session
 from dependencies.config import get_settings, Settings
 from fastapi_users.password import PasswordHelper
@@ -99,8 +99,8 @@ async def login_form(
                 "error": "Access denied. Staff or admin privileges required."
             })
 
-        # Create session token using dependency injection
-        token = create_user_token(user, settings)
+        # Create session token using unified auth system
+        token = create_user_token(user)
         
         # Check if there's a redirect URL in the form or default to home
         redirect_url = form.get("next", "/")
@@ -108,7 +108,37 @@ async def login_form(
             redirect_url = "/"
         
         response = RedirectResponse(url=redirect_url, status_code=302)
+        
+        # Set cookie for application routes
         response.set_cookie(key="access_token", value=token, httponly=True, max_age=1800)  # 30 minutes
+        
+        # Also set session token for SQLAdmin
+        request.session["token"] = token
+        
+        # Set session variables that SQLAdmin views check for
+        request.session["is_authenticated"] = True
+        request.session["is_superuser"] = user.is_superuser
+        request.session["is_staff"] = user.is_staff
+        request.session["user_id"] = str(user.id)
+        request.session["user_email"] = user.email
+        request.session["group"] = user.group
+        
+        # Set additional permissions based on user group
+        if user.group == "marketing":
+            request.session["can_manage_webinars"] = True
+        elif user.group == "sales":
+            request.session["can_manage_webinars"] = True
+        elif user.is_superuser:
+            request.session["can_manage_webinars"] = True
+        else:
+            request.session["can_manage_webinars"] = False
+        
+        print(f"🔐 Login form - JWT token created: {token[:20]}...")
+        print(f"🔐 Login form - Cookie set: access_token={token[:20]}...")
+        print(f"🔐 Login form - Session token set: {token[:20]}...")
+        print(f"🔐 Login form - Session variables set: is_superuser={user.is_superuser}, "
+              f"is_staff={user.is_staff}, group={user.group}")
+        
         return response
         
     except Exception as e:
@@ -122,8 +152,21 @@ async def login_form(
 
 
 @router.get("/logout")
-async def logout():
-    """Logout and clear authentication cookie"""
+async def logout(request: Request):
+    """Logout and clear authentication cookie and session"""
+    # Clear all session variables
+    request.session.pop("token", None)
+    request.session.pop("is_authenticated", None)
+    request.session.pop("is_superuser", None)
+    request.session.pop("is_staff", None)
+    request.session.pop("user_id", None)
+    request.session.pop("user_email", None)
+    request.session.pop("group", None)
+    request.session.pop("can_manage_webinars", None)
+    
+    # Clear the access_token cookie (for application routes)
     response = RedirectResponse(url="/", status_code=302)
     response.delete_cookie(key="access_token")
-    return response 
+    
+    print("🔓 Logout endpoint - cleared all session variables and cookie tokens")
+    return response

@@ -166,10 +166,10 @@ async def fontawesome_css_redirect():
         status_code=302
     )
 
-# Middleware to inject FontAwesome CDN CSS
+# Middleware to inject FontAwesome CDN CSS and customize SQLAdmin logout
 @app.middleware("http")
 async def inject_fontawesome_cdn(request: Request, call_next):
-    """Inject FontAwesome CDN CSS into admin pages"""
+    """Inject FontAwesome CDN CSS and customize SQLAdmin logout into admin pages"""
     response = await call_next(request)
     
     # Only process admin HTML pages (not static assets)
@@ -194,13 +194,11 @@ async def inject_fontawesome_cdn(request: Request, call_next):
             if body:
                 html = body.decode('utf-8')
                 
-                # Check if this is an HTML page and doesn't already have FontAwesome CDN
-                if ("<html" in html.lower() and 
-                    "font-awesome" not in html.lower() and 
-                    "cdnjs.cloudflare.com" not in html):
+                # Check if this is an HTML page
+                if "<html" in html.lower():
                     
-                    # Inject FontAwesome CDN CSS early in head to prevent layout warnings
-                    cdn_css = '''<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
+                    # Inject FontAwesome CDN CSS and logout customization
+                    custom_js = '''<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
     <style>
         /* Override SQLAdmin's font loading with CDN fonts */
         @font-face {
@@ -228,15 +226,75 @@ async def inject_fontawesome_cdn(request: Request, call_next):
         .fa, .fas, .far, .fal, .fab {
             font-family: "Font Awesome 6 Free" !important;
         }
-    </style>'''
+        
+        /* Hide SQLAdmin logout button */
+        .navbar .navbar-nav .nav-item:has(a[href*="logout"]) {
+            display: none !important;
+        }
+        
+        /* Style for our custom logout button */
+        .custom-logout-btn {
+            color: #dc3545 !important;
+            text-decoration: none !important;
+            margin-left: 10px;
+            display: inline-block !important;
+            padding: 8px 12px !important;
+            background-color: rgba(220, 53, 69, 0.1) !important;
+            border-radius: 4px !important;
+            border: 1px solid #dc3545 !important;
+        }
+        
+        .custom-logout-btn:hover {
+            color: #c82333 !important;
+            background-color: rgba(220, 53, 69, 0.2) !important;
+        }
+        
+        /* Make sure our logout button is visible */
+        .nav-item .custom-logout-btn {
+            display: inline-block !important;
+            visibility: visible !important;
+        }
+    </style>
+    <script>
+        // Hide SQLAdmin logout button and add our own
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('SQLAdmin customization script loaded');
+            
+            // Find and hide the original logout button
+            const logoutLinks = document.querySelectorAll('a[href*="logout"]');
+            console.log('Found logout links:', logoutLinks.length);
+            logoutLinks.forEach(link => {
+                link.style.display = 'none';
+                console.log('Hidden logout link:', link.href);
+            });
+            
+            // Add our custom logout button to the top-right corner
+            const fallbackButton = document.createElement('div');
+            fallbackButton.style.position = 'fixed';
+            fallbackButton.style.top = '10px';
+            fallbackButton.style.right = '10px';
+            fallbackButton.style.zIndex = '10000';
+            fallbackButton.style.backgroundColor = '#dc3545';
+            fallbackButton.style.color = 'white';
+            fallbackButton.style.padding = '10px 15px';
+            fallbackButton.style.borderRadius = '5px';
+            fallbackButton.style.cursor = 'pointer';
+            fallbackButton.style.fontWeight = 'bold';
+            fallbackButton.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+            fallbackButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+            fallbackButton.onclick = () => window.location.href = '/logout';
+            document.body.appendChild(fallbackButton);
+            console.log('Added custom logout button to top-right corner');
+        });
+    </script>'''
                     
                     # Inject early in head, right after opening head tag
                     if "<head>" in html:
-                        html = html.replace("<head>", f"<head>{cdn_css}")
+                        html = html.replace("<head>", f"<head>{custom_js}")
                     elif "</head>" in html:
-                        html = html.replace("</head>", f"{cdn_css}</head>")
+                        html = html.replace("</head>", f"{custom_js}</head>")
                     else:
-                        html = html.replace("</body>", f"{cdn_css}</body>")
+                        html = html.replace("</body>", f"{custom_js}</body>")
                     
                     # Return new response with proper headers (no Content-Length)
                     from fastapi.responses import HTMLResponse
@@ -246,7 +304,7 @@ async def inject_fontawesome_cdn(request: Request, call_next):
                     return HTMLResponse(content=html, status_code=response.status_code, headers=new_headers)
         
         except Exception as e:
-            print(f"FontAwesome injection error: {e}")
+            print(f"SQLAdmin customization error: {e}")
     
     return response
 
