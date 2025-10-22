@@ -346,6 +346,7 @@ COMMANDS:
     env         Check environment configuration
     secrets     Generate SECRET_KEY for .env file
     demo        Demo commands have been moved to oppdemo.py
+    clean       Move files not needed for new projects to backup
     help        Show this help message
     
 
@@ -375,6 +376,7 @@ EXAMPLES:
     # Environment management
     uv run python oppman.py env            # Check environment configuration
     uv run python oppman.py secrets        # Generate SECRET_KEY for .env file
+    uv run python oppman.py clean          # Move files not needed for new projects to backup
     
     # Demo file management (use oppdemo.py)
     uv run python oppdemo.py save          # Save demo files
@@ -455,6 +457,106 @@ NOTE: All demo-related functionality has been moved to oppdemo.py.
 Use 'uv run python oppdemo.py <command>' for demo data initialization and management.
     """
     print(help_text)
+
+
+def clean_project():
+    """Clean project by moving files not needed for a new project to backup location"""
+    import shutil
+    from pathlib import Path
+    from datetime import datetime
+    
+    # Files and directories to move to backup
+    files_to_clean = [
+        "demo_assets",
+        "base_assets", 
+        "demo_scripts",
+        "docs",
+        "tests",
+        "oppdemo.py",
+        "pytest.ini",
+        "LICENSE",
+        "fastopp"
+    ]
+    
+    # Check which files/directories exist
+    existing_items = []
+    for item in files_to_clean:
+        path = Path(item)
+        if path.exists():
+            existing_items.append(item)
+    
+    if not existing_items:
+        print("ℹ️  No files to clean - all specified files/directories are already missing")
+        return True
+    
+    # Create backup directory with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_dir = Path("backups") / "clean" / timestamp
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Show confirmation prompt
+    print("🧹 FastOpp Project Cleanup")
+    print("=" * 50)
+    print("This will move the following files/directories to backup:")
+    print()
+    for item in existing_items:
+        path = Path(item)
+        if path.is_dir():
+            print(f"  📁 {item}/ (directory)")
+        else:
+            print(f"  📄 {item} (file)")
+    print()
+    print(f"📦 Backup location: {backup_dir}")
+    print("💡 Files will be preserved in the backup directory")
+    print()
+    
+    # Get user confirmation
+    while True:
+        response = input("Do you want to proceed with cleanup? (yes/no): ").strip().lower()
+        if response in ['yes', 'y']:
+            break
+        elif response in ['no', 'n']:
+            print("❌ Cleanup cancelled by user")
+            return False
+        else:
+            print("Please enter 'yes' or 'no'")
+    
+    # Move files and directories to backup
+    moved_count = 0
+    failed_count = 0
+    
+    print(f"\n📦 Moving files to backup: {backup_dir}")
+    for item in existing_items:
+        source_path = Path(item)
+        backup_path = backup_dir / item
+        
+        try:
+            if source_path.is_dir():
+                shutil.move(str(source_path), str(backup_path))
+                print(f"✅ Moved directory: {item}/")
+            else:
+                shutil.move(str(source_path), str(backup_path))
+                print(f"✅ Moved file: {item}")
+            moved_count += 1
+        except Exception as e:
+            print(f"❌ Failed to move {item}: {e}")
+            failed_count += 1
+    
+    # Summary
+    print("\n📊 Cleanup Summary:")
+    print(f"  ✅ Successfully moved: {moved_count} items")
+    if failed_count > 0:
+        print(f"  ❌ Failed to move: {failed_count} items")
+    
+    if failed_count == 0:
+        print("\n🎉 Project cleanup completed successfully!")
+        print(f"📦 Files backed up to: {backup_dir}")
+        print("Your project is now ready to be used as a base for new applications.")
+    else:
+        print(f"\n⚠️  Cleanup completed with {failed_count} errors.")
+        print("Some files may still need manual cleanup.")
+    
+    return failed_count == 0
 
 
 def startproject():
@@ -586,7 +688,9 @@ Examples:
             # Core application management
             "runserver", "stopserver", "production", "delete", "backup", "migrate", "env", "secrets", "help", "demo",
             # Core database and user management
-            "startproject", "db", "superuser", "check_users", "test_auth", "change_password", "list_users", "emergency"
+            "startproject", "db", "superuser", "check_users", "test_auth", "change_password", "list_users", "emergency",
+            # Project management
+            "clean"
         ],
         help="Command to execute"
     )
@@ -699,6 +803,13 @@ Examples:
     if args.command == "startproject":
         # Start new project
         success = startproject()
+        if not success:
+            sys.exit(1)
+        return
+    
+    if args.command == "clean":
+        # Clean project files
+        success = clean_project()
         if not success:
             sys.exit(1)
         return
