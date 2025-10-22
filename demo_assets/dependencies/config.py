@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     - SECRET_KEY="your-secure-production-key"
     - ENVIRONMENT="production"
     - UPLOAD_DIR="/data/uploads"
+    - OPENROUTER_LLM_MODEL="meta-llama/llama-3.3-70b-instruct"
     """
     database_url: str = "sqlite+aiosqlite:///./test.db"
     secret_key: str = "dev_secret_key_change_in_production"
@@ -24,6 +25,7 @@ class Settings(BaseSettings):
     upload_dir: str = "static/uploads"
     openrouter_api_key: Optional[str] = None
     openai_api_key: Optional[str] = None
+    openrouter_llm_model: Optional[str] = None
     emergency_access_enabled: bool = False
     host: str = "0.0.0.0"
     port: int = 8000
