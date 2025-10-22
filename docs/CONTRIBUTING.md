@@ -13,19 +13,22 @@ Thank you for your interest in contributing to FastOpp! This guide will help you
 ### Initial Setup
 
 1. **Clone the repository**:
+
    ```bash
    git clone <repository-url>
    cd fastopp
    ```
 
 2. **Install dependencies**:
+
    ```bash
    uv sync
    ```
 
 3. **Run the application**:
+
    ```bash
-   uv run python main.py
+   uv run python oppman.py runserver
    ```
 
 ## Making Changes
@@ -33,11 +36,13 @@ Thank you for your interest in contributing to FastOpp! This guide will help you
 ### Development Workflow
 
 1. **Create a feature branch**:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 2. **Make your changes** and test them:
+
    ```bash
    # Run tests
    uv run pytest
@@ -48,11 +53,13 @@ Thank you for your interest in contributing to FastOpp! This guide will help you
    ```
 
 3. **Update version** in `pyproject.toml` if needed:
+
    ```toml
-   version = "0.2.2"  # Increment version number
+   version = "0.4.2"  # Increment version number
    ```
 
 4. **Commit your changes**:
+
    ```bash
    git add .
    git commit -m "feat: add new feature"
@@ -62,13 +69,13 @@ Thank you for your interest in contributing to FastOpp! This guide will help you
 
 ### Prerequisites for Publishing
 
-#### For Maintainers (Project Owners)
+#### Publishing For Maintainers (Project Owners)
 
 1. **PyPI Account**: Create an account at https://pypi.org/account/register/
 2. **API Token**: Generate an API token from your PyPI account settings
 3. **Environment Variables**: Set up your credentials
 
-#### For Contributors
+#### Publishing For Contributors
 
 **Important**: Only maintainers with PyPI access can publish releases. Contributors should:
 
@@ -94,18 +101,21 @@ If you need to grant PyPI access to trusted contributors:
 #### Method 1: Using Environment Variables (Recommended)
 
 1. **Set environment variables**:
+
    ```bash
    export TWINE_USERNAME=__token__
    export TWINE_PASSWORD=your-pypi-api-token
    ```
 
 2. **Remove old build and build new package**:
+
    ```bash
    rm -rf dist/*
    uv build
    ```
 
 3. **Upload to PyPI**:
+
    ```bash
    uv run twine upload dist/*
    ```
@@ -113,6 +123,7 @@ If you need to grant PyPI access to trusted contributors:
 #### Method 2: Using .pypirc File
 
 1. **Create/update `.pypirc`** in your home directory:
+
    ```ini
    [pypi]
    username = __token__
@@ -120,6 +131,7 @@ If you need to grant PyPI access to trusted contributors:
    ```
 
 2. **Build and upload**:
+
    ```bash
    uv build
    uv run twine upload dist/*
@@ -257,14 +269,17 @@ uv run pytest tests/test_specific.py
 ### Common Issues
 
 #### 403 Forbidden Error
+
 - **Cause**: Invalid API token or wrong repository
 - **Solution**: Verify your PyPI token and repository URL
 
 #### Build Errors
+
 - **Cause**: Missing dependencies or configuration issues
 - **Solution**: Run `uv sync` and check `pyproject.toml`
 
 #### Upload Failures
+
 - **Cause**: Network issues or authentication problems
 - **Solution**: Check your internet connection and API token
 
