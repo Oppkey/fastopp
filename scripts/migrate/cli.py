@@ -29,6 +29,17 @@ def run_migrate_command(command: str, args: Optional[List[str]] = None) -> bool:
         
         return manager.create_migration(message)
     
+    elif command == "makemigrations":
+        # Django-style makemigrations - prompt for optional message
+        if not args:
+            message = input("Enter migration message (optional, press Enter to skip): ").strip()
+            if not message:
+                message = "Auto-generated migration"
+        else:
+            message = args[0]
+        
+        return manager.create_migration(message)
+    
     elif command == "upgrade":
         revision = args[0] if args else "head"
         return manager.upgrade(revision)
@@ -61,6 +72,16 @@ def run_migrate_command(command: str, args: Optional[List[str]] = None) -> bool:
     elif command == "setup":
         return setup_alembic_config()
     
+    elif command == "sqlmigrate":
+        if not args:
+            print("❌ Revision required for sqlmigrate")
+            print("Usage: uv run python oppman.py sqlmigrate <revision>")
+            return False
+        return manager.sqlmigrate(args[0])
+    
+    elif command == "showmigrations":
+        return manager.show_migrations()
+    
     else:
         print(f"❌ Unknown migration command: {command}")
         return False
@@ -72,9 +93,22 @@ def show_migration_help():
 Migration Management Commands
 
 USAGE:
+    # Django-style commands (recommended)
+    python oppman.py makemigrations [message]
+    python oppman.py migrate
+    python oppman.py sqlmigrate <revision>
+    python oppman.py showmigrations
+    
+    # Alembic-style commands (also available)
     python oppman.py migrate <command> [options]
 
-COMMANDS:
+DJANGO-STYLE COMMANDS:
+    makemigrations    Create a new migration (prompts for optional message)
+    migrate          Apply all pending migrations
+    sqlmigrate       Show SQL statements for a specific migration
+    showmigrations  Show all migrations with applied status [X] applied, [ ] pending
+
+ALEMBIC-STYLE COMMANDS:
     init        Initialize Alembic in the project (first time setup)
     setup       Update Alembic configuration files
     create      Create a new migration (with message)
@@ -87,38 +121,24 @@ COMMANDS:
     check       Check if database is up to date
 
 EXAMPLES:
-    # First time setup
-    python oppman.py migrate init
+    # Django-style workflow (recommended)
+    python oppman.py makemigrations                    # Create migration (prompts for message)
+    python oppman.py migrate                           # Apply migrations
+    python oppman.py sqlmigrate abc123def             # Show SQL for migration
+    python oppman.py showmigrations                   # Show migration status
     
-    # Create a new migration
-    python oppman.py migrate create "Add user profile table"
-    
-    # Apply all pending migrations
-    python oppman.py migrate upgrade
-    
-    # Upgrade to specific revision
-    python oppman.py migrate upgrade abc123def
-    
-    # Downgrade to previous revision
-    python oppman.py migrate downgrade abc123def
-    
-    # Check current status
-    python oppman.py migrate current
-    
-    # View migration history
-    python oppman.py migrate history
-    
-    # Show details of latest migration
-    python oppman.py migrate show
-    
-    # Mark database as up to date without running migrations
-    python oppman.py migrate stamp head
+    # Alembic-style workflow (also available)
+    python oppman.py migrate init                      # First time setup
+    python oppman.py migrate create "Add user table"  # Create migration
+    python oppman.py migrate upgrade                  # Apply migrations
+    python oppman.py migrate current                   # Check status
+    python oppman.py migrate history                  # View history
 
 WORKFLOW:
     1. Initialize: python oppman.py migrate init
     2. Add models to models.py
-    3. Create migration: python oppman.py migrate create "Description"
-    4. Apply migration: python oppman.py migrate upgrade
+    3. Create migration: python oppman.py makemigrations (or migrate create "Description")
+    4. Apply migration: python oppman.py migrate (or migrate upgrade)
     5. Repeat steps 2-4 for new changes
 
 TROUBLESHOOTING:
@@ -167,4 +187,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()

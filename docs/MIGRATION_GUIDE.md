@@ -1,13 +1,22 @@
-# FastAPI Migration Management Guide
+# FastOpp Database Migration Management Guide
 
-This guide explains how to handle database migrations in your FastAPI application, equivalent to Django's `manage.py migrate` functionality.
+This guide explains how to handle database migrations in your FastOpp application, equivalent to Django's `manage.py migrate` functionality.
 
 ## Overview
 
-Your FastAPI project now includes a complete migration management system using **Alembic** (the standard migration tool for SQLAlchemy/SQLModel). This provides Django-like migration functionality with the syntax:
+Your FastOpp project includes a complete migration management system using **Alembic** (the standard migration tool for SQLAlchemy/SQLModel). This provides Django-like migration functionality with both Django-style and Alembic-style commands:
 
+**Django-style commands (recommended):**
 ```bash
-uv run python oppman.py migrate [command]
+uv run python oppman.py makemigrations    # Create migrations
+uv run python oppman.py migrate           # Apply migrations
+uv run python oppman.py sqlmigrate <rev>  # Show SQL for migration
+uv run python oppman.py showmigrations    # Show migration status
+```
+
+**Alembic-style commands (also available):**
+```bash
+uv run python oppman.py migrate [command] # Traditional Alembic commands
 ```
 
 ## Quick Start
@@ -19,6 +28,7 @@ uv run python oppman.py migrate init
 ```
 
 This will:
+
 - Initialize Alembic in your project
 - Create `alembic/` directory and `alembic.ini`
 - Configure the database URL for SQLite
@@ -42,18 +52,35 @@ class Order(SQLModel, table=True):
 ### 3. Create a Migration
 
 ```bash
-uv run python oppman.py migrate create "Add Order model"
+uv run python oppman.py makemigrations
+# Enter migration message: Add Order model
 ```
 
 ### 4. Apply the Migration
 
 ```bash
-uv run python oppman.py migrate upgrade
+uv run python oppman.py migrate
 ```
 
 ## Available Commands
 
-### Basic Commands
+### Django-Style Commands (Recommended)
+
+```bash
+# Create a new migration (prompts for message)
+uv run python oppman.py makemigrations
+
+# Apply all pending migrations
+uv run python oppman.py migrate
+
+# Show SQL statements for a migration
+uv run python oppman.py sqlmigrate <revision>
+
+# Show migration status with [X] applied, [ ] pending
+uv run python oppman.py showmigrations
+```
+
+### Alembic-Style Commands (Also Available)
 
 ```bash
 # Initialize Alembic (first time only)
@@ -96,6 +123,7 @@ uv run python oppman.py migrate setup
 ### Adding a New Table
 
 1. **Add model to `models.py`**:
+
 ```python
 class Category(SQLModel, table=True):
     __tablename__ = "categories"
@@ -107,17 +135,18 @@ class Category(SQLModel, table=True):
 
 2. **Create migration**:
 ```bash
-uv run python oppman.py migrate create "Add categories table"
+uv run python oppman.py makemigrations
+# Enter migration message: Add categories table
 ```
 
 3. **Apply migration**:
 ```bash
-uv run python oppman.py migrate upgrade
+uv run python oppman.py migrate
 ```
 
 4. **Verify**:
 ```bash
-uv run python oppman.py migrate current
+uv run python oppman.py showmigrations
 ```
 
 ### Modifying Existing Table
@@ -138,12 +167,13 @@ class User(SQLModel, table=True):
 
 2. **Create migration**:
 ```bash
-uv run python oppman.py migrate create "Add phone number to users"
+uv run python oppman.py makemigrations
+# Enter migration message: Add phone number to users
 ```
 
 3. **Apply migration**:
 ```bash
-uv run python oppman.py migrate upgrade
+uv run python oppman.py migrate
 ```
 
 ## File Structure
@@ -165,12 +195,12 @@ fastapi_d/
 
 ## Comparison with Django
 
-| Django Command | FastAPI Equivalent |
-|----------------|-------------------|
-| `python manage.py migrate` | `python oppman.py migrate upgrade` |
-| `python manage.py makemigrations` | `python oppman.py migrate create "Description"` |
-| `python manage.py showmigrations` | `python oppman.py migrate history` |
-| `python manage.py migrate --plan` | `python oppman.py migrate check` |
+| Django Command | FastOpp Django-Style | FastOpp Alembic-Style |
+|----------------|---------------------|----------------------|
+| `python manage.py migrate` | `python oppman.py migrate` | `python oppman.py migrate upgrade` |
+| `python manage.py makemigrations` | `python oppman.py makemigrations` | `python oppman.py migrate create "Description"` |
+| `python manage.py showmigrations` | `python oppman.py showmigrations` | `python oppman.py migrate history` |
+| `python manage.py sqlmigrate <app> <migration>` | `python oppman.py sqlmigrate <revision>` | `python oppman.py migrate show <revision>` |
 
 ## Troubleshooting
 
@@ -339,11 +369,11 @@ def downgrade() -> None:
 
 1. **Initialize migrations**: `uv run python oppman.py migrate init`
 2. **Add your models** to `models.py`
-3. **Create migrations** as you develop: `uv run python oppman.py migrate create "Description"`
-4. **Apply migrations** to update your database: `uv run python oppman.py migrate upgrade`
+3. **Create migrations** as you develop: `uv run python oppman.py makemigrations`
+4. **Apply migrations** to update your database: `uv run python oppman.py migrate`
 5. **Use in production** by running migrations before starting your server
 
-This migration system provides the same functionality as Django's `manage.py migrate` but is tailored for your FastAPI + SQLModel setup.
+This migration system provides the same functionality as Django's `manage.py migrate` but is tailored for your FastOpp + SQLModel setup.
 
 ## Registering a model in the SQLAdmin panel
 
@@ -393,11 +423,12 @@ Follow these steps to make a new model appear in the SQLAdmin UI. The examples u
    # Update Alembic environment/imports (handled by the migrate setup command)
    uv run python oppman.py migrate setup
 
-   # Create a migration for the new table
-   uv run python oppman.py migrate create "Add partners table"
+   # Create a migration for the new table (Django-style)
+   uv run python oppman.py makemigrations
+   # Enter migration message: Add partners table
 
    # Apply the migration
-   uv run python oppman.py migrate upgrade
+   uv run python oppman.py migrate
    ```
 
    Note: If you prefer to verify manually, ensure `alembic/env.py` imports your new model so that autogenerate includes it (e.g., `from models import Partner`). The `uv run python oppman.py migrate setup` command typically takes care of this.

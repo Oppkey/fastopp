@@ -249,6 +249,82 @@ class MigrationManager:
         else:
             print(f"❌ Failed to check database status: {stderr}")
             return False
+    
+    def sqlmigrate(self, revision: str) -> bool:
+        """Show SQL statements for a migration (Django-style sqlmigrate)"""
+        if not self.is_initialized():
+            print("❌ Alembic not initialized. Run: python oppman.py migrate init")
+            return False
+        
+        print(f"📋 SQL statements for migration: {revision}")
+        return_code, stdout, stderr = self._run_alembic_command(["upgrade", "--sql", revision])
+        
+        if return_code == 0:
+            print(stdout.strip())
+            return True
+        else:
+            print(f"❌ Failed to get SQL for migration: {stderr}")
+            return False
+    
+    def show_migrations(self) -> bool:
+        """Show all migrations with applied status (Django-style showmigrations)"""
+        if not self.is_initialized():
+            print("❌ Alembic not initialized. Run: python oppman.py migrate init")
+            return False
+        
+        print("📋 Migration status:")
+        
+        # Get current revision
+        return_code, current_stdout, current_stderr = self._run_alembic_command(["current"])
+        if return_code != 0:
+            print(f"❌ Failed to get current revision: {current_stderr}")
+            return False
+        
+        # Get migration history
+        return_code, history_stdout, history_stderr = self._run_alembic_command(["history", "--verbose"])
+        if return_code != 0:
+            print(f"❌ Failed to get migration history: {history_stderr}")
+            return False
+        
+        # Parse current revision
+        current_revision = None
+        for line in current_stdout.split('\n'):
+            if 'Rev:' in line:
+                # Extract revision from line like "Rev: abc123def456 (head)"
+                parts = line.split('Rev:')
+                if len(parts) > 1:
+                    revision_part = parts[1].strip().split()[0]
+                    current_revision = revision_part
+                break
+        
+        # Parse history and show status
+        lines = history_stdout.split('\n')
+        for line in lines:
+            line = line.strip()
+            if not line or line.startswith('Rev:') or line.startswith('Path:'):
+                continue
+            
+            # Check if this migration is applied
+            if current_revision and current_revision in line:
+                status = "[X]"
+            else:
+                status = "[ ]"
+            
+            # Extract migration info
+            if 'Rev:' in line:
+                # Format: "Rev: abc123def456 (head), Parent: xyz789abc123"
+                parts = line.split('Rev:')
+                if len(parts) > 1:
+                    rev_info = parts[1].strip()
+                    # Extract revision hash and description
+                    if '(' in rev_info:
+                        revision_hash = rev_info.split('(')[0].strip()
+                        description = rev_info.split('(')[1].split(')')[0].strip()
+                        print(f"{status} {revision_hash} {description}")
+                    else:
+                        print(f"{status} {rev_info}")
+        
+        return True
 
 
 def setup_alembic_config():
@@ -322,4 +398,4 @@ def setup_alembic_config():
             print(f"❌ Failed to update env.py: {e}")
             return False
     
-    return True 
+    return True
