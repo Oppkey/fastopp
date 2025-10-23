@@ -54,7 +54,8 @@ def clean_project():
         "oppdemo.py",
         "pytest.ini",
         "LICENSE",
-        "fastopp"
+        "fastopp",
+        "README.md"
     ]
     
     # Show initial confirmation prompt
