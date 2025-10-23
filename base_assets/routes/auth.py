@@ -87,14 +87,45 @@ async def login_form(request: Request):
 
         # Create session token
         token = create_user_token(user)
+        
+        # Set session variables for SQLAdmin (same as SQLAdmin login)
+        request.session["token"] = token
+        request.session["is_authenticated"] = True
+        request.session["is_superuser"] = user.is_superuser
+        request.session["is_staff"] = user.is_staff
+        request.session["user_id"] = str(user.id)
+        request.session["user_email"] = user.email
+        request.session["group"] = user.group
+        
+        # Set additional permissions based on user group
+        if user.group == "marketing":
+            request.session["can_manage_webinars"] = True
+        elif user.group == "sales":
+            request.session["can_manage_webinars"] = True
+        elif user.is_superuser:
+            request.session["can_manage_webinars"] = True
+        else:
+            request.session["can_manage_webinars"] = False
+        
         response = RedirectResponse(url="/protected", status_code=302)
         response.set_cookie(key="access_token", value=token, httponly=True, max_age=1800)  # 30 minutes
         return response
 
 
 @router.get("/logout")
-async def logout():
-    """Logout and clear authentication cookie"""
+async def logout(request: Request):
+    """Logout and clear authentication cookie and session data"""
+    # Clear all session variables (same as SQLAdmin logout)
+    request.session.pop("token", None)
+    request.session.pop("is_authenticated", None)
+    request.session.pop("is_superuser", None)
+    request.session.pop("is_staff", None)
+    request.session.pop("user_id", None)
+    request.session.pop("user_email", None)
+    request.session.pop("group", None)
+    request.session.pop("can_manage_webinars", None)
+    
+    # Clear the JWT token cookie
     response = RedirectResponse(url="/", status_code=302)
     response.delete_cookie(key="access_token")
     return response
