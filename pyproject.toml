@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fastopp"
-version = "0.4.2a0"
+version = "0.4.2"
 authors = [
     {name = "Oppkey"}
 ]
