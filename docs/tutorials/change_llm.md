@@ -25,8 +25,6 @@ for better performance and still be about 20x cheaper than premier OpenAI models
 
 Popular alternatives:
 - `meta-llama/llama-3.3-70b-instruct` (paid version, better performance)
-- `anthropic/claude-3.5-sonnet:free` (Claude 3.5 Sonnet)
-- `openai/gpt-4o-mini:free` (GPT-4o Mini)
-- `google/gemini-pro:free` (Gemini Pro)
+- `qwen/qwen3-coder:free` (Qwen3 Coder)
 
 (as of August 15, 2025)

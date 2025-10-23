@@ -154,6 +154,13 @@
                     }
                 },
                 showApiKeyWarning(message) {
+                    // Determine if it's an API key issue or model availability issue
+                    const isModelIssue = message.includes('not available') || message.includes('No endpoints found') || message.includes('model');
+                    const title = isModelIssue ? 'LLM Model Issue' : 'API Key Missing';
+                    const description = isModelIssue 
+                        ? 'The configured LLM model is not available. Please try a different model or check OpenRouter\'s available models.'
+                        : 'This demo requires a valid OPENROUTER_API_KEY environment variable.';
+                    
                     const warningHtml = `
                         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
                             <div class="flex">
@@ -164,7 +171,7 @@
                                 </div>
                                 <div class="ml-3">
                                     <p class="text-sm text-yellow-700">
-                                        <strong>API Key Missing:</strong> ${message}. This demo requires a valid OPENROUTER_API_KEY environment variable.
+                                        <strong>${title}:</strong> ${message}. ${description}
                                     </p>
                                 </div>
                             </div>

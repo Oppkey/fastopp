@@ -16,11 +16,14 @@ logger = logging.getLogger(__name__)
 
 # LLM Configuration - Uses environment variable with fallback
 LLM_MODEL = os.getenv("OPENROUTER_LLM_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
+
+# Print LLM model being used to console
+print(f"🤖 Using LLM Model: {LLM_MODEL}")
+logger.info(f"LLM Model configured: {LLM_MODEL}")
+
 # Alternative models you can use (set OPENROUTER_LLM_MODEL in your .env file):
 # OPENROUTER_LLM_MODEL=meta-llama/llama-3.3-70b-instruct  # Paid version
-# OPENROUTER_LLM_MODEL=anthropic/claude-3.5-sonnet:free    # Claude 3.5 Sonnet
-# OPENROUTER_LLM_MODEL=openai/gpt-4o-mini:free             # GPT-4o Mini
-# OPENROUTER_LLM_MODEL=google/gemini-pro:free              # Gemini Pro
+# OPENROUTER_LLM_MODEL=qwen/qwen3-coder:free              # Qwen3 Coder
 
 
 class ChatService:
@@ -84,11 +87,39 @@ class ChatService:
                         error_text = await response.text()
                         if settings.debug:
                             print(f"DEBUG: Test error: {error_text}")
-                        return {
-                            "status": "error",
-                            "message": f"API error: {error_text}",
-                            "status_code": response.status
-                        }
+                        
+                        # Provide more specific error messages
+                        if response.status == 401:
+                            return {
+                                "status": "error",
+                                "message": "Authentication failed. Please check your OPENROUTER_API_KEY is correct and valid.",
+                                "status_code": response.status
+                            }
+                        elif response.status == 400:
+                            if "model" in error_text.lower() and ("not found" in error_text.lower() or "unavailable" in error_text.lower()):
+                                return {
+                                    "status": "error",
+                                    "message": f"The LLM model '{LLM_MODEL}' is not available. Please try a different model or check OpenRouter's available models.",
+                                    "status_code": response.status
+                                }
+                            else:
+                                return {
+                                    "status": "error",
+                                    "message": f"Bad request: {error_text}",
+                                    "status_code": response.status
+                                }
+                        elif response.status == 429:
+                            return {
+                                "status": "error",
+                                "message": "Rate limit exceeded. Please try again later.",
+                                "status_code": response.status
+                            }
+                        else:
+                            return {
+                                "status": "error",
+                                "message": f"API error (status {response.status}): {error_text}",
+                                "status_code": response.status
+                            }
 
         except Exception as e:
             if settings.debug:
@@ -181,7 +212,35 @@ class ChatService:
                     if response.status != 200:
                         error_text = await response.text()
                         logger.error(f"OpenRouter API error: {error_text}")
-                        raise HTTPException(status_code=500, detail=f"OpenRouter API error: {error_text}")
+                        
+                        # Provide more specific error messages
+                        if response.status == 401:
+                            raise HTTPException(
+                                status_code=401, 
+                                detail="Authentication failed. Please check your OPENROUTER_API_KEY is correct and valid."
+                            )
+                        elif response.status == 400:
+                            # Check if it's a model availability issue
+                            if "model" in error_text.lower() and ("not found" in error_text.lower() or "unavailable" in error_text.lower()):
+                                raise HTTPException(
+                                    status_code=400,
+                                    detail=f"The LLM model '{LLM_MODEL}' is not available. Please try a different model or check OpenRouter's available models."
+                                )
+                            else:
+                                raise HTTPException(
+                                    status_code=400,
+                                    detail=f"Bad request: {error_text}"
+                                )
+                        elif response.status == 429:
+                            raise HTTPException(
+                                status_code=429,
+                                detail="Rate limit exceeded. Please try again later."
+                            )
+                        else:
+                            raise HTTPException(
+                                status_code=500, 
+                                detail=f"OpenRouter API error (status {response.status}): {error_text}"
+                            )
                     
                     result = await response.json()
                     logger.info(f"OpenRouter response: {json.dumps(result, indent=2)}")
