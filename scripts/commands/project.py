@@ -55,7 +55,10 @@ def clean_project():
         "pytest.ini",
         "LICENSE",
         "fastopp",
-        "README.md"
+        "README.md",
+        ".github",
+        ".cursor",
+        ".git"
     ]
     
     # Show initial confirmation prompt
@@ -88,6 +91,7 @@ def clean_project():
     print()
     print("⚠️  WARNING: This will switch to minimal app mode and move files to backup!")
     print("💡 Files will be preserved in the backup directory")
+    print("🔧 This includes project metadata (.git, .github, .cursor) for a fresh start")
     print()
     
     # Get user confirmation
