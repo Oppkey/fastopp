@@ -28,18 +28,18 @@ except ImportError as e:
     print("Make sure all script files are in the scripts/ directory")
     sys.exit(1)
 
-# Demo-specific scripts (from demo_scripts/ directory)
+# Demo-specific scripts (from scripts/demo/ directory)
 demo_scripts_available = True
 try:
-    from demo_scripts.add_test_users import add_test_users
-    from demo_scripts.add_sample_products import add_sample_products
-    from demo_scripts.add_sample_webinars import add_sample_webinars
-    from demo_scripts.add_sample_webinar_registrants import add_sample_registrants
-    from demo_scripts.clear_and_add_registrants import clear_and_add_registrants
-    from demo_scripts.download_sample_photos import download_sample_photos
+    from scripts.demo.add_test_users import add_test_users
+    from scripts.demo.add_sample_products import add_sample_products
+    from scripts.demo.add_sample_webinars import add_sample_webinars
+    from scripts.demo.add_sample_webinar_registrants import add_sample_registrants
+    from scripts.demo.clear_and_add_registrants import clear_and_add_registrants
+    from scripts.demo.download_sample_photos import download_sample_photos
 except ImportError:
     demo_scripts_available = False
-    print("ℹ️  Demo scripts not available (demo_scripts/ directory not found)")
+    print("ℹ️  Demo scripts not available (scripts/demo/ directory not found)")
     print("   Run 'uv run python oppdemo.py restore' to restore demo scripts")
 
 
@@ -357,26 +357,11 @@ def save_demo_files():
             print("  ✅ models.py")
             files_copied += 1
         
-        # Backup sample data scripts
-        print("📝 Backing up sample data scripts...")
-        script_files = [
-            "scripts/add_sample_products.py",
-            "scripts/add_sample_webinar_registrants.py",
-            "scripts/download_sample_photos.py",
-            "scripts/emergency_access.py"
-        ]
+        # Note: Individual script files are now handled by scripts/demo/ backup above
         
-        for script_file in script_files:
-            src = Path(script_file)
-            if src.exists():
-                dst = demo_assets / script_file
-                shutil.copy2(src, dst)
-                print(f"  ✅ {script_file}")
-                files_copied += 1
-        
-        # Backup demo_scripts directory (demo-specific scripts)
-        print("📝 Backing up demo_scripts...")
-        demo_scripts_src = Path("demo_scripts")
+        # Backup scripts/demo directory (demo-specific scripts)
+        print("📝 Backing up scripts/demo...")
+        demo_scripts_src = Path("scripts/demo")
         if demo_scripts_src.exists():
             # Copy to demo_assets/scripts (scripts will be used directly from here)
             demo_scripts_dst = demo_assets / "scripts"
@@ -386,7 +371,7 @@ def save_demo_files():
             print("  ✅ scripts/ (demo scripts)")
             files_copied += 1
         else:
-            print("  ℹ️  demo_scripts/ directory not found (skipping demo_scripts backup)")
+            print("  ℹ️  scripts/demo/ directory not found (skipping scripts/demo backup)")
         
         # Backup admin files
         print("🔧 Backing up admin files...")
@@ -628,31 +613,21 @@ def restore_demo_files():
             print("  ✅ Restored models.py")
             files_restored += 1
         
-        # Copy sample data scripts
-        print("📝 Restoring sample data scripts...")
-        scripts_src = demo_assets / "scripts"
-        scripts_dest = Path("scripts")
+        # Note: Individual script files are now handled by scripts/demo/ restore below
         
-        if scripts_src.exists():
-            for script_file in scripts_src.glob("*.py"):
-                dest_file = scripts_dest / script_file.name
-                shutil.copy2(script_file, dest_file)
-                print(f"  ✅ Restored {script_file.name}")
-                files_restored += 1
-        
-        # Restore demo_scripts directory (demo-specific scripts)
-        print("📝 Restoring demo_scripts...")
+        # Restore scripts/demo directory (demo-specific scripts)
+        print("📝 Restoring scripts/demo...")
         demo_scripts_src = demo_assets / "scripts"
-        demo_scripts_dest = Path("demo_scripts")
+        demo_scripts_dest = Path("scripts/demo")
         
         if demo_scripts_src.exists():
             if demo_scripts_dest.exists():
                 shutil.rmtree(demo_scripts_dest)
             shutil.copytree(demo_scripts_src, demo_scripts_dest)
-            print("  ✅ Restored demo_scripts/")
+            print("  ✅ Restored scripts/demo/")
             files_restored += 1
         else:
-            print("  ℹ️  scripts/ not found in backup (skipping demo_scripts restore)")
+            print("  ℹ️  scripts/ not found in backup (skipping scripts/demo restore)")
 
         # Supplement missing required files from original working copy if available
         print("🔍 Checking original working copy for missing files...")
@@ -744,9 +719,9 @@ def restore_demo_files():
         print(f"📊 Total files restored: {files_restored}")
         print("\n📋 Next steps:")
         print("1. Run sample data scripts to populate the database:")
-        print("   uv run python scripts/add_sample_products.py")
-        print("   uv run python scripts/add_sample_webinar_registrants.py")
-        print("   uv run python scripts/download_sample_photos.py")
+        print("   uv run python oppdemo.py products")
+        print("   uv run python oppdemo.py registrants")
+        print("   uv run python oppdemo.py download-photos")
         print("2. Start the application: uv run python main.py")
         print("3. Visit the demo pages:")
         print("   - http://localhost:8000/ai-demo")
@@ -931,7 +906,16 @@ async def destroy_demo_files():
         else:
             print("  ℹ️  blog/ directory not found")
         
-        # Step 10: Initialize database for base_assets
+        # Step 10: Remove scripts/demo directory (demo-specific scripts)
+        print("📝 Removing scripts/demo directory...")
+        scripts_demo_dir = Path("scripts/demo")
+        if scripts_demo_dir.exists():
+            shutil.rmtree(scripts_demo_dir)
+            print("  ✅ Removed scripts/demo/")
+        else:
+            print("  ℹ️  scripts/demo/ directory not found")
+        
+        # Step 11: Initialize database for base_assets
         print("🗄️  Initializing database for base_assets...")
         try:
             await run_init()
@@ -1162,6 +1146,27 @@ def diff_demo_files():
                 differences['modified'].append("models.py")
         elif models_src.exists() and not models_backup.exists():
             differences['missing_backup'].append("models.py")
+        
+        # Compare scripts/demo directory
+        print("📝 Comparing scripts/demo...")
+        scripts_demo_src = Path("scripts/demo")
+        scripts_demo_backup = demo_assets / "scripts"
+        
+        if scripts_demo_src.exists() and scripts_demo_backup.exists():
+            for script_file in scripts_demo_src.glob("*.py"):
+                backup_file = scripts_demo_backup / script_file.name
+                if not backup_file.exists():
+                    differences['added'].append(f"scripts/demo/{script_file.name}")
+                else:
+                    if not filecmp.cmp(script_file, backup_file, shallow=False):
+                        differences['modified'].append(f"scripts/demo/{script_file.name}")
+            
+            for backup_file in scripts_demo_backup.glob("*.py"):
+                src_file = scripts_demo_src / backup_file.name
+                if not src_file.exists():
+                    differences['deleted'].append(f"scripts/demo/{backup_file.name}")
+        elif scripts_demo_src.exists() and not scripts_demo_backup.exists():
+            differences['missing_backup'].append("scripts/demo/")
         
         # Compare main.py
         print("📄 Comparing main.py...")
