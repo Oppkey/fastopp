@@ -40,7 +40,7 @@ If `uv run fastopp-startproject` fails, try
 
 ```bash
 # in a new folder, not the one that failed
-uv init # do not specify Python version
+# run uv init
 uv add fastopp --frozen
 # follow the rest of the steps from above
 ...
