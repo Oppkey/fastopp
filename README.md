@@ -11,6 +11,18 @@ If you don't have uv installed:
 The setup command `fastopp-startproject` uses
 uv. You must install uv even if you use pip.
 
+Find out which version of python you are running.
+
+```
+python --version
+# or
+python3 --version
+```
+
+If you do not have python 3.12 installed, then run
+
+`uv python install 3.12`
+
 ### with uv (recommended)
 
 ```bash
