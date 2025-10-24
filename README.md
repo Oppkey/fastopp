@@ -27,8 +27,11 @@ cp example.env .env # open in editor and set OPENROUTER_API_KEY
 If `uv run fastopp-startproject` fails, try
 
 ```bash
-uv remove fastopp
+# in a new folder, not the one that failed
+uv init # do not specify Python version
 uv add fastopp --frozen
+# follow the rest of the steps from above
+...
 ```
 
 ### with pip
