@@ -657,7 +657,7 @@ wheels = [
 
 [[package]]
 name = "fastopp"
-version = "0.4.3"
+version = "0.4.5a0"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },

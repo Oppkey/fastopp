@@ -1,6 +1,7 @@
 """
 Page routes for rendering HTML templates
 """
+import os
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -11,6 +12,62 @@ from core.services.template_context import get_template_context
 templates = Jinja2Templates(directory="templates")
 
 router = APIRouter()
+
+
+def format_model_name(model_identifier: str) -> str:
+    """
+    Format a model identifier into a more human-readable display name
+
+    Args:
+        model_identifier: The model identifier
+            (e.g., "meta-llama/llama-3.3-70b-instruct:free")
+
+    Returns:
+        str: A formatted display name
+            (e.g., "Llama 3.3 70B Instruct (Free)")
+    """
+    # Extract the model name part (after the slash)
+    if '/' in model_identifier:
+        model_name = model_identifier.split('/', 1)[1]
+    else:
+        model_name = model_identifier
+
+    # Check if it has a :free suffix
+    is_free = model_name.endswith(':free')
+    if is_free:
+        model_name = model_name[:-5]  # Remove ':free'
+
+    # Format common model patterns
+    # Handle llama models
+    if 'llama' in model_name.lower():
+        # Extract version and size info
+        parts = model_name.replace('llama-', '').split('-')
+        formatted_parts = []
+        for part in parts:
+            if part.replace('.', '').isdigit():  # Version number
+                formatted_parts.append(part)
+            # Size like "70b"
+            elif 'b' in part.lower() and part[:-1].isdigit():
+                formatted_parts.append(part.upper())
+            else:
+                formatted_parts.append(part.capitalize())
+
+        display = f"Llama {' '.join(formatted_parts)}"
+    # Handle OpenAI models
+    elif 'gpt' in model_name.lower():
+        display = model_name.upper().replace('-', ' ').title()
+    # Handle Qwen models
+    elif 'qwen' in model_name.lower():
+        display = model_name.replace('-', ' ').title()
+    else:
+        # Generic formatting
+        display = model_name.replace('-', ' ').replace('_', ' ').title()
+
+    # Add "(Free)" suffix if applicable
+    if is_free:
+        display += " (Free)"
+
+    return display
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -72,11 +129,20 @@ async def webinar_demo(request: Request):
 
 @router.get("/ai-demo", response_class=HTMLResponse)
 async def ai_demo(request: Request):
-    """AI Chat demo page with Llama 3.3 70B integration"""
+    """AI Chat demo page with LLM integration"""
+    # Get the LLM model from environment (same default as chat_service.py)
+    llm_model = os.getenv(
+        "OPENROUTER_LLM_MODEL",
+        "meta-llama/llama-3.3-70b-instruct:free"
+    )
+    llm_model_display = format_model_name(llm_model)
+
     return templates.TemplateResponse("ai-demo.html", {
         "request": request,
         "title": "AI Chat Demo",
-        "current_page": "ai-demo"
+        "current_page": "ai-demo",
+        "llm_model": llm_model,
+        "llm_model_display": llm_model_display
     })
 
 
