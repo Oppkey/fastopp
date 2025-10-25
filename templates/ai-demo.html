@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} - AI Chat with Llama 3.3 70B</title>
+    <title>{{ title }} - AI Chat with {{ llm_model_display or llm_model }}</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/favicon.ico') }}">
     
     <!-- Tailwind CSS CDN -->
@@ -363,7 +363,7 @@
                             </div>
                             <div>
                                 <h3 class="text-white font-semibold text-lg">Single Tatami Mat AI</h3>
-                                <p class="text-blue-100 text-sm">Powered by Llama 3.3 70B</p>
+                                <p class="text-blue-100 text-sm">Powered by {{ llm_model_display or llm_model }}</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-4">
@@ -392,7 +392,7 @@
                     <!-- Welcome Message -->
                     <div class="chat chat-start">
                         <div class="chat-bubble bg-gradient-to-r from-blue-100 to-purple-100 text-gray-800 border border-blue-200">
-                            <p>👋 Hello! I'm Midori, powered by Llama 3.3 70B. How can I help you today?</p>
+                            <p>👋 Hello! I'm Midori, powered by {{ llm_model_display or llm_model }}. How can I help you today?</p>
                             <p class="text-xs opacity-70 mt-2">Just type your message below to start chatting!</p>
                         </div>
                         <div class="chat-footer opacity-50">Midori</div>
