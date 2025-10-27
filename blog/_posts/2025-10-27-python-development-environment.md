@@ -8,10 +8,9 @@ image: /assets/images/2025_10/red-maple.webp
 excerpt: "Discover how modern Rust-based tools (uv and ruff) can make Python development faster. Learn the migration path from pip to uv and from Black/Flake8 to ruff, plus optimal Cursor/VS Code settings."
 ---
 
-Python 3.14 came out in October 2025 with official free-threaded support and a whole
-list of new features for performance. The Python community is changing faster today than at any
-point in the last 20 years. To keep pace with the changes in Python, I decided to
-improve my Python tool use.
+The Python community is changing faster today than at any
+point in the last 20 years. To keep pace with the changes in Python, developers
+need to change their Python tool use.
 
 ## Comparison of Python Development Tools
 
@@ -27,10 +26,9 @@ ruff, uv, and Anysphere Python.
 | **isort**   | Import sorting              | **Ruff (built-in)**  | Same behavior, no extra tool                 |
 | **Pylance** | Language server for VS Code | **Anysphere Python** | Faster, AI-integrated, built into Cursor     |
 
-I use these tools almost every day
-to contribute to [FastOpp](https://github.com/Oppkey/fastopp),
-an open source Python stack around FastAPI
-and SQLAlchemy.
+**Note:** I'm creating this Python workflow while working on [FastOpp](https://github.com/Oppkey/fastopp),
+a FastAPI starter for students building AI web applications. If you want to practice these
+modern Python tools yourself, FastOpp is built with uv and ruff from the ground up.
 
 For the past year, I knew my editor configuration was not optimal.
 I just ignored digging into
@@ -345,7 +343,17 @@ After switching:
 
 Everything just feels faster — from creating projects to saving files.
 
----
+## Try this setup with FastOpp
+
+FastOpp is perfect for learning modern Python development patterns.
+
+```bash
+git clone https://github.com/Oppkey/fastopp.git
+cd fastopp
+uv sync
+```
+
+The tooling and flow was built and tested with FastOpp.
 
 ### Reflection
 
