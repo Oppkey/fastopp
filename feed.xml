@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://oppkey.github.io/fastopp/feed.xml" rel="self" type="application/atom+xml" /><link href="https://oppkey.github.io/fastopp/" rel="alternate" type="text/html" /><updated>2025-10-27T20:53:46+00:00</updated><id>https://oppkey.github.io/fastopp/feed.xml</id><title type="html">FastOpp Blog</title><subtitle>Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</subtitle><author><name>Oppkey</name></author><entry><title type="html">Why I Replaced pip, Black, Flake8, and isort with Two Modern Python Tools (2026)</title><link href="https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/" rel="alternate" type="text/html" title="Why I Replaced pip, Black, Flake8, and isort with Two Modern Python Tools (2026)" /><published>2025-10-27T00:00:00+00:00</published><updated>2025-10-27T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/27/python-development-environment</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/"><![CDATA[<p>Python 3.14 came out in October 2025 with official free-threaded support and a whole
-list of new features for performance. The Python community is changing faster today than at any
-point in the last 20 years. To keep pace with the changes in Python, I decided to
-improve my Python tool use.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://oppkey.github.io/fastopp/feed.xml" rel="self" type="application/atom+xml" /><link href="https://oppkey.github.io/fastopp/" rel="alternate" type="text/html" /><updated>2025-10-27T21:49:34+00:00</updated><id>https://oppkey.github.io/fastopp/feed.xml</id><title type="html">FastOpp Blog</title><subtitle>Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</subtitle><author><name>Oppkey</name></author><entry><title type="html">Why I Replaced pip, Black, Flake8, and isort with Two Modern Python Tools (2026)</title><link href="https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/" rel="alternate" type="text/html" title="Why I Replaced pip, Black, Flake8, and isort with Two Modern Python Tools (2026)" /><published>2025-10-27T00:00:00+00:00</published><updated>2025-10-27T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/27/python-development-environment</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/"><![CDATA[<p>The Python community is changing faster today than at any
+point in the last 20 years. To keep pace with the changes in Python, developers
+need to change their Python tool use.</p>
 
 <h2 id="comparison-of-python-development-tools">Comparison of Python Development Tools</h2>
 
@@ -52,10 +51,9 @@ ruff, uv, and Anysphere Python.</p>
   </tbody>
 </table>
 
-<p>I use these tools almost every day
-to contribute to <a href="https://github.com/Oppkey/fastopp">FastOpp</a>,
-an open source Python stack around FastAPI
-and SQLAlchemy.</p>
+<p><strong>Note:</strong> I’m creating this Python workflow while working on <a href="https://github.com/Oppkey/fastopp">FastOpp</a>,
+a FastAPI starter for students building AI web applications. If you want to practice these
+modern Python tools yourself, FastOpp is built with uv and ruff from the ground up.</p>
 
 <p>For the past year, I knew my editor configuration was not optimal.
 I just ignored digging into
@@ -368,7 +366,16 @@ Dart with Flutter to build frontend examples for FastOpp.</p>
 
 <p>Everything just feels faster — from creating projects to saving files.</p>
 
-<hr />
+<h2 id="try-this-setup-with-fastopp">Try this setup with FastOpp</h2>
+
+<p>FastOpp is perfect for learning modern Python development patterns.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/Oppkey/fastopp.git
+<span class="nb">cd </span>fastopp
+uv <span class="nb">sync</span>
+</code></pre></div></div>
+
+<p>The tooling and flow was built and tested with FastOpp.</p>
 
 <h3 id="reflection">Reflection</h3>
 
