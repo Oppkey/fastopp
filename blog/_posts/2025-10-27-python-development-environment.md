@@ -1,27 +1,33 @@
 ---
 layout: post
-title: "Configuring a Python Development Environment for 2026 with uv and ruff"
+title: "Why I Replaced pip, Black, Flake8, and isort with Two Modern Python Tools (2026)"
 date: 2025-10-27
 author: Craig Oda
 author_bio: "Craig Oda is a partner at Oppkey and an active contributor to FastOpp"
 image: /assets/images/2025_10/red-maple.webp
-excerpt: "uv and ruff replace pip, flake8, isort, black for improved FastOpp project development"
+excerpt: "Discover how modern Rust-based tools (uv and ruff) can make Python development faster. Learn the migration path from pip to uv and from Black/Flake8 to ruff, plus optimal Cursor/VS Code settings."
 ---
 
 Python 3.14 came out in October 2025 with official free-threaded support and a whole
 list of new features for performance. The Python community is changing faster today than at any
 point in the last 20 years. To keep pace with the changes in Python, I decided to
-improve my Python tool use. As I drove home from fly fishing in California,
-I looked at the changing crimson foliage near Stanford University and decided
-that today was the day to dump pip, pylance, flake8, isort and Black formatter and
-configure my Python tools for a fun-filled future in 2026.
+improve my Python tool use.
 
-Long ago in the mid-2000s, I taught my kids Python with Emacs and flake8.
-Twenty years later, on a beautiful Autumn afternoon in 2025, I sat down in Palo Alto and opened
-Cursor with a bunch of tools and extensions imported from
-VSCode back in 2024 - Pylance for IntelliSense,
-Flake8 for linting, isort for imports, Black for formatting,
-and pip for dependency management. I was using these tools almost every day
+## Comparison of Python Development Tools
+
+I dumped pip, pylance, flake8, isort and Black formatter and
+configured my Python tools for a fun-filled future in 2026 with
+ruff, uv, and Anysphere Python.
+
+| Old Tool    | Purpose                     | Replacement          | Why                                          |
+| ----------- | --------------------------- | -------------------- | -------------------------------------------- |
+| **pip**     | Dependency management       | **uv**               | Instant installs, modern environment manager |
+| **Black**   | Code formatting             | **Ruff Formatter**   | Black-compatible, Rust-fast                  |
+| **Flake8**  | Linting                     | **Ruff**             | 100× faster, auto-fixes, one binary          |
+| **isort**   | Import sorting              | **Ruff (built-in)**  | Same behavior, no extra tool                 |
+| **Pylance** | Language server for VS Code | **Anysphere Python** | Faster, AI-integrated, built into Cursor     |
+
+I use these tools almost every day
 to contribute to [FastOpp](https://github.com/Oppkey/fastopp),
 an open source Python stack around FastAPI
 and SQLAlchemy.
@@ -39,97 +45,7 @@ to Anysphere Python, I decided
 to give it a try. Once I opened the `settings.json` file, I realized that
 there were a lot more improvements that could make my life more fun.
 
-## From Pylance to Anysphere Python
-
-Pylance is Microsoft's language server for Python — the component that powers IntelliSense in VS Code.
-It provides:
-
-- autocompletion,
-- type inference,
-- inline documentation,
-- "go to definition" navigation,
-- and static type checking (via Pyright under the hood).
-
-Although Pylance is superior to Anysphere Python, I switched to Anysphere Python and
-replaced Pylance as the language server.
-In actual use, the advantages of Anysphere Python over Pylance are not immediately obvious. However, I'm
-hoping it will get better in 2026. I made the switch at the end of 2025 because Anysphere Python
-may have better context-aware code generating and editing in the future.
-As I've started to use the Cursor Plan mode, I'm hoping that Anysphere Python
-will help. In Cursor, I uninstalled the [Pylance extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance).
-
-Switching from Pylance to Anysphere Python is the most controversial change I made.
-Dumping pip, flake8, isort, and Black formatter are not as controversial because uv and
-ruff are superior to the older tools.
-
-## From Flake8 to Ruff
-
-Flake8 was my linter for over a decade. It's great.
-It runs static checks (E, F, W codes) to catch style issues, undefined variables, and logical mistakes.
-Flake8 can be extended with plugins like `flake8-bugbear`, `flake8-comprehensions`, and `flake8-docstrings`.
-
-The downside?
-
-- Dozens of small Python plugins to install
-- Slow runtime on large projects
-- No auto-fix
-
-Ruff, written in Rust, replaces all of that in one binary.
-It implements nearly all Flake8 plugins natively — `B` for bugbear, `C4` for comprehensions, `UP` for pyupgrade, and more.
-It's 100× faster and can fix issues automatically:
-
-```bash
-ruff check . --fix
-```
-
-I uninstalled Flake8 and now rely entirely on Ruff for linting. Similar to leaving Pylance,
-it's a bit sad to move off old tools. However, I'm excited to really focus on the new tools
-and learn more about the capability of ruff over time.
-
-## From isort to Ruff's built-in import sorter
-
-isort automatically groups and alphabetizes imports:
-
-```python
-# before
-import sys, os
-from requests import get
-```
-
-to
-
-```python
-# after
-import os
-import sys
-
-from requests import get
-```
-
-Ruff re-implements isort's logic internally — same rules, same grouping, same configuration style.
-By enabling Ruff's `"I"` rule family (and `[tool.ruff.isort]` in `pyproject.toml`), imports are fixed automatically during linting:
-
-```bash
-ruff check . --fix
-```
-
-That means no need for a separate `isort` install or pre-commit hook. I uninstalled the
-[isort VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.isort).
-
-## From Black to Ruff Formatter
-
-Black was my code formatter — it enforced consistent indentation, spacing, and line length.
-Ruff now includes a Black-compatible formatter built in:
-
-```bash
-ruff format .
-```
-
-It's fully compatible with Black's style (the "one true way" of formatting Python) but runs instantly, thanks to Rust.
-
-I removed the Black formatter extension in Cursor and set Ruff as my default formatter in `settings.json`.
-
-## From pip to uv
+## pip versus uv
 
 pip (and later `pipenv` or `poetry`) used to manage my dependencies.
 They worked, but installation speed and dependency resolution were slow — especially in large projects.
@@ -159,7 +75,20 @@ Unlike pip, which primarily uses separate `requirements.txt` files for dependenc
 dependency management, build configuration, and tool settings.
 This single file approach provides consistency across projects and makes configuration management much simpler.
 
-## Using a `pyproject.toml` Template
+## Python Black Formatter versus Ruff Formatter
+
+Black was my code formatter — it enforced consistent indentation, spacing, and line length.
+Ruff now includes a Black-compatible formatter built in:
+
+```bash
+ruff format .
+```
+
+It's fully compatible with Black's style (the "one true way" of formatting Python) but runs instantly, thanks to Rust.
+
+I removed the Black formatter extension in Cursor and set Ruff as my default formatter in `settings.json`.
+
+## Optimzing a `pyproject.toml` Template for ruff
 
 I've created a reusable `pyproject.toml` that preloads my Ruff configuration.
 Since uv doesn't yet have a template command, I copy this file manually into new projects.
@@ -232,7 +161,84 @@ cp ~/.config/uv/templates/ruff/pyproject.toml .
 
 Hopefully, uv will add the ability to start a new project with a template in future.
 
-## Adjusting `settings.json` in Cursor
+## Flake8 versus Ruff
+
+Flake8 was my linter for over a decade. It's great.
+It runs static checks (E, F, W codes) to catch style issues, undefined variables, and logical mistakes.
+Flake8 can be extended with plugins like `flake8-bugbear`, `flake8-comprehensions`, and `flake8-docstrings`.
+
+The downside?
+
+- Dozens of small Python plugins to install
+- Slow runtime on large projects
+- No auto-fix
+
+Ruff, written in Rust, replaces all of that in one binary.
+It implements nearly all Flake8 plugins natively — `B` for bugbear, `C4` for comprehensions, `UP` for pyupgrade, and more.
+It's 100× faster and can fix issues automatically:
+
+```bash
+ruff check . --fix
+```
+
+I uninstalled Flake8 and now rely entirely on Ruff for linting. Similar to leaving Pylance,
+it's a bit sad to move off old tools. However, I'm excited to really focus on the new tools
+and learn more about the capability of ruff over time.
+
+## From isort to Ruff's built-in import sorter
+
+isort automatically groups and alphabetizes imports:
+
+```python
+# before
+import sys, os
+from requests import get
+```
+
+to
+
+```python
+# after
+import os
+import sys
+
+from requests import get
+```
+
+Ruff re-implements isort's logic internally — same rules, same grouping, same configuration style.
+By enabling Ruff's `"I"` rule family (and `[tool.ruff.isort]` in `pyproject.toml`), imports are fixed automatically during linting:
+
+```bash
+ruff check . --fix
+```
+
+That means no need for a separate `isort` install or pre-commit hook. I uninstalled the
+[isort VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.isort).
+
+## Pylance versus Anysphere Python
+
+Pylance is Microsoft's language server for Python — the component that powers IntelliSense in VS Code.
+It provides:
+
+- autocompletion,
+- type inference,
+- inline documentation,
+- "go to definition" navigation,
+- and static type checking (via Pyright under the hood).
+
+Although Pylance is superior to Anysphere Python, I switched to Anysphere Python and
+replaced Pylance as the language server.
+In actual use, the advantages of Anysphere Python over Pylance are not immediately obvious. However, I'm
+hoping it will get better in 2026. I made the switch at the end of 2025 because Anysphere Python
+may have better context-aware code generating and editing in the future.
+As I've started to use the Cursor Plan mode, I'm hoping that Anysphere Python
+will help. In Cursor, I uninstalled the [Pylance extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance).
+
+Switching from Pylance to Anysphere Python is the most controversial change I made.
+Dumping pip, flake8, isort, and Black formatter are not as controversial because uv and
+ruff are superior to the older tools.
+
+## Improving Cursor `settings.json` for Python in 2026
 
 Finally, I updated my editor configuration (settings.json) to remove old formatters and linters and point to Ruff as the default Python formatter.
 
@@ -338,16 +344,6 @@ After switching:
 - Cursor's AI works directly with my Python environment (via Anysphere)
 
 Everything just feels faster — from creating projects to saving files.
-
-## Comparison of Python Development Tools
-
-| Old Tool    | Purpose                     | Replacement          | Why                                          |
-| ----------- | --------------------------- | -------------------- | -------------------------------------------- |
-| **Pylance** | Language server for VS Code | **Anysphere Python** | Faster, AI-integrated, built into Cursor     |
-| **Flake8**  | Linting                     | **Ruff**             | 100× faster, auto-fixes, one binary          |
-| **isort**   | Import sorting              | **Ruff (built-in)**  | Same behavior, no extra tool                 |
-| **Black**   | Code formatting             | **Ruff Formatter**   | Black-compatible, Rust-fast                  |
-| **pip**     | Dependency management       | **uv**               | Instant installs, modern environment manager |
 
 ---
 
