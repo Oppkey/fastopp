@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuring a Python Development Environment for 2026 with uv and ruff - FastOpp Blog</title>
+    <meta name="description" content="Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/fastopp/assets/images/fastopp_logo.webp">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ai-blue': '#3B82F6',
+                        'ai-purple': '#8B5CF6',
+                        'ai-green': '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/fastopp/assets/css/main.css">
+    
+    <!-- SEO -->
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Configuring a Python Development Environment for 2026 with uv and ruff | FastOpp Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Configuring a Python Development Environment for 2026 with uv and ruff" />
+<meta name="author" content="Craig Oda" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="uv and ruff replace pip, flake8, isort, black for improved FastOpp project development" />
+<meta property="og:description" content="uv and ruff replace pip, flake8, isort, black for improved FastOpp project development" />
+<link rel="canonical" href="https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/" />
+<meta property="og:url" content="https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/" />
+<meta property="og:site_name" content="FastOpp Blog" />
+<meta property="og:image" content="https://oppkey.github.io/fastopp/assets/images/2025_10/red-maple.webp" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-10-27T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://oppkey.github.io/fastopp/assets/images/2025_10/red-maple.webp" />
+<meta property="twitter:title" content="Configuring a Python Development Environment for 2026 with uv and ruff" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Craig Oda"},"dateModified":"2025-10-27T00:00:00+00:00","datePublished":"2025-10-27T00:00:00+00:00","description":"uv and ruff replace pip, flake8, isort, black for improved FastOpp project development","headline":"Configuring a Python Development Environment for 2026 with uv and ruff","image":"https://oppkey.github.io/fastopp/assets/images/2025_10/red-maple.webp","mainEntityOfPage":{"@type":"WebPage","@id":"https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/"},"url":"https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    
+    <!-- Feed -->
+    <link rel="alternate" type="application/rss+xml" title="FastOpp Blog" href="/fastopp/feed.xml">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center">
+                        <a href="/fastopp/" class="text-2xl font-bold text-gray-900 hover:text-ai-blue transition-colors">
+                            FastOpp Blog
+                        </a>
+                    </div>
+                    
+                    <nav class="hidden md:flex space-x-8">
+                        <a href="/fastopp/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            Home
+                        </a>
+                        <a href="/fastopp/about/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            About
+                        </a>
+                        <a href="/fastopp/posts/" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium">
+                            Posts
+                        </a>
+                        <a href="https://github.com/Oppkey/FastOpp" 
+                           class="text-gray-700 hover:text-ai-blue transition-colors font-medium"
+                           target="_blank" rel="noopener">
+                            GitHub
+                        </a>
+                    </nav>
+                    
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden">
+                        <button type="button" class="text-gray-700 hover:text-ai-blue focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Post Header -->
+    <header class="mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Configuring a Python Development Environment for 2026 with uv and ruff</h1>
+        
+        <div class="flex items-center text-gray-600 mb-6">
+            <time datetime="2025-10-27T00:00:00+00:00" class="mr-4">
+                October 27, 2025
+            </time>
+            <span class="mr-4">•</span>
+            <span>By Craig Oda</span>
+        </div>
+        
+        
+        <img src="/fastopp/assets/images/2025_10/red-maple.webp" 
+             alt="Configuring a Python Development Environment for 2026 with uv and ruff" 
+             class="w-full h-64 object-cover rounded-lg shadow-lg">
+        
+    </header>
+    
+    <!-- Post Content -->
+    <div class="prose prose-lg max-w-none">
+        <p>Python 3.14 came out in October 2025 with official free-threaded support and a whole
+list of new features for performance. The Python community is changing faster today than at any
+point in the last 20 years. To keep pace with the changes in Python, I decided to
+improve my Python tool use. As I drove home from fly fishing in California,
+I looked at the changing crimson foliage near Stanford University and decided
+that today was the day to dump pip, pylance, flake8, isort and Black formatter and
+configure my Python tools for a fun-filled future in 2026.</p>
+
+<p>Long ago in the mid-2000s, I taught my kids Python with Emacs and flake8.
+Twenty years later, on a beautiful Autumn afternoon in 2025, I sat down in Palo Alto and opened
+Cursor with a bunch of tools and extensions imported from
+VSCode back in 2024 - Pylance for IntelliSense,
+Flake8 for linting, isort for imports, Black for formatting,
+and pip for dependency management. I was using these tools almost every day
+to contribute to <a href="https://github.com/Oppkey/fastopp">FastOpp</a>,
+an open source Python stack around FastAPI
+and SQLAlchemy.</p>
+
+<p>For the past year, I knew my editor configuration was not optimal.
+I just ignored digging into
+the setup despite Cursor’s annoying message to
+use Anysphere Python instead of the proven and stable Pylance language server.
+It was more fun to write Python code than to edit the configuration files
+for Python tools. Additionally, a quick assessment months ago, showed me
+that Pylance was better than Anysphere Python.</p>
+
+<p>I like the Cursor editor and plan to stick with it in 2026. Since Cursor is committed
+to Anysphere Python, I decided
+to give it a try. Once I opened the <code class="language-plaintext highlighter-rouge">settings.json</code> file, I realized that
+there were a lot more improvements that could make my life more fun.</p>
+
+<h2 id="from-pylance-to-anysphere-python">From Pylance to Anysphere Python</h2>
+
+<p>Pylance is Microsoft’s language server for Python — the component that powers IntelliSense in VS Code.
+It provides:</p>
+
+<ul>
+  <li>autocompletion,</li>
+  <li>type inference,</li>
+  <li>inline documentation,</li>
+  <li>“go to definition” navigation,</li>
+  <li>and static type checking (via Pyright under the hood).</li>
+</ul>
+
+<p>Although Pylance is superior to Anysphere Python, I switched to Anysphere Python and
+replaced Pylance as the language server.
+In actual use, the advantages of Anysphere Python over Pylance are not immediately obvious. However, I’m
+hoping it will get better in 2026. I made the switch at the end of 2025 because Anysphere Python
+may have better context-aware code generating and editing in the future.
+As I’ve started to use the Cursor Plan mode, I’m hoping that Anysphere Python
+will help. In Cursor, I uninstalled the <a href="https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance">Pylance extension</a>.</p>
+
+<p>Switching from Pylance to Anysphere Python is the most controversial change I made.
+Dumping pip, flake8, isort, and Black formatter are not as controversial because uv and
+ruff are superior to the older tools.</p>
+
+<h2 id="from-flake8-to-ruff">From Flake8 to Ruff</h2>
+
+<p>Flake8 was my linter for over a decade. It’s great.
+It runs static checks (E, F, W codes) to catch style issues, undefined variables, and logical mistakes.
+Flake8 can be extended with plugins like <code class="language-plaintext highlighter-rouge">flake8-bugbear</code>, <code class="language-plaintext highlighter-rouge">flake8-comprehensions</code>, and <code class="language-plaintext highlighter-rouge">flake8-docstrings</code>.</p>
+
+<p>The downside?</p>
+
+<ul>
+  <li>Dozens of small Python plugins to install</li>
+  <li>Slow runtime on large projects</li>
+  <li>No auto-fix</li>
+</ul>
+
+<p>Ruff, written in Rust, replaces all of that in one binary.
+It implements nearly all Flake8 plugins natively — <code class="language-plaintext highlighter-rouge">B</code> for bugbear, <code class="language-plaintext highlighter-rouge">C4</code> for comprehensions, <code class="language-plaintext highlighter-rouge">UP</code> for pyupgrade, and more.
+It’s 100× faster and can fix issues automatically:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruff check <span class="nb">.</span> <span class="nt">--fix</span>
+</code></pre></div></div>
+
+<p>I uninstalled Flake8 and now rely entirely on Ruff for linting. Similar to leaving Pylance,
+it’s a bit sad to move off old tools. However, I’m excited to really focus on the new tools
+and learn more about the capability of ruff over time.</p>
+
+<h2 id="from-isort-to-ruffs-built-in-import-sorter">From isort to Ruff’s built-in import sorter</h2>
+
+<p>isort automatically groups and alphabetizes imports:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># before
+</span><span class="kn">import</span> <span class="nn">sys</span><span class="p">,</span> <span class="n">os</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">get</span>
+</code></pre></div></div>
+
+<p>to</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># after
+</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">get</span>
+</code></pre></div></div>
+
+<p>Ruff re-implements isort’s logic internally — same rules, same grouping, same configuration style.
+By enabling Ruff’s <code class="language-plaintext highlighter-rouge">"I"</code> rule family (and <code class="language-plaintext highlighter-rouge">[tool.ruff.isort]</code> in <code class="language-plaintext highlighter-rouge">pyproject.toml</code>), imports are fixed automatically during linting:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruff check <span class="nb">.</span> <span class="nt">--fix</span>
+</code></pre></div></div>
+
+<p>That means no need for a separate <code class="language-plaintext highlighter-rouge">isort</code> install or pre-commit hook. I uninstalled the
+<a href="https://marketplace.visualstudio.com/items?itemName=ms-python.isort">isort VSCode extension</a>.</p>
+
+<h2 id="from-black-to-ruff-formatter">From Black to Ruff Formatter</h2>
+
+<p>Black was my code formatter — it enforced consistent indentation, spacing, and line length.
+Ruff now includes a Black-compatible formatter built in:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruff format <span class="nb">.</span>
+</code></pre></div></div>
+
+<p>It’s fully compatible with Black’s style (the “one true way” of formatting Python) but runs instantly, thanks to Rust.</p>
+
+<p>I removed the Black formatter extension in Cursor and set Ruff as my default formatter in <code class="language-plaintext highlighter-rouge">settings.json</code>.</p>
+
+<h2 id="from-pip-to-uv">From pip to uv</h2>
+
+<p>pip (and later <code class="language-plaintext highlighter-rouge">pipenv</code> or <code class="language-plaintext highlighter-rouge">poetry</code>) used to manage my dependencies.
+They worked, but installation speed and dependency resolution were slow — especially in large projects.</p>
+
+<p>uv, from Astral (the team behind Ruff), replaces pip and virtualenv entirely.
+It’s a single Rust binary that can:</p>
+
+<ul>
+  <li>create virtual environments instantly,</li>
+  <li>install packages in parallel,</li>
+  <li>resolve dependencies deterministically,</li>
+  <li>manage Python versions transparently,</li>
+  <li>publish packages to PyPI with <code class="language-plaintext highlighter-rouge">uv build</code> and <code class="language-plaintext highlighter-rouge">uv publish</code>,</li>
+  <li>and manage different Python versions with <code class="language-plaintext highlighter-rouge">uv install --python &lt;version&gt;</code> and works well with pyenv,</li>
+</ul>
+
+<p>Typical workflow:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv init myproject
+uv add fastapi
+uv run fastapi dev
+</code></pre></div></div>
+
+<p>It’s drop-in compatible with pip but 10 to 100× faster.</p>
+
+<p>One major advantage of uv is its native support for <code class="language-plaintext highlighter-rouge">pyproject.toml</code>, Python’s modern standard for project configuration.
+Unlike pip, which primarily uses separate <code class="language-plaintext highlighter-rouge">requirements.txt</code> files for dependency management (leading to inconsistent setups across projects), uv encourages using <code class="language-plaintext highlighter-rouge">pyproject.toml</code> for everything:
+dependency management, build configuration, and tool settings.
+This single file approach provides consistency across projects and makes configuration management much simpler.</p>
+
+<h2 id="using-a-pyprojecttoml-template">Using a <code class="language-plaintext highlighter-rouge">pyproject.toml</code> Template</h2>
+
+<p>I’ve created a reusable <code class="language-plaintext highlighter-rouge">pyproject.toml</code> that preloads my Ruff configuration.
+Since uv doesn’t yet have a template command, I copy this file manually into new projects.
+It defines:</p>
+
+<ul>
+  <li>line length</li>
+  <li>rule families (<code class="language-plaintext highlighter-rouge">E</code>, <code class="language-plaintext highlighter-rouge">F</code>, <code class="language-plaintext highlighter-rouge">I</code>, <code class="language-plaintext highlighter-rouge">B</code>, <code class="language-plaintext highlighter-rouge">UP</code>, <code class="language-plaintext highlighter-rouge">SIM</code>, <code class="language-plaintext highlighter-rouge">C4</code>)</li>
+  <li>formatting and import-sorting behavior</li>
+</ul>
+
+<p>Example snippet:</p>
+
+<div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">[tool.ruff]</span>
+<span class="py">line-length</span> <span class="p">=</span> <span class="mi">120</span>
+<span class="py">select</span> <span class="p">=</span> <span class="p">[</span><span class="s">"E"</span><span class="p">,</span> <span class="s">"F"</span><span class="p">,</span> <span class="s">"I"</span><span class="p">,</span> <span class="s">"B"</span><span class="p">,</span> <span class="s">"UP"</span><span class="p">,</span> <span class="s">"SIM"</span><span class="p">,</span> <span class="s">"C4"</span><span class="p">]</span>
+
+<span class="nn">[tool.ruff.format]</span>
+<span class="py">quote-style</span> <span class="p">=</span> <span class="s">"double"</span>
+<span class="py">indent-style</span> <span class="p">=</span> <span class="s">"space"</span>
+</code></pre></div></div>
+
+<p>Then I just run:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv <span class="nb">sync</span> <span class="nt">--dev</span>
+ruff check <span class="nb">.</span> <span class="nt">--fix</span>
+ruff format <span class="nb">.</span>
+</code></pre></div></div>
+
+<p>This is my full <code class="language-plaintext highlighter-rouge">pyproject.toml</code> template.</p>
+
+<div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">[project]</span>
+<span class="py">name</span> <span class="p">=</span> <span class="s">"your_project"</span>
+<span class="py">version</span> <span class="p">=</span> <span class="s">"0.1.0"</span>
+<span class="py">description</span> <span class="p">=</span> <span class="s">"Modern uv + Ruff Python project"</span>
+<span class="py">readme</span> <span class="p">=</span> <span class="s">"README.md"</span>
+<span class="py">requires-python</span> <span class="p">=</span> <span class="py">"&gt;</span><span class="p">=</span><span class="mf">3.11</span><span class="s">"</span><span class="err">
+</span><span class="py">dependencies</span> <span class="p">=</span> <span class="p">[]</span>
+
+<span class="nn">[project.optional-dependencies]</span>
+<span class="py">dev</span> <span class="p">=</span> <span class="nn">["ruff"]</span>
+
+<span class="nn">[tool.ruff]</span>
+<span class="py">line-length</span> <span class="p">=</span> <span class="mi">120</span>
+<span class="py">target-version</span> <span class="p">=</span> <span class="s">"py311"</span>
+<span class="py">select</span> <span class="p">=</span> <span class="p">[</span><span class="s">"E"</span><span class="p">,</span> <span class="s">"F"</span><span class="p">,</span> <span class="s">"I"</span><span class="p">,</span> <span class="s">"B"</span><span class="p">,</span> <span class="s">"UP"</span><span class="p">,</span> <span class="s">"SIM"</span><span class="p">,</span> <span class="s">"C4"</span><span class="p">]</span>
+<span class="py">fix</span> <span class="p">=</span> <span class="kc">true</span>
+
+<span class="nn">[tool.ruff.format]</span>
+<span class="py">quote-style</span> <span class="p">=</span> <span class="s">"double"</span>
+<span class="py">indent-style</span> <span class="p">=</span> <span class="s">"space"</span>
+<span class="py">line-ending</span> <span class="p">=</span> <span class="s">"lf"</span>
+<span class="py">skip-magic-trailing-comma</span> <span class="p">=</span> <span class="kc">false</span>
+
+<span class="nn">[tool.ruff.isort]</span>
+<span class="py">combine-as-imports</span> <span class="p">=</span> <span class="kc">true</span>
+<span class="py">force-sort-within-sections</span> <span class="p">=</span> <span class="kc">true</span>
+</code></pre></div></div>
+
+<p>I keep the file in <code class="language-plaintext highlighter-rouge">/Users/craig/.config/uv/templates/ruff/pyproject.toml</code>.</p>
+
+<p>To use it, I do:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv init my_project
+<span class="nb">cd </span>my_project
+<span class="nb">cp</span> ~/.config/uv/templates/ruff/pyproject.toml <span class="nb">.</span>
+</code></pre></div></div>
+
+<p>Hopefully, uv will add the ability to start a new project with a template in future.</p>
+
+<h2 id="adjusting-settingsjson-in-cursor">Adjusting <code class="language-plaintext highlighter-rouge">settings.json</code> in Cursor</h2>
+
+<p>Finally, I updated my editor configuration (settings.json) to remove old formatters and linters and point to Ruff as the default Python formatter.</p>
+
+<p>I’ll include those specific settings in the blog itself, but here’s the key line:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"[python]"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"editor.defaultFormatter"</span><span class="p">:</span><span class="w"> </span><span class="s2">"charliermarsh.ruff"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"editor.formatOnSave"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>In the View -&gt; Command Palette, search for
+<em>Preferences: Open User Settings (JSON)</em>.</p>
+
+<p><img src="/fastopp/assets/images/2025_10/user_settings.webp" alt="User Settings" /></p>
+
+<p>Here is my full <code class="language-plaintext highlighter-rouge">settings.json</code> file:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"git.autofetch"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"git.enableSmartCommit"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"git.confirmSync"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+
+  </span><span class="nl">"[dart]"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"editor.formatOnSave"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"editor.formatOnType"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"editor.rulers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">80</span><span class="p">],</span><span class="w">
+    </span><span class="nl">"editor.selectionHighlight"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"editor.suggest.snippetsPreventQuickSuggestions"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"editor.suggestSelection"</span><span class="p">:</span><span class="w"> </span><span class="s2">"first"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"editor.tabCompletion"</span><span class="p">:</span><span class="w"> </span><span class="s2">"onlySnippets"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"editor.wordBasedSuggestions"</span><span class="p">:</span><span class="w"> </span><span class="s2">"off"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+
+  </span><span class="nl">"workbench.startupEditor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"none"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"editor.minimap.enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"window.zoomLevel"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"editor.fontFamily"</span><span class="p">:</span><span class="w"> </span><span class="s2">"'Fira Code', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"editor.fontSize"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w">
+
+  </span><span class="nl">"editor.defaultFormatter"</span><span class="p">:</span><span class="w"> </span><span class="s2">"esbenp.prettier-vscode"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"editor.formatOnSave"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"editor.inlineSuggest.enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"editor.inlineSuggest.suppressSuggestions"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"editor.suggest.showInlineDetails"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"editor.quickSuggestionsDelay"</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"editor.accessibilitySupport"</span><span class="p">:</span><span class="w"> </span><span class="s2">"off"</span><span class="p">,</span><span class="w">
+
+  </span><span class="nl">"[python]"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"editor.defaultFormatter"</span><span class="p">:</span><span class="w"> </span><span class="s2">"charliermarsh.ruff"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"editor.formatOnType"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"editor.formatOnSave"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+
+  </span><span class="nl">"prettier.disableLanguages"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"python"</span><span class="p">],</span><span class="w">
+
+  </span><span class="nl">"[html]"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"editor.defaultFormatter"</span><span class="p">:</span><span class="w"> </span><span class="s2">"esbenp.prettier-vscode"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"[json]"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"editor.defaultFormatter"</span><span class="p">:</span><span class="w"> </span><span class="s2">"esbenp.prettier-vscode"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"[javascript]"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"editor.defaultFormatter"</span><span class="p">:</span><span class="w"> </span><span class="s2">"esbenp.prettier-vscode"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"[javascriptreact]"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"editor.defaultFormatter"</span><span class="p">:</span><span class="w"> </span><span class="s2">"esbenp.prettier-vscode"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"[typescriptreact]"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"editor.defaultFormatter"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vscode.typescript-language-features"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"[css]"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"editor.defaultFormatter"</span><span class="p">:</span><span class="w"> </span><span class="s2">"esbenp.prettier-vscode"</span><span class="w"> </span><span class="p">},</span><span class="w">
+
+  </span><span class="nl">"security.workspace.trust.untrustedFiles"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"remote.autoForwardPortsSource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hybrid"</span><span class="p">,</span><span class="w">
+
+  </span><span class="nl">"dart.previewFlutterUiGuides"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"dart.previewFlutterUiGuidesCustomTracking"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"dartImport.fixOnSave"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"dartImport.showErrorMessages"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"dartImport.showInfoMessages"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"dart.flutterHotReloadOnSave"</span><span class="p">:</span><span class="w"> </span><span class="s2">"manualIfDirty"</span><span class="p">,</span><span class="w">
+
+  </span><span class="nl">"emmet.includeLanguages"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"django-html"</span><span class="p">:</span><span class="w"> </span><span class="s2">"html"</span><span class="w"> </span><span class="p">},</span><span class="w">
+
+  </span><span class="nl">"ruff.args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"--line-length=120"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--ignore=I001"</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"ruff.enable"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"ruff.nativeServer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"on"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"ruff.organizeImports"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"ruff.fixAll"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"ruff.exclude"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"venv"</span><span class="p">,</span><span class="w"> </span><span class="s2">"__pycache__"</span><span class="p">,</span><span class="w"> </span><span class="s2">"migrations"</span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>I am still using the prettier formatter for other languages such as HTML,
+JavaScript, CSS, Markdown. I’m only using
+ruff as the formatter for Python. Additionally, I have old Dart settings
+that I need to review and potentially improve. I intend to use
+Dart with Flutter to build frontend examples for FastOpp.</p>
+
+<h2 id="result">Result</h2>
+
+<p>After switching:</p>
+
+<ul>
+  <li>No more managing 4+ Python tools</li>
+  <li>No redundant dependencies</li>
+  <li>Instant linting, formatting, and import cleanup</li>
+  <li>uv replaces pip + venv, faster and cleaner</li>
+  <li>Cursor’s AI works directly with my Python environment (via Anysphere)</li>
+</ul>
+
+<p>Everything just feels faster — from creating projects to saving files.</p>
+
+<h2 id="comparison-of-python-development-tools">Comparison of Python Development Tools</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Old Tool</th>
+      <th>Purpose</th>
+      <th>Replacement</th>
+      <th>Why</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Pylance</strong></td>
+      <td>Language server for VS Code</td>
+      <td><strong>Anysphere Python</strong></td>
+      <td>Faster, AI-integrated, built into Cursor</td>
+    </tr>
+    <tr>
+      <td><strong>Flake8</strong></td>
+      <td>Linting</td>
+      <td><strong>Ruff</strong></td>
+      <td>100× faster, auto-fixes, one binary</td>
+    </tr>
+    <tr>
+      <td><strong>isort</strong></td>
+      <td>Import sorting</td>
+      <td><strong>Ruff (built-in)</strong></td>
+      <td>Same behavior, no extra tool</td>
+    </tr>
+    <tr>
+      <td><strong>Black</strong></td>
+      <td>Code formatting</td>
+      <td><strong>Ruff Formatter</strong></td>
+      <td>Black-compatible, Rust-fast</td>
+    </tr>
+    <tr>
+      <td><strong>pip</strong></td>
+      <td>Dependency management</td>
+      <td><strong>uv</strong></td>
+      <td>Instant installs, modern environment manager</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="reflection">Reflection</h3>
+
+<p>The Python ecosystem has evolved dramatically — the new Rust-based tooling from Astral (Ruff, uv) makes Python development feel fast. I saw an interview of one of the
+founders of Anysphere, the makers of Cursor. He said that
+they wanted to make development fun and that fast was fun.
+I agree with this. Speed and the quest for efficiency
+are really powerful ways to make life more fun.
+Additionally, I removed almost a dozen Python-only dependencies and simplified my workflow to just Ruff + uv.</p>
+
+<p>Dig into your editor settings and make Python development as fun as possible.
+You’ll be on track to make 2026 your most exciting
+year of Python development in decades.</p>
+
+    </div>
+    
+    <!-- Post Footer -->
+    <footer class="mt-12 pt-8 border-t border-gray-200">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div class="mb-4 sm:mb-0">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">About the Author</h3>
+                <p class="text-gray-600">
+                    Craig Oda is a partner at Oppkey and an active contributor to FastOpp
+                </p>
+            </div>
+            
+            <div class="flex space-x-4">
+                <a href="https://github.com/Oppkey/FastOpp" 
+                   class="text-gray-600 hover:text-ai-blue transition-colors"
+                   target="_blank" rel="noopener">
+                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+</article>
+
+<!-- Navigation -->
+<nav class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <div class="flex justify-between">
+        
+        <a href="/fastopp/2025/10/14/sqlite-to-postgresql/" 
+           class="flex items-center text-ai-blue hover:text-blue-700 transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Previous: Python Development with Asynchronous SQLite and PostgreSQL
+        </a>
+        
+        
+        
+    </div>
+</nav>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <div class="mb-4">
+                            <span class="text-xl font-bold">FastOpp Blog</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/Oppkey/FastOpp" 
+                               class="text-gray-300 hover:text-white transition-colors"
+                               target="_blank" rel="noopener">
+                                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                        <ul class="space-y-2">
+                            <li><a href="/fastopp/" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+                            <li><a href="/fastopp/about/" class="text-gray-300 hover:text-white transition-colors">About</a></li>
+                            <li><a href="/fastopp/posts/" class="text-gray-300 hover:text-white transition-colors">Blog Posts</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">GitHub Repository</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                        <ul class="space-y-2">
+                            <li><a href="https://github.com/Oppkey/FastOpp#-quick-start-for-students" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Quick Start Guide</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp#-management-commands" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Documentation</a></li>
+                            <li><a href="https://github.com/Oppkey/FastOpp#-troubleshooting" class="text-gray-300 hover:text-white transition-colors" target="_blank" rel="noopener">Troubleshooting</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                    <p class="text-gray-400">
+                        &copy; 2025 Oppkey. Built with FastOpp and Jekyll.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
