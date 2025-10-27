@@ -1,24 +1,24 @@
 ---
 layout: post
-title: "Configuring a Python Development Environment for 2026"
+title: "Configuring a Python Development Environment for 2026 with uv and ruff"
 date: 2025-10-27
 author: Craig Oda
 author_bio: "Craig Oda is a partner at Oppkey and an active contributor to FastOpp"
 image: /assets/images/2025_10/red-maple.webp
-excerpt: "uv and ruff replace pip, flake8, isort, black"
+excerpt: "uv and ruff replace pip, flake8, isort, black for improved FastOpp project development"
 ---
 
 Python 3.14 came out in October 2025 with official free-threaded support and a whole
-list of features. The Python community is changing faster today than at any
+list of new features for performance. The Python community is changing faster today than at any
 point in the last 20 years. To keep pace with the changes in Python, I decided to
 improve my Python tool use. As I drove home from fly fishing in California,
 I looked at the changing crimson foliage near Stanford University and decided
 that today was the day to dump pip, pylance, flake8, isort and Black formatter and
 configure my Python tools for a fun-filled future in 2026.
 
-Long ago in the mid 2000s, I taught my kids Python with Emacs and flake8.
+Long ago in the mid-2000s, I taught my kids Python with Emacs and flake8.
 Twenty years later, on a beautiful Autumn afternoon in 2025, I sat down in Palo Alto and opened
-Cursor with a bunch of extensions imported from
+Cursor with a bunch of tools and extensions imported from
 VSCode back in 2024 - Pylance for IntelliSense,
 Flake8 for linting, isort for imports, Black for formatting,
 and pip for dependency management. I was using these tools almost every day
@@ -248,7 +248,7 @@ I'll include those specific settings in the blog itself, but here's the key line
 In the View -> Command Palette, search for
 _Preferences: Open User Settings (JSON)_.
 
-![User Settings](/assets/images/2025_10/user_settings.webp)
+![User Settings](/fastopp/assets/images/2025_10/user_settings.webp)
 
 Here is my full `settings.json` file:
 
