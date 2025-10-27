@@ -4,7 +4,7 @@ title: "Configuring a Python Development Environment for 2026"
 date: 2025-10-27
 author: Craig Oda
 author_bio: "Craig Oda is a partner at Oppkey and an active contributor to FastOpp"
-image: /assets/images/2025_10/time.jpg
+image: /assets/images/2025_10/red-maple.webp
 excerpt: "uv and ruff replace pip, flake8, isort, black"
 ---
 
@@ -14,10 +14,11 @@ point in the last 20 years. To keep pace with the changes in Python, I decided t
 improve my Python tool use. As I drove home from fly fishing in California,
 I looked at the changing crimson foliage near Stanford University and decided
 that today was the day to dump pip, pylance, flake8, isort and Black formatter and
-configure my Python tools for a brighter future in 2026.
+configure my Python tools for a fun-filled future in 2026.
 
-Two decades ago, I taught my kids Python with Emacs and flake8.
-On that beautiful Autumn afternoon, I was using Cursor with a bunch of extensions imported from
+Long ago in the mid 2000s, I taught my kids Python with Emacs and flake8.
+Twenty years later, on a beautiful Autumn afternoon in 2025, I sat down in Palo Alto and opened
+Cursor with a bunch of extensions imported from
 VSCode back in 2024 - Pylance for IntelliSense,
 Flake8 for linting, isort for imports, Black for formatting,
 and pip for dependency management. I was using these tools almost every day
@@ -25,10 +26,16 @@ to contribute to [FastOpp](https://github.com/Oppkey/fastopp),
 an open source Python stack around FastAPI
 and SQLAlchemy.
 
-I knew my editor configuration was not optimal, but I just ignored digging into
+For the past year, I knew my editor configuration was not optimal.
+I just ignored digging into
 the setup despite Cursor's annoying message to
 use Anysphere Python instead of the proven and stable Pylance language server.
-Although I believe that Pylance is better than Anysphere Python, I decided
+It was more fun to write Python code than to edit the configuration files
+for Python tools. Additionally, a quick assessment months ago, showed me
+that Pylance was better than Anysphere Python.
+
+I like the Cursor editor and plan to stick with it in 2026. Since Cursor is committed
+to Anysphere Python, I decided
 to give it a try. Once I opened the `settings.json` file, I realized that
 there were a lot more improvements that could make my life more fun.
 
