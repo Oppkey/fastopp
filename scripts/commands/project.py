@@ -62,7 +62,6 @@ def clean_project():
         ".github",
         ".cursor",
         ".git",
-        "alembic/versions",  # Clean up leftover migrations from PyPI installation
     ]
 
     # Show initial confirmation prompt
@@ -75,7 +74,9 @@ def clean_project():
     print("3️⃣  Finally: Interactive project setup wizard")
     print()
     print("Files that will be moved to backup after destroy:")
-    print("(This includes leftover migrations from PyPI installation)")
+    print(
+        "(Migration files will be moved but alembic/versions directory structure preserved)"
+    )
     print()
 
     # Check which files/directories exist
@@ -185,6 +186,35 @@ def clean_project():
     print(f"  ✅ Successfully moved: {moved_count} items")
     if failed_count > 0:
         print(f"  ❌ Failed to move: {failed_count} items")
+
+    # Special handling for alembic/versions directory
+    print("\n🗄️  Cleaning up migration files while preserving directory structure...")
+    alembic_versions_dir = Path("alembic/versions")
+    if alembic_versions_dir.exists():
+        # Create alembic backup subdirectory
+        alembic_backup_dir = backup_dir / "alembic" / "versions"
+        alembic_backup_dir.mkdir(parents=True, exist_ok=True)
+
+        # Move all files in alembic/versions to backup (but keep the directory)
+        migration_files_moved = 0
+        for item in alembic_versions_dir.iterdir():
+            if item.is_file():  # Only move files, not subdirectories like __pycache__
+                try:
+                    backup_path = alembic_backup_dir / item.name
+                    shutil.move(str(item), str(backup_path))
+                    print(f"  ✅ Moved migration file: {item.name}")
+                    migration_files_moved += 1
+                except Exception as e:
+                    print(f"  ❌ Failed to move {item.name}: {e}")
+                    failed_count += 1
+
+        if migration_files_moved > 0:
+            print(f"  📦 Moved {migration_files_moved} migration files to backup")
+            print("  🔧 Preserved empty alembic/versions directory for new migrations")
+        else:
+            print("  ℹ️  No migration files found in alembic/versions")
+    else:
+        print("  ℹ️  alembic/versions directory not found")
 
     if failed_count == 0:
         print("\n🎉 Project cleanup completed successfully!")
