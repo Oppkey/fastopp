@@ -55,7 +55,7 @@ Thank you for your interest in contributing to FastOpp! This guide will help you
 3. **Update version** in `pyproject.toml` if needed:
 
    ```toml
-   version = "0.4.2"  # Increment version number
+   version = "0.4.5"  # Increment version number
    ```
 
 4. **Commit your changes**:
@@ -98,66 +98,31 @@ If you need to grant PyPI access to trusted contributors:
 
 ### Publishing Process
 
-#### Method 1: Using Environment Variables (Recommended)
+#### Test on TestPyPI First (Recommended)
 
-1. **Set environment variables**:
-
-   ```bash
-   export TWINE_USERNAME=__token__
-   export TWINE_PASSWORD=your-pypi-api-token
-   ```
-
-2. **Remove old build and build new package**:
-
-   ```bash
-   rm -rf dist/*
-   uv build
-   ```
-
-3. **Upload to PyPI**:
-
-   ```bash
-   uv run twine upload dist/*
-   ```
-
-#### Method 2: Using .pypirc File
-
-1. **Create/update `.pypirc`** in your home directory:
-
-   ```ini
-   [pypi]
-   username = __token__
-   password = your-pypi-api-token
-   ```
-
-2. **Build and upload**:
-
-   ```bash
-   uv build
-   uv run twine upload dist/*
-   ```
-
-#### Method 3: Direct Command with Credentials
-
-```bash
-TWINE_USERNAME=__token__ TWINE_PASSWORD=your-token uv run twine upload dist/*
-```
-
-### Testing Before Publishing
-
-#### Test on TestPyPI (Recommended for Pre-releases)
+**Important**: Always test on TestPyPI before publishing to PyPI, especially for pre-release versions.
 
 1. **Create TestPyPI account** at <https://test.pypi.org/>
 2. **Get TestPyPI token** from your TestPyPI account
-3. **Upload to TestPyPI first**:
+3. **Set up environment variables in `.env` file**:
 
    ```bash
-   TWINE_USERNAME=__token__
-   TWINE_PASSWORD=your-testpypi-token
-   uv run twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+   # Add to your .env file
+   UV_PUBLISH_TOKEN=your-pypi-api-token
+   UV_PUBLISH_TOKEN_TEST_PYPI=your-testpypi-api-token
    ```
 
-4. **Test installation from TestPyPI**:
+4. **Upload to TestPyPI first**:
+
+   ```bash
+   # Load environment variables
+   source .env
+
+   # Publish to TestPyPI
+   uv publish --publish-url https://test.pypi.org/legacy/ --token $UV_PUBLISH_TOKEN_TEST_PYPI
+   ```
+
+5. **Test installation from TestPyPI**:
 
    ```bash
    # For pre-release versions, you need to pin FastAPI version and use unsafe-best-match
@@ -168,6 +133,29 @@ TWINE_USERNAME=__token__ TWINE_PASSWORD=your-token uv run twine upload dist/*
    ```
 
    **Note**: The `--index-strategy unsafe-best-match` flag is required when mixing TestPyPI and PyPI indexes, as TestPyPI may not have all dependencies.
+
+#### Pre-release Versioning Strategy
+
+For pre-release versions, you have two options:
+
+**Option 1: Increment version for each test** (Recommended)
+
+```toml
+# First test
+version = "0.4.6a0"
+
+# Second test (if first had issues)
+version = "0.4.6a1"
+
+# Third test (if needed)
+version = "0.4.6a2"
+```
+
+**Option 2: Overwrite same version** (Possible but not recommended)
+
+- TestPyPI allows overwriting the same version
+- PyPI does NOT allow overwriting (you must increment)
+- **Recommendation**: Use incrementing versions for consistency
 
 #### Testing Pre-release Versions
 
@@ -221,20 +209,59 @@ This allows you to:
 - Gradually roll out features by tagging when ready
 - Ensure users always get a working template
 
+#### Publish to PyPI (After Testing)
+
+Once you've tested on TestPyPI and are satisfied:
+
+1. **Source environment and publish**:
+
+   ```bash
+   # Load environment variables
+   source .env
+
+   # Publish to PyPI
+   uv publish --token $UV_PUBLISH_TOKEN
+   ```
+
+#### Alternative Publishing Methods
+
+##### Method 1: Using .pypirc File (Alternative)
+
+1. **Create/update `.pypirc`** in your home directory:
+
+   ```ini
+   [pypi]
+   username = __token__
+   password = your-pypi-api-token
+   ```
+
+2. **Publish using uv**:
+
+   ```bash
+   uv publish
+   ```
+
+   **Note**: `uv publish` will automatically use `.pypirc` configuration if available.
+
+##### Method 2: Direct Command with Credentials (Alternative)
+
+```bash
+uv publish --token your-pypi-api-token
+```
+
+**Note**: This method is less secure than using environment variables.
+
 ### Complete Publishing Workflow
 
 ```bash
 # 1. Update version in pyproject.toml
-# 2. Build the package
-uv build
+# 2. Load environment variables
+source .env
 
-# 3. Upload to PyPI
-TWINE_USERNAME=__token__
-TWINE_PASSWORD=your-token
-uv run twine upload dist/*
+# 3. Publish to PyPI
+uv publish --token $UV_PUBLISH_TOKEN
 
 # 4. Verify the upload
-
 # Visit: https://pypi.org/project/fastopp/
 ```
 
@@ -256,13 +283,11 @@ Follow semantic versioning (SemVer):
    version = "0.2.2"  # Update version number
    ```
 
-2. **Rebuild and publish**:
+2. **Publish**:
 
    ```bash
-   uv build
-   TWINE_USERNAME=__token__
-   TWINE_PASSWORD=your-token
-   uv run twine upload dist/*
+   source .env
+   uv publish --token $UV_PUBLISH_TOKEN
    ```
 
 ## Code Quality
@@ -311,13 +336,11 @@ uv run pytest tests/test_specific.py
 2. **Test changes** thoroughly
 3. **Merge approved changes**
 4. **Update version** in `pyproject.toml`
-5. **Build and publish** to PyPI:
+5. **Publish** to PyPI:
 
    ```bash
-   uv build
-   TWINE_USERNAME=__token__
-   TWINE_PASSWORD=your-token
-   uv run twine upload dist/*
+   source .env
+   uv publish --token $UV_PUBLISH_TOKEN
    ```
 
 #### Monitor PyPI
@@ -410,8 +433,8 @@ Before publishing a new version:
 - [ ] **Linting clean** (`uv run ruff check .`)
 - [ ] **Documentation updated**
 - [ ] **Changelog updated**
-- [ ] **Package builds** (`uv build`)
-- [ ] **Ready to publish** to PyPI
+- [ ] **Environment variables loaded** (`source .env`)
+- [ ] **Ready to publish** to PyPI (`uv publish --token $UV_PUBLISH_TOKEN`)
 
 ## Contact
 
