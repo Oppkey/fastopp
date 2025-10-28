@@ -125,8 +125,18 @@ If you need to grant PyPI access to trusted contributors:
 5. **Test installation from TestPyPI**:
 
    ```bash
-   # For pre-release versions, you need to pin FastAPI version and use unsafe-best-match
+   # Create a virtual environment first
+   uv venv
+
+   # Option 1: Activate the environment manually
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    uv pip install fastopp==0.4.6a0 fastapi==0.120.1 \
+     --index-url https://test.pypi.org/simple/ \
+     --extra-index-url https://pypi.org/simple \
+     --index-strategy unsafe-best-match
+
+   # Option 2: Specify Python path directly (no activation needed)
+   uv pip install --python .venv/bin/python fastopp==0.4.6a0 fastapi==0.120.1 \
      --index-url https://test.pypi.org/simple/ \
      --extra-index-url https://pypi.org/simple \
      --index-strategy unsafe-best-match
@@ -137,7 +147,19 @@ If you need to grant PyPI access to trusted contributors:
    **If installation fails**, try adding the `--prerelease allow` flag:
 
    ```bash
+   # Create a virtual environment first
+   uv venv
+
+   # Option 1: Activate the environment manually
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    uv pip install fastopp==0.4.6a1 fastapi==0.120.1 \
+     --index-url https://test.pypi.org/simple/ \
+     --extra-index-url https://pypi.org/simple \
+     --index-strategy unsafe-best-match \
+     --prerelease allow
+
+   # Option 2: Specify Python path directly (no activation needed)
+   uv pip install --python .venv/bin/python fastopp==0.4.6a1 fastapi==0.120.1 \
      --index-url https://test.pypi.org/simple/ \
      --extra-index-url https://pypi.org/simple \
      --index-strategy unsafe-best-match \
@@ -186,8 +208,18 @@ When testing pre-release versions (e.g., `0.4.6a0`, `0.4.6a1`):
 2. **Test fastopp-startproject**:
 
    ```bash
-   # Install the pre-release version
+   # Create a virtual environment first
+   uv venv
+
+   # Option 1: Activate the environment manually
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    uv pip install fastopp==0.4.6a0 fastapi==0.120.1 \
+     --index-url https://test.pypi.org/simple/ \
+     --extra-index-url https://pypi.org/simple \
+     --index-strategy unsafe-best-match
+
+   # Option 2: Specify Python path directly (no activation needed)
+   uv pip install --python .venv/bin/python fastopp==0.4.6a0 fastapi==0.120.1 \
      --index-url https://test.pypi.org/simple/ \
      --extra-index-url https://pypi.org/simple \
      --index-strategy unsafe-best-match
@@ -202,7 +234,19 @@ When testing pre-release versions (e.g., `0.4.6a0`, `0.4.6a1`):
    **If installation fails**, try adding the `--prerelease allow` flag:
 
    ```bash
+   # Create a virtual environment first
+   uv venv
+
+   # Option 1: Activate the environment manually
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    uv pip install fastopp==0.4.6a1 fastapi==0.120.1 \
+     --index-url https://test.pypi.org/simple/ \
+     --extra-index-url https://pypi.org/simple \
+     --index-strategy unsafe-best-match \
+     --prerelease allow
+
+   # Option 2: Specify Python path directly (no activation needed)
+   uv pip install --python .venv/bin/python fastopp==0.4.6a1 fastapi==0.120.1 \
      --index-url https://test.pypi.org/simple/ \
      --extra-index-url https://pypi.org/simple \
      --index-strategy unsafe-best-match \
