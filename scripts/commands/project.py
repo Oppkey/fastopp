@@ -213,6 +213,16 @@ def clean_project():
             print("  🔧 Preserved empty alembic/versions directory for new migrations")
         else:
             print("  ℹ️  No migration files found in alembic/versions")
+
+        # Clean up __pycache__ directories in alembic/versions
+        pycache_dir = alembic_versions_dir / "__pycache__"
+        if pycache_dir.exists() and pycache_dir.is_dir():
+            try:
+                shutil.rmtree(str(pycache_dir))
+                print("  🧹 Cleaned up __pycache__ directory in alembic/versions")
+            except Exception as e:
+                print(f"  ❌ Failed to clean __pycache__ directory: {e}")
+                failed_count += 1
     else:
         print("  ℹ️  alembic/versions directory not found")
 
