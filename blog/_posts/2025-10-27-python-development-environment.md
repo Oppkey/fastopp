@@ -6,6 +6,7 @@ author: Craig Oda
 author_bio: "Craig Oda is a partner at Oppkey and an active contributor to FastOpp"
 image: /assets/images/2025_10/red-maple.webp
 excerpt: "Discover how modern Rust-based tools (uv and ruff) can make Python development faster. Learn the migration path from pip to uv and from Black/Flake8 to ruff, plus optimal Cursor/VS Code settings."
+tags: python, uv, ruff, development-environment, fastapi, fastopp, modern-tools, linting, formatting
 ---
 
 The Python community is changing faster today than at any
