@@ -42,13 +42,13 @@ def run_migrations_offline() -> None:
 
     """
     url = os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
-    
+
     # Convert async URLs to regular URLs for offline migrations
     if url and "aiosqlite" in url:
         url = url.replace("sqlite+aiosqlite://", "sqlite://")
     elif url and "asyncpg" in url:
         url = url.replace("postgresql+asyncpg://", "postgresql://")
-    
+
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -73,7 +73,7 @@ async def run_async_migrations() -> None:
 
     """
     database_url = os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
-    
+
     # Ensure database_url is not None before setting it
     if database_url:
         config.set_main_option("sqlalchemy.url", database_url)
@@ -90,9 +90,40 @@ async def run_async_migrations() -> None:
     await connectable.dispose()
 
 
+def run_sync_migrations() -> None:
+    """Run migrations in synchronous mode for SQLite."""
+    from sqlalchemy import create_engine
+
+    database_url = os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
+
+    # Convert async URLs to regular URLs for SQLite
+    if database_url and "aiosqlite" in database_url:
+        database_url = database_url.replace("sqlite+aiosqlite://", "sqlite://")
+    elif database_url and "asyncpg" in database_url:
+        database_url = database_url.replace("postgresql+asyncpg://", "postgresql://")
+
+    # Ensure database_url is not None before setting it
+    if database_url:
+        config.set_main_option("sqlalchemy.url", database_url)
+
+    connectable = create_engine(
+        database_url,
+        poolclass=pool.NullPool,
+    )
+
+    with connectable.connect() as connection:
+        do_run_migrations(connection)
+
+
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
-    asyncio.run(run_async_migrations())
+    database_url = os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
+
+    # Use synchronous migrations for SQLite, async for others
+    if database_url and ("sqlite" in database_url or "aiosqlite" in database_url):
+        run_sync_migrations()
+    else:
+        asyncio.run(run_async_migrations())
 
 
 if context.is_offline_mode():
