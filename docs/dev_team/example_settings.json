@@ -1,0 +1,67 @@
+{
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.rulers": [80],
+    "editor.selectionHighlight": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.suggestSelection": "first",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": "off"
+  },
+
+  "workbench.startupEditor": "none",
+  "editor.minimap.enabled": false,
+  "window.zoomLevel": 4,
+  "editor.fontFamily": "'FiraCode Nerd Font Mono', 'FiraCode Nerd Font', 'Fira Code', 'Droid Sans Mono', monospace, 'Droid Sans Fallback'",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 20,
+
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.inlineSuggest.enabled": true,
+  "editor.inlineSuggest.suppressSuggestions": false,
+  "editor.suggest.showInlineDetails": false,
+  "editor.quickSuggestionsDelay": 500,
+  "editor.accessibilitySupport": "off",
+
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnType": true,
+    "editor.formatOnSave": true
+  },
+
+  "prettier.disableLanguages": ["python"],
+
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  "security.workspace.trust.untrustedFiles": "open",
+  "remote.autoForwardPortsSource": "hybrid",
+
+  "dart.previewFlutterUiGuides": true,
+  "dart.previewFlutterUiGuidesCustomTracking": true,
+  "dartImport.fixOnSave": true,
+  "dartImport.showErrorMessages": false,
+  "dartImport.showInfoMessages": false,
+  "dart.flutterHotReloadOnSave": "manualIfDirty",
+
+  "emmet.includeLanguages": { "django-html": "html" },
+
+  "ruff.args": ["--line-length=120", "--ignore=I001"],
+  "ruff.enable": true,
+  "ruff.nativeServer": "on",
+  "ruff.organizeImports": true,
+  "ruff.fixAll": true,
+  "ruff.exclude": ["venv", "__pycache__", "migrations"]
+}
