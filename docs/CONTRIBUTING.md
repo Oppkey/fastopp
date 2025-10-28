@@ -126,13 +126,23 @@ If you need to grant PyPI access to trusted contributors:
 
    ```bash
    # For pre-release versions, you need to pin FastAPI version and use unsafe-best-match
-   uv pip install fastopp==0.4.6a0 fastapi==0.115.6 \
+   uv pip install fastopp==0.4.6a0 fastapi==0.120.1 \
      --index-url https://test.pypi.org/simple/ \
      --extra-index-url https://pypi.org/simple \
      --index-strategy unsafe-best-match
    ```
 
    **Note**: The `--index-strategy unsafe-best-match` flag is required when mixing TestPyPI and PyPI indexes, as TestPyPI may not have all dependencies.
+
+   **If installation fails**, try adding the `--prerelease allow` flag:
+
+   ```bash
+   uv pip install fastopp==0.4.6a1 fastapi==0.120.1 \
+     --index-url https://test.pypi.org/simple/ \
+     --extra-index-url https://pypi.org/simple \
+     --index-strategy unsafe-best-match \
+     --prerelease allow
+   ```
 
 #### Pre-release Versioning Strategy
 
@@ -177,7 +187,7 @@ When testing pre-release versions (e.g., `0.4.6a0`, `0.4.6a1`):
 
    ```bash
    # Install the pre-release version
-   uv pip install fastopp==0.4.6a0 fastapi==0.115.6 \
+   uv pip install fastopp==0.4.6a0 fastapi==0.120.1 \
      --index-url https://test.pypi.org/simple/ \
      --extra-index-url https://pypi.org/simple \
      --index-strategy unsafe-best-match
@@ -187,6 +197,16 @@ When testing pre-release versions (e.g., `0.4.6a0`, `0.4.6a1`):
    uv init --python 3.12
    uv add fastopp
    uv run fastopp-startproject
+   ```
+
+   **If installation fails**, try adding the `--prerelease allow` flag:
+
+   ```bash
+   uv pip install fastopp==0.4.6a1 fastapi==0.120.1 \
+     --index-url https://test.pypi.org/simple/ \
+     --extra-index-url https://pypi.org/simple \
+     --index-strategy unsafe-best-match \
+     --prerelease allow
    ```
 
 3. **Expected behavior**:
