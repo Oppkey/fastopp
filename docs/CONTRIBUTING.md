@@ -46,7 +46,7 @@ Thank you for your interest in contributing to FastOpp! This guide will help you
    ```bash
    # Run tests
    uv run pytest
-   
+
    # Run linting
    uv run ruff check .
    uv run mypy .
@@ -145,23 +145,81 @@ TWINE_USERNAME=__token__ TWINE_PASSWORD=your-token uv run twine upload dist/*
 
 ### Testing Before Publishing
 
-#### Test on TestPyPI (Optional)
+#### Test on TestPyPI (Recommended for Pre-releases)
 
 1. **Create TestPyPI account** at <https://test.pypi.org/>
 2. **Get TestPyPI token** from your TestPyPI account
 3. **Upload to TestPyPI first**:
 
    ```bash
-   TWINE_USERNAME=__token__ 
-   TWINE_PASSWORD=your-testpypi-token 
+   TWINE_USERNAME=__token__
+   TWINE_PASSWORD=your-testpypi-token
    uv run twine upload --repository-url https://test.pypi.org/legacy/ dist/*
    ```
 
 4. **Test installation from TestPyPI**:
 
    ```bash
-   uv add --index-url https://test.pypi.org/simple/ fastopp
+   # For pre-release versions, you need to pin FastAPI version and use unsafe-best-match
+   uv pip install fastopp==0.4.6a0 fastapi==0.115.6 \
+     --index-url https://test.pypi.org/simple/ \
+     --extra-index-url https://pypi.org/simple \
+     --index-strategy unsafe-best-match
    ```
+
+   **Note**: The `--index-strategy unsafe-best-match` flag is required when mixing TestPyPI and PyPI indexes, as TestPyPI may not have all dependencies.
+
+#### Testing Pre-release Versions
+
+##### Creating Git Tags for Pre-releases
+
+When testing pre-release versions (e.g., `0.4.6a0`, `0.4.6a1`):
+
+1. **Create and push the tag**:
+
+   ```bash
+   # Create the tag locally
+   git tag v0.4.6a0
+
+   # Push the tag to GitHub
+   git push origin v0.4.6a0
+   ```
+
+2. **Test fastopp-startproject**:
+
+   ```bash
+   # Install the pre-release version
+   uv pip install fastopp==0.4.6a0 fastapi==0.115.6 \
+     --index-url https://test.pypi.org/simple/ \
+     --extra-index-url https://pypi.org/simple \
+     --index-strategy unsafe-best-match
+
+   # Test the startproject command
+   mkdir test-project && cd test-project
+   uv init --python 3.12
+   uv add fastopp
+   uv run fastopp-startproject
+   ```
+
+3. **Expected behavior**:
+
+   - If tag `v0.4.6a0` exists: Uses that exact version template
+   - If tag doesn't exist: Falls back to latest stable release (e.g., `v0.4.5`)
+   - User sees clear messages about which version is being used
+
+##### Testing Version Fallback
+
+To test the fallback mechanism:
+
+1. **Upload pre-release to TestPyPI** (without creating git tag)
+2. **Install and test**: Package will try to find matching tag, fail, and fall back to latest stable
+3. **Create tag later**: Same package will now find and use the matching tag
+
+This allows you to:
+
+- Test pre-release packages on TestPyPI before tagging
+- Gradually roll out features by tagging when ready
+- Ensure users always get a working template
 
 ### Complete Publishing Workflow
 
@@ -171,8 +229,8 @@ TWINE_USERNAME=__token__ TWINE_PASSWORD=your-token uv run twine upload dist/*
 uv build
 
 # 3. Upload to PyPI
-TWINE_USERNAME=__token__ 
-TWINE_PASSWORD=your-token 
+TWINE_USERNAME=__token__
+TWINE_PASSWORD=your-token
 uv run twine upload dist/*
 
 # 4. Verify the upload
