@@ -48,6 +48,9 @@ def run_setup_wizard():
         pyproject_path.write_text(content)
         print("✅ Updated pyproject.toml")
 
+    # Create README.md before Ruff installation (needed for project build)
+    generate_readme(project_name, author_name, description)
+
     # Ask about Ruff configuration
     add_ruff = input("Add Ruff configuration? (press Enter to skip): ").strip().lower()
     use_ruff = add_ruff in ["yes", "y"]
@@ -55,9 +58,6 @@ def run_setup_wizard():
     # Add Ruff configuration if requested
     if use_ruff:
         add_ruff_configuration(pyproject_path)
-
-    # Create new README.md
-    generate_readme(project_name, author_name, description)
 
 
 def generate_readme(project_name, author_name, description):
