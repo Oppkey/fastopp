@@ -252,10 +252,7 @@ def clean_project():
     )
 
     # Ask about Ruff configuration
-    add_ruff = (
-        input("Add Ruff configuration? (press Enter for 'yes'): ").strip().lower()
-        or "yes"
-    )
+    add_ruff = input("Add Ruff configuration? (press Enter to skip): ").strip().lower()
     use_ruff = add_ruff in ["yes", "y"]
 
     # Delete README.md (it was already moved to backup)
@@ -390,6 +387,24 @@ def clean_project():
                     print(
                         f"✅ Added Ruff configuration (target-version: {python_version})"
                     )
+                    print("⚠️  Installing Ruff to project dependencies...")
+                    try:
+                        subprocess.run(
+                            ["uv", "add", "ruff", "--dev"],
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                        )
+                        print("✅ Ruff installed successfully")
+                    except subprocess.CalledProcessError as e:
+                        print(
+                            f"⚠️  Failed to install Ruff automatically: {e.stderr if e.stderr else 'Unknown error'}"
+                        )
+                        print("💡 You can install it manually with: uv add ruff --dev")
+                    except FileNotFoundError:
+                        print(
+                            "⚠️  uv command not found. Please install Ruff manually with: uv add ruff --dev"
+                        )
 
         pyproject_path.write_text(content)
         print("✅ Updated pyproject.toml")
