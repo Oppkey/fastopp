@@ -1,12 +1,9 @@
-[project]
-name = "your_project"
-version = "0.1.0"
-description = "Change this for your project. FastOpp project with modern uv + Ruff Python tools"
-readme = "README.md"
-requires-python = ">=3.12"
-dependencies = []
+"""
+Constants for project management commands
+"""
 
-[project.optional-dependencies]
+# Embedded Ruff configuration template
+RUFF_TEMPLATE = """[project.optional-dependencies]
 dev = ["ruff"]
 
 [tool.ruff]
@@ -24,3 +21,4 @@ skip-magic-trailing-comma = false
 [tool.ruff.isort]
 combine-as-imports = true
 force-sort-within-sections = true
+"""
