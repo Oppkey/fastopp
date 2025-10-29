@@ -93,5 +93,5 @@ def add_ruff_configuration(pyproject_path):
     print(
         f"✅ Added Ruff configuration to pyproject.toml (target-version: {python_version})"
     )
-    print("💡 To install Ruff, run: uv sync --all  (or: uv add ruff --dev)")
+    print("💡 To install Ruff, run: uv add ruff --dev  (or: uv sync --all-extras)")
     return True
