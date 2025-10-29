@@ -3,6 +3,7 @@ Ruff configuration setup for project management
 """
 
 import re
+import subprocess
 from pathlib import Path
 
 from .constants import RUFF_TEMPLATE
@@ -90,8 +91,45 @@ def add_ruff_configuration(pyproject_path):
         content = content.rstrip() + "\n\n" + ruff_config_text
 
     pyproject_path.write_text(content)
-    print(
-        f"✅ Added Ruff configuration to pyproject.toml (target-version: {python_version})"
-    )
-    print("💡 To install Ruff, run: uv add ruff --dev  (or: uv sync --all-extras)")
+
+    # Install Ruff automatically
+    installation_successful = install_ruff()
+
+    if installation_successful:
+        print(
+            f"✅ Ruff configuration added and installed (target-version: {python_version})"
+        )
+    else:
+        print(
+            f"✅ Ruff configuration added to pyproject.toml (target-version: {python_version})"
+        )
+
     return True
+
+
+def install_ruff():
+    """Install Ruff to project dependencies using uv
+    
+    Returns:
+        bool: True if installation succeeded, False otherwise
+    """
+    print("⚠️  Installing Ruff to project dependencies...")
+    try:
+        subprocess.run(
+            ["uv", "add", "ruff", "--dev"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return True
+    except subprocess.CalledProcessError as e:
+        print(
+            f"⚠️  Failed to install Ruff automatically: {e.stderr if e.stderr else 'Unknown error'}"
+        )
+        print("💡 You can install it manually with: uv add ruff --dev")
+        return False
+    except FileNotFoundError:
+        print(
+            "⚠️  uv command not found. Please install Ruff manually with: uv add ruff --dev"
+        )
+        return False
