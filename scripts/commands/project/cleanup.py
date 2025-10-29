@@ -15,6 +15,7 @@ FILES_TO_CLEAN = [
     "scripts/demo",
     "docs",
     "tests",
+    "blog",
     "oppdemo.py",
     "pytest.ini",
     "LICENSE",
