@@ -251,6 +251,13 @@ def clean_project():
         or "A new FastOpp project"
     )
 
+    # Ask about Ruff configuration
+    add_ruff = (
+        input("Add Ruff configuration? (press Enter for 'yes'): ").strip().lower()
+        or "yes"
+    )
+    use_ruff = add_ruff in ["yes", "y"]
+
     # Delete README.md (it was already moved to backup)
     readme_path = Path("README.md")
     if readme_path.exists():
@@ -268,6 +275,122 @@ def clean_project():
         content = re.sub(
             r'description = ".*?"', f'description = "{description}"', content
         )
+
+        # Add Ruff configuration if requested
+        if use_ruff:
+            # Read template file
+            template_path = Path("docs/dev_team/template_pyproject.toml")
+            if not template_path.exists():
+                print("⚠️  Template file not found, skipping Ruff configuration")
+            else:
+                template_content = template_path.read_text()
+
+                # Detect Python version from requires-python
+                python_version = "py312"  # default
+                requires_python_match = re.search(
+                    r'requires-python\s*=\s*[">=]+(\d+)\.(\d+)', content
+                )
+                if requires_python_match:
+                    major = requires_python_match.group(1)
+                    minor = requires_python_match.group(2)
+                    python_version = f"py{major}{minor}"
+
+                # Extract Ruff config sections from template
+                ruff_config_parts = []
+
+                # Extract [project.optional-dependencies] dev section
+                opt_deps_match = re.search(
+                    r"\[project\.optional-dependencies\]\s*dev\s*=\s*\[.*?\]",
+                    template_content,
+                    re.DOTALL,
+                )
+                if opt_deps_match:
+                    ruff_config_parts.append(opt_deps_match.group(0))
+
+                # Extract all [tool.ruff*] sections
+                # Find all tool.ruff section headers
+                tool_ruff_indices = []
+                for match in re.finditer(r"\[tool\.ruff[^\]]*\]", template_content):
+                    tool_ruff_indices.append(match.start())
+
+                # Extract each section (from header to next [ or end of file)
+                for i, start_idx in enumerate(tool_ruff_indices):
+                    # Find the end - either next section header or end of file
+                    if i + 1 < len(tool_ruff_indices):
+                        end_idx = tool_ruff_indices[i + 1]
+                    else:
+                        end_idx = len(template_content)
+
+                    ruff_section = template_content[start_idx:end_idx].strip()
+                    # Adjust target-version to match detected Python version
+                    ruff_section = re.sub(
+                        r'target-version\s*=\s*"[^"]+"',
+                        f'target-version = "{python_version}"',
+                        ruff_section,
+                    )
+                    ruff_config_parts.append(ruff_section)
+
+                # Add Ruff configuration to pyproject.toml
+                if ruff_config_parts:
+                    # Check if [project.optional-dependencies] already exists
+                    if "[project.optional-dependencies]" in content:
+                        # Check if ruff is already in dev dependencies
+                        if '"ruff"' not in content and "'ruff'" not in content:
+                            # Merge dev dependencies if the section exists
+                            if "dev = [" in content:
+                                # Find the dev array and add ruff to it
+                                # Match dev = [...] including multiline arrays
+                                dev_pattern = r"(dev\s*=\s*\[)([^\]]*?)(\])"
+                                dev_match = re.search(dev_pattern, content, re.DOTALL)
+                                if dev_match:
+                                    existing_deps = dev_match.group(2).strip()
+                                    if existing_deps:
+                                        # Add comma and ruff if there are existing deps
+                                        new_dev_line = f'{dev_match.group(1)}{existing_deps.rstrip(",").rstrip()},\n    "ruff"{dev_match.group(3)}'
+                                    else:
+                                        # Just add ruff if array is empty
+                                        new_dev_line = f'{dev_match.group(1)}"ruff"{dev_match.group(3)}'
+                                    content = re.sub(
+                                        dev_pattern,
+                                        new_dev_line,
+                                        content,
+                                        flags=re.DOTALL,
+                                    )
+                                else:
+                                    # dev array doesn't exist in expected format, add it
+                                    content = re.sub(
+                                        r"(\[project\.optional-dependencies\]\s*)",
+                                        r'\1dev = ["ruff"]\n',
+                                        content,
+                                    )
+                            else:
+                                # Add dev line to existing optional-dependencies section
+                                content = re.sub(
+                                    r"(\[project\.optional-dependencies\]\s*)",
+                                    r'\1dev = ["ruff"]\n',
+                                    content,
+                                )
+                    else:
+                        # Add the entire [project.optional-dependencies] section
+                        if opt_deps_match:
+                            content = (
+                                content.rstrip()
+                                + "\n\n"
+                                + opt_deps_match.group(0)
+                                + "\n"
+                            )
+
+                    # Append all [tool.ruff*] sections
+                    ruff_tool_sections = "\n\n".join(
+                        part for part in ruff_config_parts if "[tool.ruff" in part
+                    )
+                    if ruff_tool_sections:
+                        content = content.rstrip() + "\n\n" + ruff_tool_sections + "\n"
+
+                    print(
+                        f"✅ Added Ruff configuration (target-version: {python_version})"
+                    )
+
         pyproject_path.write_text(content)
         print("✅ Updated pyproject.toml")
 
