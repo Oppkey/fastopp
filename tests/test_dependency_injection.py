@@ -6,20 +6,21 @@ for educational purposes. It focuses on core functionality without
 complex edge cases or performance testing.
 """
 
-import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
+import pytest
+
 from dependencies.config import Settings, get_settings
-from dependencies.database import get_db_session, create_database_engine, create_session_factory
-from dependencies.services import get_product_service, get_webinar_service, get_chat_service
+from dependencies.database import create_database_engine, create_session_factory, get_db_session
+from dependencies.services import get_chat_service, get_product_service, get_webinar_service
 from main import app as main_app
 from tests.dependencies import (
-    get_test_settings,
-    get_test_db_session,
-    create_test_app,
+    MockChatService,
     MockProductService,
     MockWebinarService,
-    MockChatService
+    create_test_app,
+    get_test_db_session,
+    get_test_settings,
 )
 
 
@@ -165,8 +166,8 @@ class TestDatabaseDependencies:
     
     def test_create_database_engine(self):
         """Test database engine creation."""
-        from dependencies.database import create_database_engine
         from dependencies.config import Settings
+        from dependencies.database import create_database_engine
         
         settings = Settings(
             database_url="sqlite+aiosqlite:///:memory:",
@@ -179,8 +180,8 @@ class TestDatabaseDependencies:
     
     def test_create_session_factory(self):
         """Test session factory creation."""
-        from dependencies.database import create_database_engine, create_session_factory
         from dependencies.config import Settings
+        from dependencies.database import create_database_engine, create_session_factory
         
         settings = Settings(
             database_url="sqlite+aiosqlite:///:memory:",

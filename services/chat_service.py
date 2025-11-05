@@ -1,13 +1,15 @@
 """
 Chat service for handling AI chat functionality using OpenRouter API
 """
-import os
 import json
-import aiohttp
-import markdown
 import logging
-from typing import Dict, Any, AsyncGenerator
+import os
+from typing import Any, AsyncGenerator, Dict
+
+import aiohttp
 from fastapi import HTTPException
+import markdown
+
 from dependencies.config import get_settings
 
 # Set up logging

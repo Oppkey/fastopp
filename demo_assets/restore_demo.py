@@ -6,9 +6,9 @@ This script restores all demo files from the demo_assets backup to their origina
 Run this script from the project root directory.
 """
 
+from pathlib import Path
 import shutil
 import sys
-from pathlib import Path
 
 
 def restore_demo_files():

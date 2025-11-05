@@ -5,22 +5,23 @@ Main entry point for FastOpp management commands.
 """
 import argparse
 import asyncio
-import sys
 import os
+import sys
 
 # Add the current directory to Python path so we can import our modules
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 try:
     # Import command modules
-    from scripts.commands import database, server, users, project
-    from scripts.help import show_help
-    from scripts.migrate.cli import run_migrate_command, show_migration_help
-    from scripts.check_env import check_environment
-    from scripts.emergency_access import main as emergency_access_main
-    from scripts.generate_secrets import main as generate_secrets_main
     # Simple environment variable configuration
     from dotenv import load_dotenv
+
+    from scripts.check_env import check_environment
+    from scripts.commands import database, project, server, users
+    from scripts.emergency_access import main as emergency_access_main
+    from scripts.generate_secrets import main as generate_secrets_main
+    from scripts.help import show_help
+    from scripts.migrate.cli import run_migrate_command, show_migration_help
     load_dotenv()
         
 except ImportError as e:

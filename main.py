@@ -2,22 +2,26 @@
 # main.py
 # =========================
 from pathlib import Path
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-from fastapi.security import HTTPBasic
-from starlette.middleware.sessions import SessionMiddleware
+
 from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.security import HTTPBasic
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
+
 from admin.setup import setup_admin
-from routes.chat import router as chat_router
 from routes.api import router as api_router
+from routes.chat import router as chat_router
 from routes.health import router as health_router
+
 try:
     from routes.auth import router as auth_router
 except Exception:
     auth_router = None  # Optional during partial restores
 from routes.pages import router as pages_router
+
 try:
     from routes.webinar import router as webinar_router
 except Exception:
@@ -32,8 +36,8 @@ except Exception:
     oppdemo_router = None  # Optional during partial restores
 
 # Import dependency injection modules
-from dependencies.database import create_database_engine, create_session_factory
 from dependencies.config import get_settings
+from dependencies.database import create_database_engine, create_session_factory
 
 # Load environment variables
 load_dotenv()
@@ -44,14 +48,13 @@ settings = get_settings()
 # Initialize storage system (handles directory creation gracefully)
 try:
     from core.services.storage import get_storage
+
     storage = get_storage()
     # Ensure required directories exist
     storage.ensure_directories("photos", "sample_photos")
 except Exception as e:
     print(f"Warning: Storage initialization failed: {e}")
     print("Application will continue but file uploads may not work.")
-
-# from users import fastapi_users, auth_backend  # type: ignore
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
@@ -109,15 +112,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Configure templates with authentication context processor
 from core.services.template_context import get_template_context
 
-templates = Jinja2Templates(
-    directory="templates",
-    context_processors=[get_template_context]
-)
+templates = Jinja2Templates(directory="templates", context_processors=[get_template_context])
 security = HTTPBasic()
 
 
 # Setup admin interface
 setup_admin(app, settings.secret_key)
+
 
 # Add custom routes to handle missing FontAwesome font files
 @app.get("/admin/statics/webfonts/{font_file}")
@@ -125,7 +126,7 @@ async def serve_font_files(font_file: str):
     """Redirect all font requests to CDN to prevent 404 errors and font loading issues"""
     try:
         from fastapi.responses import RedirectResponse
-        
+
         # Map all possible font files to CDN equivalents
         font_mapping = {
             "fa-solid-900.woff2": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/webfonts/fa-solid-900.woff2",
@@ -137,74 +138,80 @@ async def serve_font_files(font_file: str):
             "fa-regular-400.ttf": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/webfonts/fa-regular-400.ttf",
             "fa-regular-400.eot": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/webfonts/fa-regular-400.eot",
         }
-        
+
         if font_file in font_mapping:
             return RedirectResponse(url=font_mapping[font_file], status_code=302)
         else:
             # For any other font file, redirect to solid font as fallback
             return RedirectResponse(
                 url="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/webfonts/fa-solid-900.woff2",
-                status_code=302
+                status_code=302,
             )
-    except Exception as e:
+    except Exception:
         # If anything fails, redirect to CDN anyway
         return RedirectResponse(
-            url="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/webfonts/fa-solid-900.woff2",
-            status_code=302
+            url="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/webfonts/fa-solid-900.woff2", status_code=302
         )
+
 
 # Add favicon route to prevent 404 errors
 @app.get("/favicon.ico")
 async def favicon():
     """Return a simple favicon to prevent 404 errors"""
     from fastapi.responses import Response
+
     # Return a minimal 1x1 transparent PNG
-    favicon_data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xdb\x00\x00\x00\x00IEND\xaeB`\x82'
+    favicon_data = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xdb\x00\x00\x00\x00IEND\xaeB`\x82"
     return Response(content=favicon_data, media_type="image/png")
+
 
 # Add CSS file redirects to prevent 404 errors for missing SQLAdmin CSS
 @app.get("/admin/statics/css/fontawesome.min.css")
 async def fontawesome_css_redirect():
     """Redirect FontAwesome CSS to CDN to prevent 404 errors"""
     from fastapi.responses import RedirectResponse
+
     return RedirectResponse(
-        url="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
-        status_code=302
+        url="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css", status_code=302
     )
+
 
 # Middleware to inject FontAwesome CDN CSS and customize SQLAdmin logout
 @app.middleware("http")
 async def inject_fontawesome_cdn(request: Request, call_next):
     """Inject FontAwesome CDN CSS and customize SQLAdmin logout into admin pages"""
     response = await call_next(request)
-    
+
     # Only process admin HTML pages (not static assets)
-    if (request.url.path.startswith("/admin/") and 
-        not request.url.path.startswith("/admin/statics/") and
-        not request.url.path.startswith("/admin/static/") and
-        not request.url.path.endswith(('.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', '.woff2', '.ttf', '.eot'))):
+    if (
+        request.url.path.startswith("/admin/")
+        and not request.url.path.startswith("/admin/statics/")
+        and not request.url.path.startswith("/admin/static/")
+        and not request.url.path.endswith(
+            (".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".woff", ".woff2", ".ttf", ".eot")
+        )
+    ):
         try:
             # Get response body
             body = b""
-            if hasattr(response, 'body'):
+            if hasattr(response, "body"):
                 body = response.body
-            elif hasattr(response, 'content'):
+            elif hasattr(response, "content"):
                 body = response.content
-            elif hasattr(response, 'text'):
-                body = response.text.encode('utf-8')
-            elif hasattr(response, 'body_iterator'):
+            elif hasattr(response, "text"):
+                body = response.text.encode("utf-8")
+            elif hasattr(response, "body_iterator"):
                 # Handle streaming responses
                 async for chunk in response.body_iterator:
                     body += chunk
-            
+
             if body:
-                html = body.decode('utf-8')
-                
+                html = body.decode("utf-8")
+
                 # Check if this is an HTML page
                 if "<html" in html.lower():
-                    
                     # Inject FontAwesome CDN CSS and logout customization
-                    custom_js = '''<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
+                    custom_js = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
     <style>
         /* Override SQLAdmin's font loading with CDN fonts */
         @font-face {
@@ -292,8 +299,8 @@ async def inject_fontawesome_cdn(request: Request, call_next):
             document.body.appendChild(fallbackButton);
             console.log('Added custom logout button to top-right corner');
         });
-    </script>'''
-                    
+    </script>"""
+
                     # Inject early in head, right after opening head tag
                     if "<head>" in html:
                         html = html.replace("<head>", f"<head>{custom_js}")
@@ -301,18 +308,20 @@ async def inject_fontawesome_cdn(request: Request, call_next):
                         html = html.replace("</head>", f"{custom_js}</head>")
                     else:
                         html = html.replace("</body>", f"{custom_js}</body>")
-                    
+
                     # Return new response with proper headers (no Content-Length)
                     from fastapi.responses import HTMLResponse
+
                     new_headers = dict(response.headers)
                     # Remove Content-Length to let FastAPI calculate it
-                    new_headers.pop('content-length', None)
+                    new_headers.pop("content-length", None)
                     return HTMLResponse(content=html, status_code=response.status_code, headers=new_headers)
-        
+
         except Exception as e:
             print(f"SQLAdmin customization error: {e}")
-    
+
     return response
+
 
 # Include routers
 app.include_router(health_router)
@@ -347,18 +356,15 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 async def global_exception_handler(request: Request, exc: Exception):
     """Handle global exceptions, especially database connection errors"""
     from dependencies.database_health import is_database_available
-    
+
     # Check if this is a database-related error
     if "database" in str(exc).lower() or "sqlite" in str(exc).lower() or "operational" in str(exc).lower():
         # Check if database is available
         db_available = await is_database_available()
-        
+
         if not db_available:
             # Redirect to database status page for database issues
             return RedirectResponse(url="/database-status", status_code=302)
-    
+
     # For other exceptions, return a generic error
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "Internal server error. Please try again later."}
-    )
+    return JSONResponse(status_code=500, content={"detail": "Internal server error. Please try again later."})

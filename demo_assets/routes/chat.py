@@ -1,11 +1,13 @@
 """
 Chat routes for AI chat functionality
 """
+import json
+
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from sse_starlette.sse import EventSourceResponse
+
 from services.chat_service import ChatService
-import json
 
 router = APIRouter()
 

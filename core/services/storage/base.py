@@ -3,7 +3,7 @@ Abstract base class for storage implementations.
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional, List
+from typing import List, Optional
 
 
 class StorageInterface(ABC):

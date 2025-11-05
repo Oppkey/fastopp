@@ -3,12 +3,14 @@ FastAPI Dependencies for Authentication
 Provides dependency injection support for demo mode
 """
 from fastapi import Depends, Request
-from .core import (
-    get_current_user_from_cookies,
-    get_current_staff_or_admin_from_cookies,
-    get_current_superuser_from_cookies
-)
+
 from models import User
+
+from .core import (
+    get_current_staff_or_admin_from_cookies,
+    get_current_superuser_from_cookies,
+    get_current_user_from_cookies,
+)
 
 
 async def get_current_user(request: Request) -> User:

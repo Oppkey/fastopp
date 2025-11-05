@@ -2,8 +2,10 @@
 # admin/views.py (Demo Assets - Full Features)
 # =========================
 from typing import Any
+
 from sqladmin import ModelView
-from models import User, Product, WebinarRegistrants, AuditLog
+
+from models import AuditLog, Product, User, WebinarRegistrants
 
 
 class UserAdmin(ModelView, model=User):

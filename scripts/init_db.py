@@ -2,10 +2,12 @@
 # init_db.py - Database initialization script
 # =========================
 import asyncio
+from urllib.parse import parse_qs, urlparse
+
 from sqlalchemy.ext.asyncio import create_async_engine
-from urllib.parse import urlparse, parse_qs
-from db import DATABASE_URL
 from sqlmodel import SQLModel
+
+from db import DATABASE_URL
 
 
 async def init_db():

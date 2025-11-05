@@ -2,12 +2,14 @@
 Page routes for rendering HTML templates
 """
 import os
-from fastapi import APIRouter, Request, Depends
+
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+
 from core.services.auth import get_current_staff_or_admin, get_current_user_from_cookies
-from models import User
 from core.services.template_context import get_template_context
+from models import User
 
 templates = Jinja2Templates(directory="templates")
 

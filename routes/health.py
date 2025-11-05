@@ -3,6 +3,7 @@ Health check routes
 """
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+
 from dependencies.database_health import get_database_status
 
 router = APIRouter()

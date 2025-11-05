@@ -1,16 +1,17 @@
 """
 Authentication routes
 """
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlmodel import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from models import User
-from core.services.auth import create_user_token
-from dependencies.database import get_db_session
-from dependencies.config import get_settings, Settings
 from fastapi_users.password import PasswordHelper
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import select
+
+from core.services.auth import create_user_token
+from dependencies.config import Settings, get_settings
+from dependencies.database import get_db_session
+from models import User
 
 templates = Jinja2Templates(directory="templates")
 

@@ -1,8 +1,10 @@
 import asyncio
+
+from fastapi_users.password import PasswordHelper
 from sqlmodel import select
+
 from db import AsyncSessionLocal
 from models import User
-from fastapi_users.password import PasswordHelper
 
 
 async def create_superuser():

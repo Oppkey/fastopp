@@ -2,16 +2,18 @@
 Unified Authentication Core
 JWT-based authentication system for both SQLAdmin and application routes
 """
-import uuid
-import os
 from datetime import datetime, timedelta
+import os
 from typing import Optional
+import uuid
+
 from fastapi import HTTPException, Request, status
 from fastapi_users.password import PasswordHelper
+import jwt
 from sqlmodel import select
+
 from db import AsyncSessionLocal
 from models import User
-import jwt
 
 
 def get_secret_key() -> str:

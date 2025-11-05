@@ -3,8 +3,9 @@ S3-compatible object storage implementation.
 """
 
 import os
-from typing import Optional, List
+from typing import List, Optional
 from urllib.parse import quote
+
 from dependencies.config import get_settings
 
 try:

@@ -2,10 +2,13 @@
 # admin/setup.py (Base Assets - Users Only)
 # =========================
 import os
-from sqladmin import Admin
+
 from fastapi import FastAPI
-from db import async_engine
+from sqladmin import Admin
+
 from core.services.auth import AdminAuth
+from db import async_engine
+
 from .views import UserAdmin
 
 

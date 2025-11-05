@@ -3,27 +3,26 @@ Oppman API routes for admin management functions
 Provides web interface for oppman.py functionality
 """
 import asyncio
-import subprocess
-import sys
-from pathlib import Path
-from typing import List, Optional
-
-from fastapi import APIRouter, Depends, Request, Form, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
-from sqlmodel import select
-from fastapi_users.password import PasswordHelper
+from datetime import datetime
 import hashlib
 import hmac
 import os
-from datetime import datetime
+from pathlib import Path
+import subprocess
+import sys
+from typing import List, Optional
+
+from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+from fastapi_users.password import PasswordHelper
+from sqlalchemy import text
+from sqlmodel import SQLModel, select
 
 from core.services.auth import get_current_superuser
-from dependencies.config import get_settings, Settings
-from models import User
 from db import AsyncSessionLocal
-from sqlalchemy import text
-from sqlmodel import SQLModel
+from dependencies.config import Settings, get_settings
+from models import User
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -471,6 +470,7 @@ async def emergency_drop_tables(request: Request):
     try:
         # Use a fresh engine with prepared statements disabled to avoid cached prepared statements
         from sqlalchemy.ext.asyncio import create_async_engine
+
         from db import DATABASE_URL
 
         # Create a fresh engine with prepared statements disabled

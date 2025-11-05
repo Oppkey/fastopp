@@ -7,23 +7,23 @@ and initializing demo data (users, products, webinars, registrants, photos).
 
 import argparse
 import asyncio
+from datetime import datetime
 import filecmp
 import os
+from pathlib import Path
 import shutil
 import sys
-from datetime import datetime
-from pathlib import Path
 
 # Add the current directory to Python path so we can import our modules
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 try:
     # Core scripts (shared with oppman.py)
-    from scripts.init_db import init_db
-    from scripts.create_superuser import create_superuser
+    from scripts.change_password import change_password_interactive, list_users
     from scripts.check_users import check_users
+    from scripts.create_superuser import create_superuser
+    from scripts.init_db import init_db
     from scripts.test_auth import test_auth
-    from scripts.change_password import list_users, change_password_interactive
 except ImportError as e:
     print(f"❌ Import error: {e}")
     print("Make sure all script files are in the scripts/ directory")
@@ -32,10 +32,10 @@ except ImportError as e:
 # Demo-specific scripts (from scripts/demo/ directory)
 demo_scripts_available = True
 try:
-    from scripts.demo.add_test_users import add_test_users
     from scripts.demo.add_sample_products import add_sample_products
-    from scripts.demo.add_sample_webinars import add_sample_webinars
     from scripts.demo.add_sample_webinar_registrants import add_sample_registrants
+    from scripts.demo.add_sample_webinars import add_sample_webinars
+    from scripts.demo.add_test_users import add_test_users
     from scripts.demo.clear_and_add_registrants import clear_and_add_registrants
     from scripts.demo.download_sample_photos import download_sample_photos
 except ImportError:

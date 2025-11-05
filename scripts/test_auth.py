@@ -4,10 +4,12 @@ Script to test the authentication system
 """
 
 import asyncio
+
+from sqlmodel import select
+
 from core.services.auth import create_user_token
 from db import AsyncSessionLocal
 from models import User
-from sqlmodel import select
 
 
 async def test_auth():

@@ -2,12 +2,15 @@
 # admin/setup.py (Demo Assets - Full Features)
 # =========================
 import os
-from sqladmin import Admin
+
 from fastapi import FastAPI
-from dependencies.database import create_database_engine
-from dependencies.config import get_settings
+from sqladmin import Admin
+
 from core.services.auth import AdminAuth
-from .views import UserAdmin, ProductAdmin, WebinarRegistrantsAdmin, AuditLogAdmin
+from dependencies.config import get_settings
+from dependencies.database import create_database_engine
+
+from .views import AuditLogAdmin, ProductAdmin, UserAdmin, WebinarRegistrantsAdmin
 
 
 def setup_admin(app: FastAPI, secret_key: str):

@@ -3,8 +3,10 @@
 # =========================
 import asyncio
 from datetime import datetime, timedelta
-from db import AsyncSessionLocal
+
 from sqlmodel import select
+
+from db import AsyncSessionLocal
 
 
 async def add_sample_webinars():
