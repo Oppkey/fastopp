@@ -1,9 +1,8 @@
 # FastOpp Developer Tooling
 
-- install uv
-- install ruff, either globally with uv or locally with `uv add --dev ruff`
+- Install `uv`
+- Install dev dependencies (including ruff) with `uv sync --group dev` or `uv sync --all-groups`
 
 ## New project based on FastOpp
 
-In template_pyproject.toml, copy the relevant ruff settings into your
-`pyproject.toml` file.
+The Ruff configuration is already included in the root `pyproject.toml` file. You can copy the relevant `[tool.ruff]` sections into your own `pyproject.toml` file.
