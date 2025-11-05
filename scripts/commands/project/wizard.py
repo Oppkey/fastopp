@@ -2,8 +2,8 @@
 Interactive project setup wizard
 """
 
-import re
 from pathlib import Path
+import re
 
 from .ruff_config import add_ruff_configuration
 

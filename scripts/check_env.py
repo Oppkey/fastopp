@@ -4,6 +4,7 @@ Environment Configuration Checker
 Shows current environment variables and configuration.
 """
 import os
+
 from dotenv import load_dotenv
 
 

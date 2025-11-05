@@ -5,8 +5,8 @@ Example: Adding a new model and creating a migration
 This script demonstrates how to add a new model to models.py
 and create a migration for it.
 """
-import sys
 from pathlib import Path
+import sys
 
 # Add the project root to Python path
 project_root = Path(__file__).parent.parent.parent

@@ -3,12 +3,13 @@
 User management commands for oppman.py
 """
 import asyncio
-from scripts.init_db import init_db
-from scripts.create_superuser import create_superuser
+
+from scripts.change_password import change_password_interactive, list_users
 from scripts.check_users import check_users
-from scripts.test_auth import test_auth
-from scripts.change_password import list_users, change_password_interactive
+from scripts.create_superuser import create_superuser
 from scripts.emergency_access import main as emergency_access_main
+from scripts.init_db import init_db
+from scripts.test_auth import test_auth
 
 
 async def run_init():

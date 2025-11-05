@@ -1,9 +1,10 @@
 # FastOpp Package
 # This package provides a FastAPI starter template for AI web applications
 
-from fastapi import FastAPI
-from typing import Optional
 import os
+from typing import Optional
+
+from fastapi import FastAPI
 
 
 def create_app(
@@ -65,12 +66,12 @@ app = create_app()
 
 def startproject():
     """Start a new FastOpp project with full structure from GitHub"""
-    import subprocess
-    import shutil
-    import time
-    import platform
-    from pathlib import Path
     from importlib.metadata import version
+    from pathlib import Path
+    import platform
+    import shutil
+    import subprocess
+    import time
 
     def remove_directory_with_retry(path: Path, max_retries: int = 5, delay: float = 0.5):
         """

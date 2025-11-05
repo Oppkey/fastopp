@@ -1,15 +1,16 @@
-import asyncio
 import argparse
+import asyncio
 import os
 import sys
 
 # Add the parent directory to Python path so we can import our modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from fastapi_users.password import PasswordHelper
 from sqlmodel import select
+
 from db import AsyncSessionLocal
 from models import User
-from fastapi_users.password import PasswordHelper
 
 
 async def change_user_password(email: str, new_password: str) -> bool:

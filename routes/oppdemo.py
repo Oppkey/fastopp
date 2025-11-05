@@ -10,21 +10,21 @@ from fastapi.templating import Jinja2Templates
 from sqlmodel import select
 
 from core.services.auth import get_current_superuser
-from dependencies.config import get_settings, Settings
-from models import User
 from db import AsyncSessionLocal
+from dependencies.config import Settings, get_settings
+from models import User
+from scripts.check_users import check_users
+from scripts.create_superuser import create_superuser
+from scripts.demo.add_sample_products import add_sample_products
+from scripts.demo.add_sample_webinar_registrants import add_sample_registrants
+from scripts.demo.add_sample_webinars import add_sample_webinars
+from scripts.demo.add_test_users import add_test_users
+from scripts.demo.clear_and_add_registrants import clear_and_add_registrants
+from scripts.demo.download_sample_photos import download_sample_photos
 
 # Import oppdemo functions
 from scripts.init_db import init_db
-from scripts.create_superuser import create_superuser
-from scripts.check_users import check_users
 from scripts.test_auth import test_auth
-from scripts.demo.add_test_users import add_test_users
-from scripts.demo.add_sample_products import add_sample_products
-from scripts.demo.add_sample_webinars import add_sample_webinars
-from scripts.demo.add_sample_webinar_registrants import add_sample_registrants
-from scripts.demo.clear_and_add_registrants import clear_and_add_registrants
-from scripts.demo.download_sample_photos import download_sample_photos
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -277,6 +277,7 @@ async def oppdemo_debug_storage(
     """Debug storage system"""
     try:
         import os
+
         from core.services.storage import get_storage
         
         debug_info = {

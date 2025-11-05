@@ -1,9 +1,10 @@
 # db.py - Simple database setup for base_assets
 import os
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy import event
+
 # from urllib.parse import urlparse  # Not needed for minimal config
 from dotenv import load_dotenv
+from sqlalchemy import event
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 # Load environment variables
 load_dotenv()

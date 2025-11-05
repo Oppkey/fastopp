@@ -4,11 +4,12 @@ Authentication routes for base_assets
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from fastapi_users.password import PasswordHelper
 from sqlmodel import select
+
+from core.services.auth import create_user_token
 from db import AsyncSessionLocal
 from models import User
-from core.services.auth import create_user_token
-from fastapi_users.password import PasswordHelper
 
 templates = Jinja2Templates(directory="templates")
 

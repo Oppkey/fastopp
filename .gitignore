@@ -40,6 +40,9 @@ static/uploads/*
 !static/uploads/.gitkeep
 !static/uploads/sample_photos/**
 
+# Demo assets backup (sample_photos can be re-downloaded or restored)
+demo_assets/static/uploads/sample_photos/
+
 # Alembic migration files
 # Ignore migration files but keep the versions directory structure
 alembic/versions/*.py

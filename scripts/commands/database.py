@@ -2,9 +2,9 @@
 """
 Database management commands for oppman.py
 """
-import shutil
 from datetime import datetime
 from pathlib import Path
+import shutil
 
 
 def backup_database():

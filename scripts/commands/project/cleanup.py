@@ -2,11 +2,10 @@
 File cleanup and backup operations for project management
 """
 
-import shutil
-import subprocess
 from datetime import datetime
 from pathlib import Path
-
+import shutil
+import subprocess
 
 # Files and directories to move to backup (after destroy)
 FILES_TO_CLEAN = [

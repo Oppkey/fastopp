@@ -5,10 +5,12 @@ Integrates SQLAdmin login with unified JWT authentication system
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from fastapi_users.password import PasswordHelper
+from sqladmin.authentication import AuthenticationBackend
 from sqlmodel import select
+
 from db import AsyncSessionLocal
 from models import User
-from sqladmin.authentication import AuthenticationBackend
+
 from .core import create_user_token
 
 

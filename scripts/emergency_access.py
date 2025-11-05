@@ -5,8 +5,8 @@ Generates emergency access tokens using the SECRET_KEY for password recovery.
 """
 import hashlib
 import os
-import sys
 from pathlib import Path
+import sys
 
 # Add the current directory to Python path so we can import our modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

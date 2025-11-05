@@ -2,7 +2,8 @@
 No-op storage implementation for serverless environments.
 """
 
-from typing import Optional, List
+from typing import List, Optional
+
 from .base import StorageInterface
 
 

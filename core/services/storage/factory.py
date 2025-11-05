@@ -6,8 +6,8 @@ import os
 
 from .base import StorageInterface
 from .filesystem import FilesystemStorage
-from .s3 import S3Storage
 from .noop import NoOpStorage
+from .s3 import S3Storage
 
 
 def get_storage() -> StorageInterface:

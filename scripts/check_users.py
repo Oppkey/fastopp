@@ -4,9 +4,11 @@ Script to check existing users and their permissions
 """
 
 import asyncio
+
+from sqlmodel import select
+
 from db import AsyncSessionLocal
 from models import User
-from sqlmodel import select
 
 
 async def check_users():

@@ -2,10 +2,12 @@
 Webinar registrant management routes
 """
 from typing import Optional
-from fastapi import APIRouter, Depends, UploadFile, File, Form
+
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi.responses import HTMLResponse
-from models import User
+
 from core.services.auth import get_current_staff_or_admin
+from models import User
 
 router = APIRouter()
 

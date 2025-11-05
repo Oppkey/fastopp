@@ -1,10 +1,12 @@
 """
 Database health check and graceful degradation utilities
 """
-from typing import Optional, Dict, Any
-from sqlalchemy.ext.asyncio import create_async_engine
+from typing import Any, Dict, Optional
+
 from sqlalchemy import text
-from sqlalchemy.exc import OperationalError, DatabaseError
+from sqlalchemy.exc import DatabaseError, OperationalError
+from sqlalchemy.ext.asyncio import create_async_engine
+
 from .config import Settings, get_settings
 
 

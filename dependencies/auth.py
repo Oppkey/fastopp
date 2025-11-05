@@ -1,16 +1,19 @@
 """
 Authentication dependencies for dependency injection
 """
-import uuid
 from datetime import datetime, timedelta
 from typing import Optional
+import uuid
+
 from fastapi import Depends, HTTPException, Request, status
+import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
-from .database import get_db_session
-from .config import Settings, get_settings
+
 from models import User
-import jwt
+
+from .config import Settings, get_settings
+from .database import get_db_session
 
 
 def create_access_token(

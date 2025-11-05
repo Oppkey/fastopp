@@ -3,11 +3,11 @@
 Migration Management Core
 Handles Alembic migrations for the FastAPI application.
 """
-import os
-import subprocess
 import glob
+import os
 from pathlib import Path
-from typing import Optional, List, Tuple
+import subprocess
+from typing import List, Optional, Tuple
 
 
 class MigrationManager:

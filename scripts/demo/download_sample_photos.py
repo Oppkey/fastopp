@@ -4,8 +4,9 @@ Script to download sample fake people images for the webinar registrants demo
 """
 
 import os
-import requests
 from pathlib import Path
+
+import requests
 
 # Sample photos from Unsplash (free to use)
 SAMPLE_PHOTOS = [

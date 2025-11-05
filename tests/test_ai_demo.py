@@ -3,8 +3,9 @@
 Simple test script for the AI Demo functionality
 """
 import asyncio
-import aiohttp
 import os
+
+import aiohttp
 from dotenv import load_dotenv
 
 # Load environment variables

@@ -3,9 +3,10 @@ API routes for data endpoints
 """
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
-from models import User
+
 from core.services.auth import get_current_staff_or_admin
 from dependencies.services import get_product_service
+from models import User
 
 router = APIRouter()
 
@@ -29,8 +30,9 @@ async def get_registrants(current_user: User = Depends(get_current_staff_or_admi
 @router.get("/webinar-attendees")
 async def get_webinar_attendees(request: Request):
     """Get webinar attendees for the marketing demo page"""
-    from services.webinar_service import WebinarService
     from fastapi.templating import Jinja2Templates
+
+    from services.webinar_service import WebinarService
     
     attendees = await WebinarService.get_webinar_attendees()
     

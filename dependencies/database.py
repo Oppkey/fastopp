@@ -1,6 +1,7 @@
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy import event
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
 # from urllib.parse import urlparse  # Not needed for minimal config
 from .config import Settings, get_settings
 

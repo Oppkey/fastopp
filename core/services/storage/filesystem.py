@@ -3,7 +3,7 @@ Filesystem storage implementation.
 """
 
 from pathlib import Path
-from typing import Optional, List
+from typing import List, Optional
 from urllib.parse import quote
 
 from .base import StorageInterface

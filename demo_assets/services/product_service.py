@@ -1,13 +1,14 @@
 """
 Product service for handling product-related business logic
 """
-from sqlmodel import select, func
 from sqlalchemy import case
+from sqlalchemy.exc import DatabaseError, OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import OperationalError, DatabaseError
-from models import Product
+from sqlmodel import func, select
+
 from dependencies.config import Settings
 from dependencies.database_health import get_fallback_data
+from models import Product
 
 
 class ProductService:

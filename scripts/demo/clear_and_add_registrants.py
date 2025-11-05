@@ -4,13 +4,15 @@ Script to clear existing registrants and add new ones with photos
 """
 
 import asyncio
-import os
-import uuid
-from pathlib import Path
 from datetime import datetime, timezone
-from db import AsyncSessionLocal
+import os
+from pathlib import Path
+import uuid
+
 from sqlmodel import delete
+
 from core.services.storage import get_storage
+from db import AsyncSessionLocal
 
 
 async def clear_and_add_registrants():

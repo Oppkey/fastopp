@@ -5,16 +5,17 @@ This module provides test-specific dependency overrides and mock implementations
 for testing the FastAPI dependency injection system.
 """
 
-import pytest
+from typing import AsyncGenerator
 from unittest.mock import AsyncMock
+
 from fastapi import FastAPI
+import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.pool import StaticPool
-from typing import AsyncGenerator
 
 from dependencies.config import Settings, get_settings
 from dependencies.database import get_db_session
-from dependencies.services import get_product_service, get_webinar_service, get_chat_service
+from dependencies.services import get_chat_service, get_product_service, get_webinar_service
 
 
 class TestSettings(Settings):

@@ -3,28 +3,25 @@ Oppman API routes for admin management functions
 Provides web interface for oppman.py functionality
 """
 import asyncio
-import subprocess
-import sys
-from pathlib import Path
-from typing import List, Optional
-
-from fastapi import APIRouter, Depends, Request, Form, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
-from sqlmodel import select
-from fastapi_users.password import PasswordHelper
+from datetime import datetime
 import hashlib
 import hmac
 import os
-from datetime import datetime
+from pathlib import Path
+import subprocess
+import sys
+from typing import List, Optional
 
 # Simple authentication for base assets mode
-from fastapi import HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
 from fastapi_users.password import PasswordHelper
-from models import User
-from db import AsyncSessionLocal
 from sqlalchemy import text
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, select
+
+from db import AsyncSessionLocal
+from models import User
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")

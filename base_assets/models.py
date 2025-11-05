@@ -2,9 +2,10 @@
 # base_assets/models.py
 # Minimal models for base_assets - only User model
 # =========================
-import uuid
 from typing import Optional
-from sqlmodel import SQLModel, Field
+import uuid
+
+from sqlmodel import Field, SQLModel
 
 
 class User(SQLModel, table=True):

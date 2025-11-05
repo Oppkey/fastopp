@@ -3,14 +3,16 @@ Webinar service for handling webinar registrant business logic
 """
 from pathlib import Path
 from typing import Optional
-from uuid import UUID
 import uuid
+from uuid import UUID
+
+from sqlalchemy.exc import DatabaseError, OperationalError
 from sqlmodel import select
-from sqlalchemy.exc import OperationalError, DatabaseError
-from db import AsyncSessionLocal
-from models import WebinarRegistrants
+
 from core.services.storage import get_storage
-from dependencies.database_health import get_fallback_registrants, get_fallback_attendees
+from db import AsyncSessionLocal
+from dependencies.database_health import get_fallback_attendees, get_fallback_registrants
+from models import WebinarRegistrants
 
 
 class WebinarService:

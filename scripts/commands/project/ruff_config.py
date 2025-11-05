@@ -2,9 +2,9 @@
 Ruff configuration setup for project management
 """
 
+from pathlib import Path
 import re
 import subprocess
-from pathlib import Path
 
 from .constants import RUFF_TEMPLATE
 

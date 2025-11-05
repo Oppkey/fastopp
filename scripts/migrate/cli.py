@@ -5,7 +5,7 @@ Provides command-line interface for migration management.
 """
 import argparse
 import sys
-from typing import Optional, List
+from typing import List, Optional
 
 from .core import MigrationManager, setup_alembic_config
 

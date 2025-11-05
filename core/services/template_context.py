@@ -2,9 +2,10 @@
 Flexible template context processor for authentication state
 Can be used across different FastAPI applications with different auth systems
 """
-from fastapi import Request
-from typing import Optional, Dict, Any, Callable
 import logging
+from typing import Any, Callable, Dict, Optional
+
+from fastapi import Request
 
 logger = logging.getLogger(__name__)
 

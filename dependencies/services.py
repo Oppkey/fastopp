@@ -1,7 +1,8 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from .database import get_db_session
+
 from .config import Settings, get_settings
+from .database import get_db_session
 
 
 def get_product_service(

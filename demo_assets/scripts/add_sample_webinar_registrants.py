@@ -4,12 +4,13 @@ Script to add sample webinar registrants with photos for testing the photo uploa
 """
 
 import asyncio
-import os
-import uuid
-from pathlib import Path
 from datetime import datetime, timezone
-from db import AsyncSessionLocal
+import os
+from pathlib import Path
+import uuid
+
 from core.services.storage import get_storage
+from db import AsyncSessionLocal
 
 
 async def add_sample_registrants():

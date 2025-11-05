@@ -3,8 +3,9 @@
 Test script to demonstrate improved message formatting with DaisyUI
 """
 import asyncio
-import aiohttp
 import os
+
+import aiohttp
 from dotenv import load_dotenv
 
 # Load environment variables
