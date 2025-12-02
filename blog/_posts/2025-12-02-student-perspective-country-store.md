@@ -5,6 +5,7 @@ date: 2025-12-02
 author: Ethan Kim
 author_bio: "Ethan Kim is a UC Berkeley Data Science student with a concentration on applied modeling."
 author_github: Gilaze
+author_linkedin: https://www.linkedin.com/in/ethan-luke-kim/
 image: /assets/images/2025_12/ethan_screenshot.webp
 excerpt: "Explanation of classes and data models for interaction with an SQL database."
 tags: python, class, model, SQL
