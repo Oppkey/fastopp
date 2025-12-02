@@ -1,4 +1,134 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://oppkey.github.io/fastopp/feed.xml" rel="self" type="application/atom+xml" /><link href="https://oppkey.github.io/fastopp/" rel="alternate" type="text/html" /><updated>2025-10-28T14:47:18+00:00</updated><id>https://oppkey.github.io/fastopp/feed.xml</id><title type="html">FastOpp Blog</title><subtitle>Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</subtitle><author><name>Oppkey</name></author><entry><title type="html">Why I Replaced pip, Black, Flake8, and isort with Two Modern Python Tools (2026)</title><link href="https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/" rel="alternate" type="text/html" title="Why I Replaced pip, Black, Flake8, and isort with Two Modern Python Tools (2026)" /><published>2025-10-27T00:00:00+00:00</published><updated>2025-10-27T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/27/python-development-environment</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/"><![CDATA[<p>The Python community is changing faster today than at any
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://oppkey.github.io/fastopp/feed.xml" rel="self" type="application/atom+xml" /><link href="https://oppkey.github.io/fastopp/" rel="alternate" type="text/html" /><updated>2025-12-02T22:16:32+00:00</updated><id>https://oppkey.github.io/fastopp/feed.xml</id><title type="html">FastOpp Blog</title><subtitle>Easier AI Web Apps for Students - FastAPI starter package for students prototyping AI web applications</subtitle><author><name>Oppkey</name></author><entry><title type="html">A Student’s Experience with FastOpp Country Store Parts 2-4</title><link href="https://oppkey.github.io/fastopp/2025/12/02/student-perspective-country-store/" rel="alternate" type="text/html" title="A Student’s Experience with FastOpp Country Store Parts 2-4" /><published>2025-12-02T00:00:00+00:00</published><updated>2025-12-02T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/12/02/student-perspective-country-store</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/12/02/student-perspective-country-store/"><![CDATA[<p>Recently I had the opportunity to complete parts 2-4 of the
+<a href="https://youtube.com/playlist?list=PLJVZE-yg6ykADrM4qb0WHJAp37--rIkCw&amp;si=umcmGe9XemprzSjy">Country Store walkthrough videos</a>
+and build upon my version of the country store. This article will not be a guide but rather an
+explanation of the process through the perspective of the builder and some insights to ensure
+that your process of building your country store goes smoothly.</p>
+
+<p>Disclaimer: While it is not required, it is recommended to install and use
+<a href="https://learn.microsoft.com/en-us/windows/wsl/install">Windows WSL</a>
+during the walkthrough for a smoother experience.</p>
+
+<h2 id="part-2-adding-images-and-admin-panel">Part 2: Adding Images and Admin Panel</h2>
+
+<p>Part 2 focuses on two things: adding real images to your store and a real admin
+panel to your FastAPI app.</p>
+
+<p>In the first part of the guide, the walkthrough demonstrates hardcoding the
+image into the Food class.</p>
+
+<p>What is a class, you may ask. Think of a car. All instances of the car class share the same
+attributes: car model, car brand, mileage, and age. When you buy a car from the dealer,
+you have your very own car instance. It has its own model, brand, mileage, and age.
+Similarity, all Food instances in this program share the same attributes.</p>
+
+<p>Before, each Food instance knew its id, name, and description.</p>
+
+<p>Did it click? We’re adding the image attribute to the car class. Each Food instance will
+now possess an image to display on the country store.</p>
+
+<p>This can be found in step 1 of <a href="https://fastopp.hashnode.dev/build-a-database-driven-country-store-with-images-admin-and-fastapi-parts-23">Build a database-driven country store with images, admin,
+and FastAPI (Parts 2-3)</a> on hashnode and around 1:20 in <a href="https://youtu.be/NeYBDNiLpHc">FastOpp Country Store 1.2 - Static
+Images and SQLAdmin Setup with FastAPI on YouTube</a>.</p>
+
+<p>It looks something like this:</p>
+
+<p>In <code class="language-plaintext highlighter-rouge">models.py</code>:</p>
+
+<p><code class="language-plaintext highlighter-rouge">class Food(SQLModel, table=True):</code></p>
+
+<p>Key points:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">image_url</code> is an optional <code class="language-plaintext highlighter-rouge">str</code>, so it can be <code class="language-plaintext highlighter-rouge">None</code> when no image is available.</li>
+  <li>The field is nullable in the database.</li>
+</ul>
+
+<p>I already had <code class="language-plaintext highlighter-rouge">Food</code> defined without <code class="language-plaintext highlighter-rouge">image_url</code>, so I was just adding a new column here.</p>
+
+<p>Before moving on, it’s recommended to store your food images in a designated folder
+located inside the images folder found inside the static folder.</p>
+
+<p><code class="language-plaintext highlighter-rouge">… static/images/&lt;your folder&gt;</code></p>
+
+<p>Now, we assign specific images to its designated food (Article Step 3, Video 3:30).</p>
+
+<p>In routes/pages.py, find your list of foods which looks like this:</p>
+
+<p><code class="language-plaintext highlighter-rouge">foods: list[Food] = [</code></p>
+
+<p>After <code class="language-plaintext highlighter-rouge">description= "...."</code>, adding <code class="language-plaintext highlighter-rouge">image_url="&lt;image url&gt;"</code> tells each food object
+what image it’s assigned to, similar to a video game character learning a new spell.</p>
+
+<p>It should now look like this:</p>
+
+<p><code class="language-plaintext highlighter-rouge">foods: list[Food] = [</code></p>
+
+<p>The walkthrough then goes through styling the image using Tailwind which you can do and
+customize on your own (not covered in this blogpost).</p>
+
+<p>The final step of Part 2 (Article step 6, Video 9:20) focuses on modifying and adding
+the <code class="language-plaintext highlighter-rouge">FoodAdmin</code> class to <code class="language-plaintext highlighter-rouge">pages.py</code>.</p>
+
+<p>This is a significant step in building the country store because it adds the functionality
+of adding new foods and their attributes (description, image, etc.) through
+the UI in the admin panel. This is much easier and user friendly compared
+to adding new foods through VSCode every single time.</p>
+
+<h2 id="part-3---connect-python-data-model-to-sql-database">Part 3 - Connect Python Data Model to SQL Database</h2>
+
+<p>Part 3 focuses on connecting the store to a database so that new entries of food from the
+UI can actually be saved.</p>
+
+<p>Before you begin, make sure you have all your foods in the database (added
+through the UI, not the code) and to delete all the hardcoded foods in pages.py.</p>
+
+<p>When completing Part 3, make sure to follow the instructions exactly. Both the
+article and the video give clear instructions which made it easy for me to integrate
+a database. (Article Step 8, <a href="https://youtu.be/YG7fkmdMdIU">Video</a> 1:20 onward).</p>
+
+<p>Great! Let’s see if we can add a new food entry to our website WITHOUT hardcoding it.</p>
+
+<p>Browse to <code class="language-plaintext highlighter-rouge">/admin</code> or the admin panel</p>
+
+<p>Log in using the default credentials</p>
+
+<p>Add or edit FOOD entries. Note: make sure the image url is inside the specified path file.</p>
+
+<p>Visit your store in another tab.</p>
+
+<p>If done correctly, you should see your newly added food entry! Isn’t this so much more convenient?!</p>
+
+<h2 id="part-4---changing-favicon">Part 4 - Changing favicon</h2>
+
+<p>Finally, we conclude by changing the Favicon.</p>
+
+<p>What is Favicon? Do you see the small logo at the top left of your browser tab? That’s
+your Favicon. Right now, it should be defaulted to OPPKEY’s favicon.</p>
+
+<p>Open your static folder and delete the current favicon. If the folder is opened in VSCode,
+the favicon should have a star logo on its left.</p>
+
+<p>Go to favicon.io and press the green square (“PNG → ICO”).</p>
+
+<p>Drag and drop your desired favicon.</p>
+
+<p>Download the folder (may be automatic) and extract the folder.</p>
+
+<p>Drag the favicon into the static folder.</p>
+
+<p>Refresh your country store.</p>
+
+<p>Note: If it still shows the old favicon, press CTRL + Shift + R. This will clear the browser
+cache, updating the country store favicon. I personally ran into this problem and this solution worked for me.</p>
+
+<p>And done! Your store looks amazing with added functionality!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I personally had a good experience following the walkthroughs and developing my own country store.
+The instructions were clear and simple for me to follow and it’s pretty awesome to
+see so many modern APIs and code segments coming together to power this functional store.
+I am excited to continue improving and integrating more tools to my country store.</p>]]></content><author><name>Ethan Kim</name></author><category term="python," /><category term="class," /><category term="model," /><category term="SQL" /><summary type="html"><![CDATA[Explanation of classes and data models for interaction with an SQL database.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://oppkey.github.io/fastopp/assets/images/2025_12/ethan_screenshot.webp" /><media:content medium="image" url="https://oppkey.github.io/fastopp/assets/images/2025_12/ethan_screenshot.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Why I Replaced pip, Black, Flake8, and isort with Two Modern Python Tools (2026)</title><link href="https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/" rel="alternate" type="text/html" title="Why I Replaced pip, Black, Flake8, and isort with Two Modern Python Tools (2026)" /><published>2025-10-27T00:00:00+00:00</published><updated>2025-10-27T00:00:00+00:00</updated><id>https://oppkey.github.io/fastopp/2025/10/27/python-development-environment</id><content type="html" xml:base="https://oppkey.github.io/fastopp/2025/10/27/python-development-environment/"><![CDATA[<p>The Python community is changing faster today than at any
 point in the last 20 years. To keep pace with the changes in Python, developers
 need to change their Python tool use.</p>
 
